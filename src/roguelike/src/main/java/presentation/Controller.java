@@ -41,10 +41,10 @@ public class Controller {
                             model.openBackpack('w');
                             break;
                         case 'j':
-                            System.out.println("world");
+                            model.openBackpack('f');
                             break;
                         case 'k':
-                            System.out.println("world");
+                            model.openBackpack('e');
                             break;
                         case 'e':
                             System.out.println("world");
@@ -70,6 +70,11 @@ public class Controller {
                          '3', '4', '5',
                          '6', '7', '8' :
                         model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        break;
+                    case '9' :
+                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        break;
+                    default:
                         break;
                 }
             }

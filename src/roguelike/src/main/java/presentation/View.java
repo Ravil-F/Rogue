@@ -147,7 +147,7 @@ public class View {
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
                         viewGameOver();
-                        controller.getModel().getPlayer().setStatus(StatusPlayer.OVER);
+                        break;
                     }
 
                     if (this.key.getKeyType() == KeyType.Character && (controller.getModel().getPlayer().getStatus() == StatusPlayer.ACTION)) {
@@ -168,30 +168,47 @@ public class View {
         }
     }
 
-//    private void viewGame() throws IOException {
-//        viewController();
-////        viewMap();
-////        viewInfo();
-////        screen.refresh();
-//    }
-
     private void viewController() throws IOException, InterruptedException {
-        if (Character.toLowerCase(this.key.getCharacter()) == 'h') {
-            viewSingleItemtype();
-            setKey();
+        switch (Character.toLowerCase(this.key.getCharacter())) {
+            case 'h':
+                viewWeapor();
+                break;
+            case 'j':
+                viewFood();
+                break;
+            case 'k':
+                viewWeapor();
+                break;
+            default:
+                break;
+        }
+    }
 
-            while (this.key != null){
-                if(this.key.getKeyType() == KeyType.Escape)
-                    return;
-
-                if(this.key != null && this.key.getKeyType() == KeyType.Character){
-//                    System.out.println("tmpInt: " + this.key);
-                    controller.userInputBackpack(this.key);
-                    return;
-                }
-                setKey();
+    private void viewWeapor() throws IOException, InterruptedException {
+        viewSingleItemtype();
+        setKey();
+        while (this.key != null){
+            if(this.key.getKeyType() == KeyType.Escape)
+                return;
+            if(this.key != null && this.key.getKeyType() == KeyType.Character){
+                controller.userInputBackpack(this.key);
+                return;
             }
+            setKey();
+        }
+    }
 
+    private void viewFood() throws IOException, InterruptedException {
+        viewSingleItemtype();
+        setKey();
+        while (this.key != null){
+            if(this.key.getKeyType() == KeyType.Escape)
+                return;
+            if(this.key != null && this.key.getKeyType() == KeyType.Character){
+                controller.userInputBackpack(this.key);
+                return;
+            }
+            setKey();
         }
     }
 

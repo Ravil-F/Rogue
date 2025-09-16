@@ -48,7 +48,6 @@ public class Model {
 
     public void movePlayer(final StatusE status) {
         if (getPlayer().getStatus() == StatusPlayer.MOVE) {
-            System.out.println("world");
             int tmpX = player.getCoord().getX();
             int tmpY = player.getCoord().getY();
             int oldX = tmpX;
@@ -92,8 +91,6 @@ public class Model {
         int index = equalsMapItems(x, y, items);
         if (index != -1) {
             backpack.add(items.getItems().get(index));
-            backpack.printBackpack();
-            System.out.println("-----------------------------------");
             map.putZero(x, y);
             map.putZero(player.getCoord().getX(), player.getCoord().getY());
             player.setCoord(x, y);
@@ -117,7 +114,6 @@ public class Model {
                 singleItemType.add(backpack.getItems(i));
             }
         }
-
     }
 
     //get - set metod
