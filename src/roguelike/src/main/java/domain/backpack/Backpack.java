@@ -3,14 +3,25 @@ package domain.backpack;
 import java.util.ArrayList;
 import java.util.List;
 import domain.abstact.Items;
+import domain.items.Elixir;
+import domain.items.Food;
+import domain.items.Weapon;
 
 public class Backpack {
     private List<Items> items;
     private int counter;
     private final int maxSize = 9;
 
+    //для каждого предмета нужно по 9 слотов
+    private List<Food> pack_foods;
+    private List<Weapon> pack_weapons;
+    private List<Elixir> pack_elixirs;
+
     public Backpack() {
         items = new ArrayList<>();
+        pack_foods = new ArrayList<>(9);
+        pack_weapons = new ArrayList<>(9);
+        pack_elixirs = new ArrayList<>(9);
         this.counter = 0;
     }
 
