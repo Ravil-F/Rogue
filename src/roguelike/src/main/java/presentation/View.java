@@ -171,46 +171,52 @@ public class View {
     private void viewController() throws IOException, InterruptedException {
         switch (Character.toLowerCase(this.key.getCharacter())) {
             case 'h':
-                viewWeapor();
+                viewBackpack();
                 break;
             case 'j':
-                viewFood();
+                viewBackpack();
                 break;
             case 'k':
-                viewWeapor();
+                viewBackpack();
+                break;
+            case 'e':
+                viewBackpack();
                 break;
             default:
                 break;
         }
     }
 
-    private void viewWeapor() throws IOException, InterruptedException {
+    private void viewBackpack() throws IOException, InterruptedException {
         viewSingleItemtype();
         setKey();
         while (this.key != null){
-            if(this.key.getKeyType() == KeyType.Escape)
+            if(this.key.getKeyType() == KeyType.Escape){
+                screen.clear();
                 return;
+            }
             if(this.key != null && this.key.getKeyType() == KeyType.Character){
                 controller.userInputBackpack(this.key);
+                screen.clear();
                 return;
             }
             setKey();
         }
     }
 
-    private void viewFood() throws IOException, InterruptedException {
-        viewSingleItemtype();
-        setKey();
-        while (this.key != null){
-            if(this.key.getKeyType() == KeyType.Escape)
-                return;
-            if(this.key != null && this.key.getKeyType() == KeyType.Character){
-                controller.userInputBackpack(this.key);
-                return;
-            }
-            setKey();
-        }
-    }
+//    private void viewFood() throws IOException, InterruptedException {
+//        viewSingleItemtype();
+//        setKey();
+//        while (this.key != null){
+//            if(this.key.getKeyType() == KeyType.Escape)
+//                return;
+//            if(this.key != null && this.key.getKeyType() == KeyType.Character){
+//                controller.userInputBackpack(this.key);
+//                return;
+//            }
+//            setKey();
+//        }
+//    }
 
     public void stopWidows() throws IOException {
         screen.stopScreen();

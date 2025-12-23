@@ -44,10 +44,10 @@ public class Controller {
                             model.openBackpack('f');
                             break;
                         case 'k':
-                            model.openBackpack('e');
+                            model.openBackpack('k');
                             break;
                         case 'e':
-                            System.out.println("world");
+                            model.openBackpack('e');
                             break;
                         default:
                             break;
