@@ -5,6 +5,7 @@ import java.util.List;
 import domain.abstact.Items;
 import domain.items.Elixir;
 import domain.items.Food;
+import domain.items.Scroll;
 import domain.items.Weapon;
 
 public class Backpack {
@@ -13,15 +14,17 @@ public class Backpack {
     private final int maxSize = 9;
 
     //для каждого предмета нужно по 9 слотов
-    private List<Food> pack_foods;
-    private List<Weapon> pack_weapons;
-    private List<Elixir> pack_elixirs;
+    private List<Food> packFoods;
+    private List<Weapon> packWeapons;
+    private List<Elixir> packElixirs;
+    private List<Scroll> packScroll;
 
     public Backpack() {
         items = new ArrayList<>();
-        pack_foods = new ArrayList<>(9);
-        pack_weapons = new ArrayList<>(9);
-        pack_elixirs = new ArrayList<>(9);
+        packFoods = new ArrayList<>(9);
+        packWeapons = new ArrayList<>(9);
+        packElixirs = new ArrayList<>(9);
+        packScroll = new ArrayList<>(9);
         this.counter = 0;
     }
 
