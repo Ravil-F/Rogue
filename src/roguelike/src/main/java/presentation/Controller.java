@@ -3,8 +3,11 @@ package presentation;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
+import domain.abstact.Items;
 import domain.enums.StatusE;
 import domain.enums.StatusPlayer;
+
+import java.util.List;
 
 public class Controller {
     private Model model;
@@ -62,24 +65,25 @@ public class Controller {
         model.gameSession();
     }
 
-    public void userInputBackpack(KeyStroke key){
-        if (key != null){
+    public void userInputBackpack(KeyStroke key, final char symbol ){
+        List<Items> item = model.getBackpack().getPackItems(symbol);
+        if (key != null && !item.isEmpty()){
+
             if (key.getKeyType() == KeyType.Character){
+
                 switch (key.getCharacter()){
                     case '0', '1', '2',
                          '3', '4', '5',
                          '6', '7', '8' :
-                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
-                        break;
-                    case '9' :
-                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        model.getPlayer().increaseStrenght(item.get(Character.getNumericValue(key.getCharacter())).getIncrease());
                         break;
                     default:
                         break;
                 }
             }
+            model.getBackpack().getPackItems(symbol).remove(Character.getNumericValue(key.getCharacter()));
         }
-//        model.getBackpack().getItems().remove(Character.getNumericValue(key.getCharacter()));
+
     }
 
     public void passName(String namePlayer){

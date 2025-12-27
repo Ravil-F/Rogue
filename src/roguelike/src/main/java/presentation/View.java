@@ -198,7 +198,7 @@ public class View {
                 return;
             }
             if(this.key != null && this.key.getKeyType() == KeyType.Character){
-                controller.userInputBackpack(this.key);
+                controller.userInputBackpack(this.key, symbol);
                 screen.clear();
                 return;
             }

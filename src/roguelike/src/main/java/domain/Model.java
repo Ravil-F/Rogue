@@ -16,7 +16,6 @@ public class Model {
     private Backpack backpack;
     private Map map;
     private GameItems items;
-    private List<Items> singleItemType;
     private int level;
 
     public Model(){
@@ -24,7 +23,6 @@ public class Model {
         backpack = new Backpack();
         map = new Map();
         items = new GameItems();
-        singleItemType = new LinkedList<>();
         level = 1;
     }
 
@@ -108,8 +106,7 @@ public class Model {
     }
 
     public void openBackpack(final char symbol){
-        singleItemType.clear();
-        singleItemType.addAll(getBackpack().getPackItems(symbol));
+        //не знаю за чем он нужен, возможно стоит удалить его. т.к. он не нужен
     }
 
     //get - set metod
@@ -123,10 +120,6 @@ public class Model {
 
     public void setMap(Map map) {
         this.map = map;
-    }
-
-    public List<Items> getSingleItemType() {
-        return singleItemType;
     }
 
     public Backpack getBackpack() {
