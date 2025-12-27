@@ -6,9 +6,11 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.input.KeyStroke;
+import domain.abstact.Items;
 import domain.enums.StatusPlayer;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class View {
@@ -96,20 +98,22 @@ public class View {
         }
     }
 
-    private void viewSingleItemtype() throws IOException {
+    private void viewSingleItemtype(final char symbol) throws IOException {
         int tmpX = controller.getModel().getMap().getHeight();
         textGraphics.putString(tmpX + 2, 1, "Enter number items (0-8), Escape - exit");
-        if (controller.getModel().getSingleItemType().isEmpty())
+        if (controller.getModel().getBackpack().getScreenOutput().isEmpty())
             textGraphics.putString(2, 2, "Not Items in Backpack");
-        for(int i = 0; i < controller.getModel().getSingleItemType().size(); ++i){
-            textGraphics.putString(tmpX + 4, 2 + i,+ i + "." +
-                    " name-" + controller.getModel().getSingleItemType().get(i).getName() +
-                    " increase-" + controller.getModel().getSingleItemType().get(i).getIncrease());
+        else {
+            List<Items> item = controller.getModel().getBackpack().getScreenOutput();
+            for (int i = 0; i < item.size(); ++i) {
+                textGraphics.putString(tmpX + 4, 2 + i, +i + "." +
+                        " name-" + item.get(i).getName() +
+                        " increase-" + item.get(i).getIncrease());
+            }
         }
         screen.refresh();
     }
     // END VIEW WINDOWS
-
 
     // GET-SET METOD
     public KeyStroke getKey() {
@@ -118,8 +122,6 @@ public class View {
 
     public void setKey() throws IOException, InterruptedException {
         KeyStroke tmp = screen.readInput();
-        long currentTime = System.currentTimeMillis();
-
         if(tmp != null) {
             this.key = tmp;
         }
@@ -147,7 +149,7 @@ public class View {
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
                         viewGameOver();
-                        controller.getModel().getPlayer().setStatus(StatusPlayer.OVER);
+                        break;
                     }
 
                     if (this.key.getKeyType() == KeyType.Character && (controller.getModel().getPlayer().getStatus() == StatusPlayer.ACTION)) {
@@ -168,30 +170,39 @@ public class View {
         }
     }
 
-//    private void viewGame() throws IOException {
-//        viewController();
-////        viewMap();
-////        viewInfo();
-////        screen.refresh();
-//    }
-
     private void viewController() throws IOException, InterruptedException {
-        if (Character.toLowerCase(this.key.getCharacter()) == 'h') {
-            viewSingleItemtype();
-            setKey();
+        switch (Character.toLowerCase(this.key.getCharacter())) {
+            case 'h':
+                viewBackpack('w');
+                break;
+            case 'j':
+                viewBackpack('f');
+                break;
+            case 'k':
+                viewBackpack('e');
+                break;
+            case 'e':
+                viewBackpack('s');
+                break;
+            default:
+                break;
+        }
+    }
 
-            while (this.key != null){
-                if(this.key.getKeyType() == KeyType.Escape)
-                    return;
-
-                if(this.key != null && this.key.getKeyType() == KeyType.Character){
-//                    System.out.println("tmpInt: " + this.key);
-                    controller.userInputBackpack(this.key);
-                    return;
-                }
-                setKey();
+    private void viewBackpack(final char symbol) throws IOException, InterruptedException {
+        viewSingleItemtype(symbol);
+        setKey();
+        while (this.key != null){
+            if(this.key.getKeyType() == KeyType.Escape){
+                screen.clear();
+                return;
             }
-
+            if(this.key != null && this.key.getKeyType() == KeyType.Character){
+                controller.userInputBackpack(this.key, symbol);
+                screen.clear();
+                return;
+            }
+            setKey();
         }
     }
 

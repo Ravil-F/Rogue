@@ -16,7 +16,6 @@ public class Model {
     private Backpack backpack;
     private Map map;
     private GameItems items;
-    private List<Items> singleItemType;
     private int level;
 
     public Model(){
@@ -24,7 +23,6 @@ public class Model {
         backpack = new Backpack();
         map = new Map();
         items = new GameItems();
-        singleItemType = new LinkedList<>();
         level = 1;
     }
 
@@ -48,7 +46,6 @@ public class Model {
 
     public void movePlayer(final StatusE status) {
         if (getPlayer().getStatus() == StatusPlayer.MOVE) {
-            System.out.println("world");
             int tmpX = player.getCoord().getX();
             int tmpY = player.getCoord().getY();
             int oldX = tmpX;
@@ -88,12 +85,10 @@ public class Model {
     }
 
     private boolean checkItems(int x, int y){
-        if(items.getItems() == null) return false;
+        if(items.getItems() == null || items.getItems().isEmpty()) return false;
         int index = equalsMapItems(x, y, items);
         if (index != -1) {
-            backpack.add(items.getItems().get(index));
-            backpack.printBackpack();
-            System.out.println("-----------------------------------");
+            backpack.add(items.getItems().get(index), items.getItems().get(index).getSymbol());
             map.putZero(x, y);
             map.putZero(player.getCoord().getX(), player.getCoord().getY());
             player.setCoord(x, y);
@@ -104,20 +99,15 @@ public class Model {
 
     private int equalsMapItems(int x, int y, GameItems items){
         for(int i = 0; i < items.getItems().size(); i++){
-            if (map.convertIntToString(x, y).equals(String.valueOf(items.getItems().get(i).getSymbol())))
+            if (items.getItems().get(i).getCoord().getX() == x && items.getItems().get(i).getCoord().getY() == y)
                 return i;
         }
         return -1;
     }
 
     public void openBackpack(final char symbol){
-        singleItemType.clear();
-        for(int i = 0; i < backpack.getItemsSize(); ++i){
-            if (backpack.getItems(i).getSymbol() == symbol){
-                singleItemType.add(backpack.getItems(i));
-            }
-        }
-
+        getBackpack().getScreenOutput().clear();
+        getBackpack().getScreenOutput().addAll(getBackpack().getPackItems(symbol));
     }
 
     //get - set metod
@@ -133,11 +123,59 @@ public class Model {
         this.map = map;
     }
 
-    public List<Items> getSingleItemType() {
-        return singleItemType;
-    }
-
     public Backpack getBackpack() {
         return backpack;
     }
+
+    // действия предметов из рюкзака
+    public void actionOfItems(final char symbol, final int index){
+        List<Items> item = getBackpack().getPackItems(symbol);
+        int value = item.get(index).getIncrease();
+        switch (symbol){
+            case 'w':
+                getPlayer().increaseStrenght(value);
+                break;
+            case 'f':
+                if (getPlayer().getHealth() <= 100)
+                    getPlayer().increaseHealth(value);
+                break;
+            case 'e':
+                actionWithElixirScroll(item.get(index).getName(), value);
+                break;
+            case 's':
+                actionWithElixirScroll(item.get(index).getName(), value);
+                break;
+        }
+    }
+
+    public void actionWithElixirScroll(final String name, final int value){
+        String tmpName = name.split(" ")[0];
+        System.out.println("tmp_name = " + tmpName);
+        switch (tmpName){
+            case "health":
+                if(getPlayer().getHealth() <= 100)
+                    getPlayer().increaseHealth(value);
+                break;
+            case "agility":
+                getPlayer().increaseAgility(value);
+                break;
+            case "strength":
+                getPlayer().increaseStrenght(value);
+                break;
+        }
+    }
+
+//    public void actionWithScroll(final String name, final int value){
+//        switch (name){
+//            case "health scroll":
+//                getPlayer().increaseHealth(value);
+//                break;
+//            case "agility scroll":
+//                getPlayer().increaseAgility(value);
+//                break;
+//            case "strength scroll":
+//                getPlayer().increaseStrenght(value);
+//                break;
+//        }
+//    }
 }

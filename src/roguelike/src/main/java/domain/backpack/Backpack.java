@@ -1,78 +1,63 @@
 package domain.backpack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import domain.abstact.Items;
+import domain.items.Elixir;
+import domain.items.Food;
+import domain.items.Scroll;
+import domain.items.Weapon;
 
 public class Backpack {
-    private List<Items> items;
-    private int counter;
-    private final int maxSize = 9;
+    private List<Items> packWeapon;
+    private List<Items> packFood;
+    private List<Items> packElixir;
+    private List<Items> packScroll;
+    private List<Items> screenOuptup;
 
     public Backpack() {
-        items = new ArrayList<>();
-        this.counter = 0;
+       packWeapon = new ArrayList<>();
+       packFood = new ArrayList<>();
+       packElixir = new ArrayList<>();
+       packScroll = new ArrayList<>();
+       screenOuptup = new ArrayList<>();
     }
 
-    public Items getItems(int index){
-        return items.get(index);
-    }
-
-    public List<Items> getItems() {
-        return items;
-    }
-
-    public int getItemsSize(){
-        return items.size();
-    }
-
-    public String getItemsName(){
-        return items.get(0).getName();
-    }
-
-    public char getItemsSymbol(){
-        return items.get(0).getSymbol();
-    }
-
-    public int getItemsIncrease(){
-        return items.get(0).getIncrease();
-    }
-
-    public void setItems(List<Items> items) {
-        this.items = items;
-    }
-
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
-    public void add(Items item){
-        if (counter < maxSize) {
-            this.items.add(item);
-            ++counter;
+   public void add(Items item,  final char symbol ){
+        switch (symbol){
+            case 'w':
+                packWeapon.add(item);
+                break;
+            case 'f':
+                packFood.add(item);
+                break;
+            case 'e':
+                packElixir.add(item);
+                break;
+            case 's':
+                packScroll.add(item);
+                break;
         }
-    }
+   }
 
-    public void remove(int index){
-        if (counter != 0) {
-            this.items.remove(index);
-            --counter;
+   public List<Items> getPackItems(final char symbol){
+        switch (symbol){
+            case 'w':
+                return packWeapon;
+            case 'f':
+                return packFood;
+            case 'e':
+                return packElixir;
+            case 's':
+                return packScroll;
         }
-    }
+        return null;
+   }
 
-    public void printBackpack(){
-        for(Items i : items) {
-            System.out.println("Name: " + i.getName() +
-                    " Symbol: " + i.getSymbol() +
-                    " increase: " + i.getIncrease());
-        }
-    }
+   public List<Items> getScreenOutput(){
+        return screenOuptup;
+   }
 
-    public int getMaxSize() {
-        return maxSize;
-    }
 }
+
+

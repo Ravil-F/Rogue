@@ -3,8 +3,11 @@ package presentation;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
+import domain.abstact.Items;
 import domain.enums.StatusE;
 import domain.enums.StatusPlayer;
+
+import java.util.List;
 
 public class Controller {
     private Model model;
@@ -41,13 +44,13 @@ public class Controller {
                             model.openBackpack('w');
                             break;
                         case 'j':
-                            System.out.println("world");
+                            model.openBackpack('f');
                             break;
                         case 'k':
-                            System.out.println("world");
+                            model.openBackpack('e');
                             break;
                         case 'e':
-                            System.out.println("world");
+                            model.openBackpack('s');
                             break;
                         default:
                             break;
@@ -62,19 +65,25 @@ public class Controller {
         model.gameSession();
     }
 
-    public void userInputBackpack(KeyStroke key){
-        if (key != null){
+    public void userInputBackpack(KeyStroke key, final char symbol ){
+        List<Items> item = model.getBackpack().getScreenOutput();
+        if (key != null && !item.isEmpty()){
+
             if (key.getKeyType() == KeyType.Character){
-                switch (key.getCharacter()){
-                    case '0', '1', '2',
-                         '3', '4', '5',
-                         '6', '7', '8' :
-                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                int index = Character.getNumericValue(key.getCharacter());
+                switch (index){
+                    case 0, 1, 2,
+                         3, 4, 5,
+                         6, 7, 8 :
+                        model.actionOfItems(symbol, index);
+                        break;
+                    default:
                         break;
                 }
             }
+            model.getBackpack().getPackItems(symbol).remove(Character.getNumericValue(key.getCharacter()));
         }
-        model.getBackpack().getItems().remove(Character.getNumericValue(key.getCharacter()));
+
     }
 
     public void passName(String namePlayer){
