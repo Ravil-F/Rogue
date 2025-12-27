@@ -101,10 +101,10 @@ public class View {
     private void viewSingleItemtype(final char symbol) throws IOException {
         int tmpX = controller.getModel().getMap().getHeight();
         textGraphics.putString(tmpX + 2, 1, "Enter number items (0-8), Escape - exit");
-        if (controller.getModel().getBackpack().getPackItems(symbol).isEmpty())
+        if (controller.getModel().getBackpack().getScreenOutput().isEmpty())
             textGraphics.putString(2, 2, "Not Items in Backpack");
         else {
-            List<Items> item = controller.getModel().getBackpack().getPackItems(symbol);
+            List<Items> item = controller.getModel().getBackpack().getScreenOutput();
             for (int i = 0; i < item.size(); ++i) {
                 textGraphics.putString(tmpX + 4, 2 + i, +i + "." +
                         " name-" + item.get(i).getName() +

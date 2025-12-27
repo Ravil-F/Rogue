@@ -41,16 +41,16 @@ public class Controller {
                             model.movePlayer(StatusE.RIGHT);
                             break;
                         case 'h':
-                            model.openBackpack('h');
+                            model.openBackpack('w');
                             break;
                         case 'j':
                             model.openBackpack('f');
                             break;
                         case 'k':
-                            model.openBackpack('k');
+                            model.openBackpack('e');
                             break;
                         case 'e':
-                            model.openBackpack('e');
+                            model.openBackpack('s');
                             break;
                         default:
                             break;
@@ -66,7 +66,7 @@ public class Controller {
     }
 
     public void userInputBackpack(KeyStroke key, final char symbol ){
-        List<Items> item = model.getBackpack().getPackItems(symbol);
+        List<Items> item = model.getBackpack().getScreenOutput();
         if (key != null && !item.isEmpty()){
 
             if (key.getKeyType() == KeyType.Character){
