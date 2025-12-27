@@ -38,16 +38,16 @@ public class Controller {
                             model.movePlayer(StatusE.RIGHT);
                             break;
                         case 'h':
-                            model.openBackpack(0);
+                            model.openBackpack('h');
                             break;
                         case 'j':
-                            model.openBackpack(1);
+                            model.openBackpack('f');
                             break;
                         case 'k':
-                            model.openBackpack(2);
+                            model.openBackpack('k');
                             break;
                         case 'e':
-                            model.openBackpack(3);
+                            model.openBackpack('e');
                             break;
                         default:
                             break;
@@ -69,17 +69,17 @@ public class Controller {
                     case '0', '1', '2',
                          '3', '4', '5',
                          '6', '7', '8' :
-                        model.getPlayer().increaseStrenght(model.getContentPackByType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
                         break;
                     case '9' :
-                        model.getPlayer().increaseStrenght(model.getContentPackByType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
                         break;
                     default:
                         break;
                 }
             }
         }
-        model.getBackpack().getItems().remove(Character.getNumericValue(key.getCharacter()));
+//        model.getBackpack().getItems().remove(Character.getNumericValue(key.getCharacter()));
     }
 
     public void passName(String namePlayer){

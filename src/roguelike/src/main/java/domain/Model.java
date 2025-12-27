@@ -87,10 +87,10 @@ public class Model {
     }
 
     private boolean checkItems(int x, int y){
-        if(items.getItems() == null) return false;
+        if(items.getItems() == null || items.getItems().isEmpty()) return false;
         int index = equalsMapItems(x, y, items);
         if (index != -1) {
-            backpack.add(items.getItems().get(index));
+            backpack.add(items.getItems().get(index), items.getItems().get(index).getSymbol());
             map.putZero(x, y);
             map.putZero(player.getCoord().getX(), player.getCoord().getY());
             player.setCoord(x, y);
@@ -101,7 +101,7 @@ public class Model {
 
     private int equalsMapItems(int x, int y, GameItems items){
         for(int i = 0; i < items.getItems().size(); i++){
-            if (map.convertIntToString(x, y).equals(String.valueOf(items.getItems().get(i).getSymbol())))
+            if (items.getItems().get(i).getCoord().getX() == x && items.getItems().get(i).getCoord().getY() == y)
                 return i;
         }
         return -1;
@@ -109,11 +109,7 @@ public class Model {
 
     public void openBackpack(final char symbol){
         singleItemType.clear();
-        for(int i = 0; i < backpack.getItemsSize(); ++i){
-            if (backpack.getItems(i).getSymbol() == symbol){
-                singleItemType.add(backpack.getItems(i));
-            }
-        }
+        singleItemType.addAll(getBackpack().getPackItems(symbol));
     }
 
     //get - set metod

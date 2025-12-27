@@ -17,7 +17,6 @@ public class Main {
         Model model = new Model();
         Controller controller = new Controller(model);
         View view = new View(controller);
-
         view.startWindow();
         startGameLoop(view, controller);
         view.stopWidows();
