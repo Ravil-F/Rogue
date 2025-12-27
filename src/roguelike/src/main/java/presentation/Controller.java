@@ -38,16 +38,16 @@ public class Controller {
                             model.movePlayer(StatusE.RIGHT);
                             break;
                         case 'h':
-                            model.openBackpack('w');
+                            model.openBackpack(0);
                             break;
                         case 'j':
-                            model.openBackpack('f');
+                            model.openBackpack(1);
                             break;
                         case 'k':
-                            model.openBackpack('k');
+                            model.openBackpack(2);
                             break;
                         case 'e':
-                            model.openBackpack('e');
+                            model.openBackpack(3);
                             break;
                         default:
                             break;
@@ -69,10 +69,10 @@ public class Controller {
                     case '0', '1', '2',
                          '3', '4', '5',
                          '6', '7', '8' :
-                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        model.getPlayer().increaseStrenght(model.getContentPackByType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
                         break;
                     case '9' :
-                        model.getPlayer().increaseStrenght(model.getSingleItemType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                        model.getPlayer().increaseStrenght(model.getContentPackByType().get(Character.getNumericValue(key.getCharacter())).getIncrease());
                         break;
                     default:
                         break;
