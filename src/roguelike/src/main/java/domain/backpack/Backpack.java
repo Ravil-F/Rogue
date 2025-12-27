@@ -13,12 +13,14 @@ public class Backpack {
     private List<Items> packFood;
     private List<Items> packElixir;
     private List<Items> packScroll;
+    private List<Items> screenOuptup;
 
     public Backpack() {
        packWeapon = new ArrayList<>();
        packFood = new ArrayList<>();
        packElixir = new ArrayList<>();
        packScroll = new ArrayList<>();
+       screenOuptup = new ArrayList<>();
     }
 
    public void add(Items item,  final char symbol ){
@@ -50,6 +52,10 @@ public class Backpack {
                 return packScroll;
         }
         return null;
+   }
+
+   public List<Items> getScreenOutput(){
+        return screenOuptup;
    }
 
 }

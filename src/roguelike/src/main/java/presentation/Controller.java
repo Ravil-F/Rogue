@@ -70,12 +70,12 @@ public class Controller {
         if (key != null && !item.isEmpty()){
 
             if (key.getKeyType() == KeyType.Character){
-
-                switch (key.getCharacter()){
-                    case '0', '1', '2',
-                         '3', '4', '5',
-                         '6', '7', '8' :
-                        model.getPlayer().increaseStrenght(item.get(Character.getNumericValue(key.getCharacter())).getIncrease());
+                int index = Character.getNumericValue(key.getCharacter());
+                switch (index){
+                    case 0, 1, 2,
+                         3, 4, 5,
+                         6, 7, 8 :
+                        model.actionOfItems(symbol, index);
                         break;
                     default:
                         break;

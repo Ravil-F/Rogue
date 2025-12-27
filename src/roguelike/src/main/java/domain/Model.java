@@ -106,7 +106,8 @@ public class Model {
     }
 
     public void openBackpack(final char symbol){
-        //не знаю за чем он нужен, возможно стоит удалить его. т.к. он не нужен
+        getBackpack().getScreenOutput().clear();
+        getBackpack().getScreenOutput().addAll(getBackpack().getPackItems(symbol));
     }
 
     //get - set metod
@@ -125,4 +126,56 @@ public class Model {
     public Backpack getBackpack() {
         return backpack;
     }
+
+    // действия предметов из рюкзака
+    public void actionOfItems(final char symbol, final int index){
+        List<Items> item = getBackpack().getPackItems(symbol);
+        int value = item.get(index).getIncrease();
+        switch (symbol){
+            case 'w':
+                getPlayer().increaseStrenght(value);
+                break;
+            case 'f':
+                if (getPlayer().getHealth() <= 100)
+                    getPlayer().increaseHealth(value);
+                break;
+            case 'e':
+                actionWithElixirScroll(item.get(index).getName(), value);
+                break;
+            case 's':
+                actionWithElixirScroll(item.get(index).getName(), value);
+                break;
+        }
+    }
+
+    public void actionWithElixirScroll(final String name, final int value){
+        String tmpName = name.split(" ")[0];
+        System.out.println("tmp_name = " + tmpName);
+        switch (tmpName){
+            case "health":
+                if(getPlayer().getHealth() <= 100)
+                    getPlayer().increaseHealth(value);
+                break;
+            case "agility":
+                getPlayer().increaseAgility(value);
+                break;
+            case "strength":
+                getPlayer().increaseStrenght(value);
+                break;
+        }
+    }
+
+//    public void actionWithScroll(final String name, final int value){
+//        switch (name){
+//            case "health scroll":
+//                getPlayer().increaseHealth(value);
+//                break;
+//            case "agility scroll":
+//                getPlayer().increaseAgility(value);
+//                break;
+//            case "strength scroll":
+//                getPlayer().increaseStrenght(value);
+//                break;
+//        }
+//    }
 }

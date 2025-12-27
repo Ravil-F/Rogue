@@ -18,13 +18,15 @@ public class Player extends Attributes {
     }
 
     public void increaseStrenght(int xp){
-        int res = getStrength() + xp;
-        System.out.println("res: " + res);
-        setStrength(res);
+        setStrength(getStrength() + xp);
     }
 
-    public void increaseHealth(int a){
-        setHealth(getHealth() + a);
+    public void increaseHealth(int xp){
+        setHealth(getHealth() + xp);
+    }
+
+    public void increaseAgility(int xp){
+        setAgility(getAgility() + xp);
     }
 
     public StatusPlayer getStatus() {

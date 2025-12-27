@@ -206,20 +206,6 @@ public class View {
         }
     }
 
-//    private void viewFood() throws IOException, InterruptedException {
-//        viewSingleItemtype();
-//        setKey();
-//        while (this.key != null){
-//            if(this.key.getKeyType() == KeyType.Escape)
-//                return;
-//            if(this.key != null && this.key.getKeyType() == KeyType.Character){
-//                controller.userInputBackpack(this.key);
-//                return;
-//            }
-//            setKey();
-//        }
-//    }
-
     public void stopWidows() throws IOException {
         screen.stopScreen();
     }
