@@ -2,17 +2,18 @@ package domain.location;
 
 import domain.interfaces.Utils;
 import utils.CommonProperties;
+import utils.MapProperties;
 
 import java.util.List;
 
 public class Map implements Utils {
     private List<Rooms> room;
     private List<Passage> passages;
-    private CommonProperties common;
+    private MapProperties common;
     private int[][] map;
     
     public Map(){
-        common = new CommonProperties();
+        common = new MapProperties();
         this.map = new int[this.common.getWidthHeight()][this.common.getWidthHeight()];
     }
 

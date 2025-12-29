@@ -7,17 +7,18 @@ import java.util.Properties;
 
 public class CommonProperties {
     private Properties properties;
-    private final String FILE_NAME = "common.properties";
+    private final String fileName;
 
-    public CommonProperties() {
+    public CommonProperties(String fileName) {
         properties = new Properties();
-        loadProperties();
+        this.fileName = fileName;
+        loadProperties(fileName);
     }
 
-    private void loadProperties() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(FILE_NAME)) {
+    private void loadProperties(String fileName) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(fileName)) {
             if (input == null) {
-                System.out.println("Unable to find " + FILE_NAME);
+                System.out.println("Unable to find " + fileName);
                 return;
             }
             properties.load(input);
@@ -26,15 +27,8 @@ public class CommonProperties {
         }
     }
 
-    public int getMaxLevel() {
-        return Integer.parseInt(properties.getProperty("MAX_LEVEL"));
+    public int getIntProperty(String key, int defaultParam){
+        return Integer.parseInt(properties.getProperty(key), defaultParam);
     }
 
-    public int getDifferenceLevel() {
-        return Integer.parseInt(properties.getProperty("DIFFERENCE_LEVEL"));
-    }
-
-    public int getWidthHeight() {
-        return Integer.parseInt(properties.getProperty("WIDTH_HEIGHT"));
-    }
 }
