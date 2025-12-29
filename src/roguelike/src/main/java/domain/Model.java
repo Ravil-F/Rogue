@@ -7,7 +7,6 @@ import domain.enums.StatusPlayer;
 import domain.items.GameItems;
 import domain.location.Map;
 import domain.player.Player;
-import utils.CommonProperties;
 
 import java.util.*;
 
@@ -150,7 +149,6 @@ public class Model {
 
     public void actionWithElixirScroll(final String name, final int value){
         String tmpName = name.split(" ")[0];
-        System.out.println("tmp_name = " + tmpName);
         switch (tmpName){
             case "health":
                 if(getPlayer().getHealth() <= 100)
@@ -165,17 +163,5 @@ public class Model {
         }
     }
 
-//    public void actionWithScroll(final String name, final int value){
-//        switch (name){
-//            case "health scroll":
-//                getPlayer().increaseHealth(value);
-//                break;
-//            case "agility scroll":
-//                getPlayer().increaseAgility(value);
-//                break;
-//            case "strength scroll":
-//                getPlayer().increaseStrenght(value);
-//                break;
-//        }
-//    }
+
 }

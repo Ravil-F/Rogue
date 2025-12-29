@@ -1,40 +1,32 @@
 package utils;
 
-import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+public class CommonProperties extends MainProperties {
+    private final int maxlevel;
+    private final int differenceLevel;
+    private final int widthHeight;
+    private final int countEnemy;
 
-public class CommonProperties {
-    private Properties properties;
-    private final String FILE_NAME = "common.properties";
-
-    public CommonProperties() {
-        properties = new Properties();
-        loadProperties();
-    }
-
-    private void loadProperties() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(FILE_NAME)) {
-            if (input == null) {
-                System.out.println("Unable to find " + FILE_NAME);
-                return;
-            }
-            properties.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public int getMaxLevel() {
-        return Integer.parseInt(properties.getProperty("MAX_LEVEL"));
+    public CommonProperties(){
+        super("common.properties");
+        this.maxlevel = getIntProperty("max_level", 21);
+        this.differenceLevel = getIntProperty("difference_level", 16);
+        this.widthHeight = getIntProperty("width_heigth", 20);
+        this.countEnemy = getIntProperty("count_enemy", 5);
     }
 
     public int getDifferenceLevel() {
-        return Integer.parseInt(properties.getProperty("DIFFERENCE_LEVEL"));
+        return differenceLevel;
     }
 
     public int getWidthHeight() {
-        return Integer.parseInt(properties.getProperty("WIDTH_HEIGHT"));
+        return widthHeight;
+    }
+
+    public int getMaxlevel() {
+        return maxlevel;
+    }
+
+    public int getCountEnemy() {
+        return countEnemy;
     }
 }

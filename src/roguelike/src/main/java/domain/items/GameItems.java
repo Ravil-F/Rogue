@@ -7,7 +7,6 @@ import utils.CommonProperties;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 
 public class GameItems implements Utils {
@@ -27,7 +26,7 @@ public class GameItems implements Utils {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-        for (int i = 0; i < common.getMaxLevel() - tmpDifference; i++) {
+        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countItems);
             switch (countRandom){
                 case 0:
