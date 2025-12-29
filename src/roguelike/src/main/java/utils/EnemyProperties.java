@@ -4,9 +4,8 @@ import domain.enums.ColorE;
 import domain.enums.HostilityE;
 import java.util.Properties;
 
-public class EnemyProperties {
-    private CommonProperties common;
-//    private final String name;
+public class EnemyProperties extends CommonProperties{
+    private final String name;
     private final char symbol;
     private final String color;
     private final int maxHealth;
@@ -16,8 +15,8 @@ public class EnemyProperties {
     private final String hostility;
 
     EnemyProperties(String enemyID){
-        common = new CommonProperties("enemy.properties");
-        this.name = common.getStrProperty(enemyID + ".name", "Unknown");
+        super("enemy.properties");
+        this.name = getStrProperty(enemyID + ".name", "Unknown");
     }
 
     public String getName(){return name;}

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class CommonProperties {
+public abstract class CommonProperties {
     private Properties properties;
     private final String fileName;
 
@@ -25,6 +25,10 @@ public class CommonProperties {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public String getStrProperty(String key, String defaultParam){
+        return properties.getProperty(key, defaultParam);
     }
 
     public int getIntProperty(String key, int defaultParam){
