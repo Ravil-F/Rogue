@@ -7,7 +7,6 @@ import domain.enums.StatusPlayer;
 import domain.items.GameItems;
 import domain.location.Map;
 import domain.player.Player;
-import utils.CommonProperties;
 
 import java.util.*;
 

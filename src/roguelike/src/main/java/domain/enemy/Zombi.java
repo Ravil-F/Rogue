@@ -1,19 +1,34 @@
 package domain.enemy;
-import domain.abstact.Enemy;
-import domain.enums.EnemyE;
-import domain.enums.HostilityE;
 
-public class Zombi extends Enemy{
-    private EnemyE zombi;
+import domain.common.Coord;
+import utils.EnemyProperties;
 
-    public Zombi(EnemyE enemyType, int x, int y) {
-        super(enemyType, x, y);
+public class Zombi {
+    private EnemyProperties properties;
+    private Coord coord;
+
+    public Zombi(int x, int y) {
+        this.properties = new EnemyProperties("zombi");
+        this.coord = new Coord(x, y);
     }
 
-    public EnemyE getZombi(){return zombi;}
+    public void setCoord(int x, int y){
+        coord.setCoord(x, y);
+    }
 
-    public int getHealth(){return zombi.getHealth();}
-    public int getAgality(){return zombi.getAgality();}
-    public int getStrength(){return zombi.getStrength();}
-    public HostilityE getHostility(){return zombi.getHostility();}
+    public int getX(){
+        return coord.getX();
+    }
+
+    public int getY(){
+        return coord.getY();
+    }
+
+    public EnemyProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(EnemyProperties properties) {
+        this.properties = properties;
+    }
 }

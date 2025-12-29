@@ -4,14 +4,13 @@ import domain.abstact.Items;
 import domain.enums.*;
 import domain.interfaces.Utils;
 import utils.CommonProperties;
-import utils.MapProperties;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 public class GameItems implements Utils {
-    MapProperties common;
+    CommonProperties common;
     private List<Items> items;
     private Random random;
     private final int countItems = 4;
@@ -19,7 +18,7 @@ public class GameItems implements Utils {
     public GameItems(){
         items = new LinkedList<Items>();
         random = new Random();
-        common = new MapProperties();
+        common = new CommonProperties();
 //        generateRandomItems();
     }
 
@@ -27,7 +26,7 @@ public class GameItems implements Utils {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-        for (int i = 0; i < common.getMaxLevel() - tmpDifference; i++) {
+        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countItems);
             switch (countRandom){
                 case 0:
