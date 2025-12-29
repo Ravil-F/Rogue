@@ -31,7 +31,15 @@ public abstract class MainProperties {
     }
 
     public int getIntProperty(String key, int defaultParam){
-        return Integer.parseInt(properties.getProperty(key), defaultParam);
+        String value = properties.getProperty(key);
+        if (value == null) {
+            return defaultParam;
+        }
+        try {
+            return Integer.parseInt(value);  // Десятичная система
+        } catch (NumberFormatException e) {
+            return defaultParam;
+        }
     }
 
         public char getCharProperty(String key, char defaultParam){
