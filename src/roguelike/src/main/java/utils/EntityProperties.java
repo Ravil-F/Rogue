@@ -36,8 +36,8 @@ public class EntityProperties extends MainProperties {
         return getIntProperty(this.entityId + ".strength", 0);
     }
 
-    public String getHostility(){
-        return getStrProperty(this.entityId + ".hostility", "LOW");
+    public int getHostility(){
+        return getIntProperty(this.entityId + ".hostility", 2);
     }
 
 
