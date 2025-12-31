@@ -1,34 +1,28 @@
 package domain.enemy;
 
-import domain.common.Coord;
-import utils.EnemyProperties;
+import utils.EntityProperties;
+import domain.abstact.Attributes;
 
-public class Zombi {
-    private EnemyProperties properties;
-    private Coord coord;
+public class Zombi extends Attributes {
+    private final EntityProperties properties;
 
     public Zombi(int x, int y) {
-        this.properties = new EnemyProperties("zombi");
-        this.coord = new Coord(x, y);
+        this(createProperties(), x, y);
     }
 
-    public void setCoord(int x, int y){
-        coord.setCoord(x, y);
-    }
-
-    public int getX(){
-        return coord.getX();
-    }
-
-    public int getY(){
-        return coord.getY();
-    }
-
-    public EnemyProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(EnemyProperties properties) {
+    private Zombi(EntityProperties properties, int x, int y){
+        super(properties.getName(), properties.getSymbol(),
+                properties.getColor(), properties.getMaxHealth(),
+                properties.getHealth(), properties.getAgility(),
+                properties.getStrength(), x, y);
         this.properties = properties;
+    }
+    
+    private static EntityProperties createProperties(){
+        return new EntityProperties("zombi");
+    }
+
+    public EntityProperties getProperties() {
+        return properties;
     }
 }

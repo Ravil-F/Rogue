@@ -9,6 +9,7 @@ public class Scroll extends Items {
 
     public Scroll(ScrollE scroll, int x, int y){
         super(scroll.getSymbol(), scroll.getName(), scroll.getIncrease(), x, y);
+        this.scroll = scroll;
     }
 
     public ScrollE getScroll() {

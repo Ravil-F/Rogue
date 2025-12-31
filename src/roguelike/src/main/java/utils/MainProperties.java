@@ -44,7 +44,7 @@ public abstract class MainProperties {
 
         public char getCharProperty(String key, char defaultParam){
             String value = properties.getProperty(key, String.valueOf(defaultParam));
-            return  (value != null && value .isEmpty()) ? value.charAt(0) : defaultParam;
+            return  (value != null && !value.isEmpty()) ? value.charAt(0) : defaultParam;
         }
 
 }

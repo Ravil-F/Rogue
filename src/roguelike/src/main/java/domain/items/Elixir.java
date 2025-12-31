@@ -8,6 +8,7 @@ public class Elixir extends Items {
 
     public Elixir(ElixirE elixir, int duration, int x, int y){
         super(elixir.getSymbol(), elixir.getName(), elixir.getIncrease(), x, y);
+        this.elixir = elixir;
     }
 
     public ElixirE getElixir() {
