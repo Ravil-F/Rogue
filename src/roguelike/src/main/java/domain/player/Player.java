@@ -9,11 +9,11 @@ public class Player extends Attributes {
     private StatusPlayer status;
 
     public Player() {
-        super("Player", '@', ColorE.RED, 100, 100, 0, 0, 5, 5);
+        super("Player", '@', "RED", 100, 100, 0, 0, 5, 5);
         status = StatusPlayer.START;
     }
 
-    public Player(String name, char symbol, ColorE color, int maxHealth, int health, int agility, int strength, int x, int y) {
+    public Player(String name, char symbol, String color, int maxHealth, int health, int agility, int strength, int x, int y) {
         super(name, symbol, color, maxHealth, health, agility, strength, x, y);
     }
 

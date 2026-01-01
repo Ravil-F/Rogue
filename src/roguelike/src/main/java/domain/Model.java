@@ -29,7 +29,7 @@ public class Model {
         player.setStatus(StatusPlayer.ACTION);
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
 
-        items.generateRandomItems(level);
+        items.generateRandom(level);
         for(int i = 0; i < items.getItems().size(); ++i) {
             map.setMap(items.getItems().get(i).getCoord().getX(), items.getItems().get(i).getCoord().getY(), items.getItems().get(i).getSymbol());
         }
