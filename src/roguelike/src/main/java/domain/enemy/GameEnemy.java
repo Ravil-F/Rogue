@@ -1,22 +1,22 @@
 package domain.enemy;
 
+import domain.abstact.Attributes;
 import domain.interfaces.GenerateRandom;
 import domain.interfaces.Utils;
 import utils.CommonProperties;
-import utils.EntityProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class GameEnemy implements Utils, GenerateRandom {
-    private List<EntityProperties> enemy;
+    private List<Attributes> enemy;
     CommonProperties common;
     private Random random;
     private final int countEnemy = 5;
 
-    public GameEnemy(int x, int y){
-        enemy = new ArrayList<EntityProperties>();
+    public GameEnemy(){
+        enemy = new ArrayList<>();
         common = new CommonProperties();
         random = new Random();
     }
@@ -26,27 +26,26 @@ public class GameEnemy implements Utils, GenerateRandom {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-//        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
-//            int countRandom = random.nextInt(0, countItems);
-//            switch (countRandom){
-//                case 0:
-//                    ElixirE randomElixir = ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
-//                    items.add(new Elixir(randomElixir, 60, randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 1:
-//                    FoodE randomFood = FoodE.values()[random.nextInt(0, FoodE.values().length)];
-//                    items.add(new Food(randomFood, randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 2:
-//                    ScrollE randomScroll = ScrollE.values()[random.nextInt(0, ScrollE.values().length)];
-//                    items.add(new Scroll(randomScroll, randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 3:
-//                    WeaponE randomWeapon = WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
-//                    items.add(new Weapon(randomWeapon, randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//            }
-//        }
+        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
+            int countRandom = random.nextInt(0, countEnemy);
+            switch (countRandom){
+                case 0:
+                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 1:
+                    enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 2:
+                    enemy.add(new Grost(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 3:
+                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 4:
+                    enemy.add(new SnakeMage(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+            }
+        }
     }
 
     @Override
@@ -78,7 +77,7 @@ public class GameEnemy implements Utils, GenerateRandom {
     }
 
 
-    public List<EntityProperties> getEnemy() {
+    public List<Attributes> getEnemy() {
         return enemy;
     }
 
