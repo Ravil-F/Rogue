@@ -2,6 +2,7 @@ package domain;
 
 import domain.abstact.Items;
 import domain.backpack.Backpack;
+import domain.enemy.GameEnemy;
 import domain.enums.StatusE;
 import domain.enums.StatusPlayer;
 import domain.items.GameItems;
@@ -15,6 +16,7 @@ public class Model {
     private Backpack backpack;
     private Map map;
     private GameItems items;
+    private GameEnemy enemy;
     private int level;
 
     public Model(){
@@ -22,6 +24,7 @@ public class Model {
         backpack = new Backpack();
         map = new Map();
         items = new GameItems();
+        enemy = new GameEnemy();
         level = 1;
     }
 
@@ -29,9 +32,14 @@ public class Model {
         player.setStatus(StatusPlayer.ACTION);
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
 
-        items.generateRandomItems(level);
+        items.generateRandom(level);
         for(int i = 0; i < items.getItems().size(); ++i) {
             map.setMap(items.getItems().get(i).getCoord().getX(), items.getItems().get(i).getCoord().getY(), items.getItems().get(i).getSymbol());
+        }
+
+        enemy.generateRandom(level);
+        for(int i = 0; i < enemy.getEnemy().size(); ++i){
+            map.setMap(enemy.getEnemy().get(i).getCoord().getX(), enemy.getEnemy().get(i).getCoord().getY(), enemy.getEnemy().get(i).getSymbol());
         }
     }
 

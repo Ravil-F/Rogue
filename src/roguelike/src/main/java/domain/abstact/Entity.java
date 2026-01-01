@@ -1,13 +1,13 @@
 package domain.abstact;
 
-import domain.enums.ColorE;
+//import domain.enums.ColorE;
 import domain.common.Coord;
 
 //сущность
 public abstract class Entity {
     private String name;
     private char symbol;
-    private ColorE color;
+    private String color;
     private Coord coord;
 
     public String getName() {
@@ -26,11 +26,11 @@ public abstract class Entity {
         this.symbol = symbol;
     }
 
-    public ColorE getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(ColorE color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
@@ -50,7 +50,7 @@ public abstract class Entity {
         this.coord.setX(y);
     }
 
-    public Entity(String name, char symbol, ColorE color, int x, int y) {
+    public Entity(String name, char symbol, String color, int x, int y) {
         this.name = name;
         this.symbol = symbol;
         this.color = color;

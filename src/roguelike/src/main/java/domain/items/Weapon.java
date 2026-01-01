@@ -9,6 +9,7 @@ public class Weapon extends Items {
 
     public Weapon(WeaponE weapon, int x, int y){
         super(weapon.getSymbol(), weapon.getName(), weapon.getIncrease(), x, y);
+        this.weapon = weapon;
     }
 
     public WeaponE getWeapon() {

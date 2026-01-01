@@ -1,17 +1,17 @@
 package domain.enemy;
 
-import utils.EntityProperties;
 import domain.abstact.Attributes;
+import utils.EntityProperties;
 
-public class Zombi extends Attributes {
+public class Orge extends Attributes {
     private final EntityProperties properties;
     private final int hostility;
 
-    public Zombi(int x, int y) {
+    public Orge(int x, int y) {
         this(createProperties(), x, y);
     }
 
-    private Zombi(EntityProperties properties, int x, int y){
+    private Orge(EntityProperties properties, int x, int y){
         super(properties.getName(), properties.getSymbol(),
                 properties.getColor(), properties.getMaxHealth(),
                 properties.getHealth(), properties.getAgility(),
@@ -19,9 +19,9 @@ public class Zombi extends Attributes {
         this.properties = properties;
         this.hostility = properties.getHostility();
     }
-    
+
     private static EntityProperties createProperties(){
-        return new EntityProperties("zombi");
+        return new EntityProperties("orge");
     }
 
     public EntityProperties getProperties() {

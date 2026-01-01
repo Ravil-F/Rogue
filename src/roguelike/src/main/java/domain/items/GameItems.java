@@ -2,6 +2,7 @@ package domain.items;
 
 import domain.abstact.Items;
 import domain.enums.*;
+import domain.interfaces.GenerateRandom;
 import domain.interfaces.Utils;
 import utils.CommonProperties;
 
@@ -9,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class GameItems implements Utils {
+public class GameItems implements Utils, GenerateRandom {
     CommonProperties common;
     private List<Items> items;
     private Random random;
@@ -22,7 +23,8 @@ public class GameItems implements Utils {
 //        generateRandomItems();
     }
 
-    public void generateRandomItems(int level) {
+    @Override
+    public void generateRandom(int level) {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
@@ -49,7 +51,8 @@ public class GameItems implements Utils {
         }
     }
 
-    private int checkDifference(int level){
+    @Override
+    public int checkDifference(int level){
         int result = 16;
         if (level <= 5) result = 16;
         else if (level <= 10) result = 17;
@@ -58,19 +61,12 @@ public class GameItems implements Utils {
         return result;
     }
 
-    private int randomXY(int xy){
+    @Override
+    public int randomXY(int xy){
         int tmp =  random.nextInt(xy);
         if (isWithInBounds(tmp))
             return tmp;
         else return randomXY(xy);
-    }
-
-    public List<Items> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Items> items) {
-        this.items = items;
     }
 
     @Override
@@ -81,5 +77,13 @@ public class GameItems implements Utils {
     @Override
     public boolean isWithInBounds(int x, int y) {
         return false;
+    }
+
+    public List<Items> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Items> items) {
+        this.items = items;
     }
 }

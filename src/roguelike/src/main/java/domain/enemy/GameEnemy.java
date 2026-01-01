@@ -1,23 +1,84 @@
 package domain.enemy;
 
+import domain.abstact.Attributes;
+import domain.interfaces.GenerateRandom;
+import domain.interfaces.Utils;
 import utils.CommonProperties;
-import utils.EnemyProperties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-public class GameEnemy {
-    private List<EnemyProperties> enemy;
+public class GameEnemy implements Utils, GenerateRandom {
+    private List<Attributes> enemy;
     CommonProperties common;
-    Zombi zombi;
+    private Random random;
+    private final int countEnemy = 5;
 
-    public GameEnemy(int x, int y){
+    public GameEnemy(){
         enemy = new ArrayList<>();
         common = new CommonProperties();
-        zombi = new Zombi(x, y);
+        random = new Random();
     }
 
-    public List<EnemyProperties> getEnemy() {
+    @Override
+    public void generateRandom(int level){
+        int tmpXY = common.getWidthHeight();
+        int tmpDifference = checkDifference(level);
+
+        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
+            int countRandom = random.nextInt(0, countEnemy);
+            switch (countRandom){
+                case 0:
+                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 1:
+                    enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 2:
+                    enemy.add(new Grost(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 3:
+                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 4:
+                    enemy.add(new SnakeMage(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public int checkDifference(int level) {
+        int result = 16;
+        if (level <= 5) result = 16;
+        else if (level <= 10) result = 17;
+        else if (level <= 15) result = 18;
+        else if (level <= 20) result = 19;
+        return result;
+    }
+
+    @Override
+    public int randomXY(int xy){
+        int tmp =  random.nextInt(xy);
+        if (isWithInBounds(tmp))
+            return tmp;
+        else return randomXY(xy);
+    }
+
+    @Override
+    public boolean isWithInBounds(int x) {
+        return x > 0 && x < common.getWidthHeight();
+    }
+
+    @Override
+    public boolean isWithInBounds(int x, int y) {
+        return false;
+    }
+
+
+    public List<Attributes> getEnemy() {
         return enemy;
     }
+
 }

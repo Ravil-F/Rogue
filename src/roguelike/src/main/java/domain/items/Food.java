@@ -9,6 +9,7 @@ public class Food extends Items {
 
     public Food(FoodE food, int x, int y){
         super(food.getSymbol(), food.getName(), food.getIncrease(), x, y);
+        this.food = food;
     }
 
     public FoodE getFood() {
