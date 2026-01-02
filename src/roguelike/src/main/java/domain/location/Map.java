@@ -21,8 +21,8 @@ public class Map implements Utils {
     private static final int MIN_ROOM_HEIGHT = 5;
     private static final int MAX_ROOM_HEIGHT = REGION_HEIGHT - 2;
 
-    public static final int MAP_WIDTH = ROOMS_IN_WIDTH * REGION_WIDTH;   // 81
-    public static final int MAP_HEIGHT = ROOMS_IN_HEIGHT * REGION_HEIGHT; // 30
+    public static final int MAP_WIDTH = ROOMS_IN_WIDTH * REGION_WIDTH;
+    public static final int MAP_HEIGHT = ROOMS_IN_HEIGHT * REGION_HEIGHT;
 
     private static final int NUM_ROOMS = 9;
     private static final Random rnd = new Random();
@@ -145,7 +145,6 @@ public class Map implements Utils {
 
     private void sendRoomsIntoMap() {
         for (Rooms room : rooms) {
-            // Рисуем стены комнаты
             for (int x = room.getLeftX(); x <= room.getRightX(); x++) {
                 map[x][room.getTopY()] = '#';
                 map[x][room.getBottomY()] = '#';
@@ -222,12 +221,10 @@ public class Map implements Utils {
         return MAP_HEIGHT;
     }
 
-    @Override
     public boolean isWithInBounds(int x) {
         return false;
     }
 
-    @Override
     public boolean isWithInBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < MAP_WIDTH && y < MAP_HEIGHT;
     }
