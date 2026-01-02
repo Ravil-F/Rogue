@@ -63,24 +63,30 @@ public class Model implements Utils {
 
             switch (status) {
                 case DOWN:
-                    tmpY = player.down(tmpY);
+                    player.move(tmpY, true);
+//                    ++tmpY;
                     break;
                 case UP:
-                    --tmpY;
+                    player.move(tmpY, false);
+//                    --tmpY;
                     break;
                 case LEFT:
-                    --tmpX;
+                    player.move(tmpX, false);
+//                    --tmpX;
                     break;
                 case RIGHT:
-                    ++tmpX;
+                    player.move(tmpX, true);
+//                    ++tmpX;
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid status");
             }
 
             if(checkEnemy(tmpX, tmpY)){
+                player.setStatus(StatusPlayer.ATTAC);
                 System.out.println("Enemy");
 //                enemyAttac();
+                player.setStatus(StatusPlayer.MOVE);
             }
             else if (tryMove(tmpX, tmpY)) {
                 map.putZero(oldX, oldY);
@@ -209,6 +215,11 @@ public class Model implements Utils {
             if(isWithInBounds(newX, newY)){
                 System.out.println("Not move enemy");
             }
+            else{
+                map.putZero(currentX, currentY);
+                map.setMap(newX, newY, enemy.getSymbol());
+                enemy.setCoord(newX, newY);
+            }
 
         }
     }
@@ -303,11 +314,10 @@ public class Model implements Utils {
     @Override
     public boolean isWithInBounds(int x, int y) {
         if (x < 0 || x >= map.getWidth() || y < 0 || y >= map.getHeight()) {
-            return false;
+            return true;
         }
 
         char cellChar = (char) map.getMap(x, y);
-
         return cellChar == 's' || cellChar == 'w' || cellChar == '@' ||
                 cellChar == 'f' || cellChar == 'e';
     }

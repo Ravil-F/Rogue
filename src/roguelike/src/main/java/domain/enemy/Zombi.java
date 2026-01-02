@@ -1,9 +1,12 @@
 package domain.enemy;
 
+import domain.interfaces.Action;
 import utils.EntityProperties;
 import domain.abstact.Attributes;
 
-public class Zombi extends Attributes {
+import java.util.Random;
+
+public class Zombi extends Attributes implements Action {
     private final EntityProperties properties;
     private final int hostility;
 
@@ -26,5 +29,27 @@ public class Zombi extends Attributes {
 
     public EntityProperties getProperties() {
         return properties;
+    }
+
+    @Override
+    public int[] move(int x, int y) {
+        // Зомби в 4 направления
+        Random random = new Random();
+        int newX = x;
+        int newY = y;
+        int direction = random.nextInt(4);
+        switch (direction) {
+            case 0: newX = x + 1; break; // вправо
+            case 1: newX = x - 1; break; // влево
+            case 2: newY = y + 1; break; // вниз
+            case 3: newY = y - 1; break; // вверх
+        }
+
+        return new int[]{newX, newY};
+    }
+
+    @Override
+    public int move(int xy, boolean sign) {
+        return 0;
     }
 }

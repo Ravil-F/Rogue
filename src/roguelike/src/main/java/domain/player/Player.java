@@ -2,11 +2,10 @@ package domain.player;
 
 import domain.abstact.Attributes;
 
-import domain.enums.ColorE;
 import domain.enums.StatusPlayer;
-import domain.interfaces.Move;
+import domain.interfaces.Action;
 
-public class Player extends Attributes implements Move {
+public class Player extends Attributes implements Action {
     private StatusPlayer status;
 
     public Player() {
@@ -39,22 +38,13 @@ public class Player extends Attributes implements Move {
     }
 
     @Override
-    public int left(int x){
-        return --x;
+    public int[] move(int x, int y) {
+
+        return new int[]{x, y};
     }
 
     @Override
-    public int right(int x) {
-        return ++x;
-    }
-
-    @Override
-    public int up(int y) {
-        return --y;
-    }
-
-    @Override
-    public int down(int y) {
-        return ++y;
+    public int move(int xy, boolean sign){ //true ++, false --
+        return sign ? ++xy : --xy;
     }
 }
