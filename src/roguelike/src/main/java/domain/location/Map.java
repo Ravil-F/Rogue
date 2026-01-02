@@ -3,17 +3,146 @@ package domain.location;
 import domain.interfaces.Utils;
 import utils.CommonProperties;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Random;
 
 public class Map implements Utils {
-    private List<Rooms> room;
-    private List<Passage> passages;
     private CommonProperties common;
     private int[][] map;
-    
+
+    private static final int ROOMS_IN_WIDTH = 3;
+    private static final int ROOMS_IN_HEIGHT = 3;
+    private static final int REGION_WIDTH = 27;
+    private static final int REGION_HEIGHT = 10;
+
+    private static final int MIN_ROOM_WIDTH = 6;
+    private static final int MAX_ROOM_WIDTH = REGION_WIDTH - 2;  // 25
+    private static final int MIN_ROOM_HEIGHT = 5;
+    private static final int MAX_ROOM_HEIGHT = REGION_HEIGHT - 2; // 8
+
+    public static final int MAP_WIDTH = ROOMS_IN_WIDTH * REGION_WIDTH;   // 81
+    public static final int MAP_HEIGHT = ROOMS_IN_HEIGHT * REGION_HEIGHT; // 30
+
+    private static final int NUM_ROOMS = 9;
+    private static final Random rnd = new Random();
+
+    private List<Rooms> rooms = new ArrayList<>();
+    private List<Passage> passages = new ArrayList<>();
+
     public Map(){
         common = new CommonProperties();
-        this.map = new int[this.common.getWidthHeight()][this.common.getWidthHeight()];
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//        this.map = new int[MAP_HEIGHT][MAP_WIDTH];
+        generateRoomsAndPassages();
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    }
+
+    public List<Rooms> getRooms() {
+        return rooms;
+    }
+
+    public List<Passage> getPassages() {
+        return passages;
+    }
+
+    private void generateRoomsAndPassages() {
+        rooms.clear();
+        passages.clear();
+        for (int i = 0; i < NUM_ROOMS; i++) {
+            Rooms room = new Rooms();
+            room.generateSingleRoom(i,
+                    MIN_ROOM_WIDTH, MAX_ROOM_WIDTH,
+                    MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT,
+                    REGION_WIDTH, REGION_HEIGHT);
+            rooms.add(room);
+        }
+        generatePassages();
+    }
+
+    private void generatePassages() {
+        List<Edge> edges = new ArrayList<>();
+        for (int row = 0; row < ROOMS_IN_HEIGHT; row++) {
+            for (int col = 0; col < ROOMS_IN_WIDTH - 1; col++) {
+                int roomA = row * ROOMS_IN_WIDTH + col;
+                int roomB = roomA + 1;
+                edges.add(new Edge(roomA, roomB));
+            }
+        }
+        for (int row = 0; row < ROOMS_IN_HEIGHT - 1; row++) {
+            for (int col = 0; col < ROOMS_IN_WIDTH; col++) {
+                int roomA = row * ROOMS_IN_WIDTH + col;
+                int roomB = roomA + ROOMS_IN_WIDTH;
+                edges.add(new Edge(roomA, roomB));
+            }
+        }
+        Collections.shuffle(edges, rnd);
+        DisjointSetUnion dsu = new DisjointSetUnion(NUM_ROOMS);
+        for (Edge edge : edges) {
+            int roomA = edge.getRoomA();
+            int roomB = edge.getRoomB();
+            if (!dsu.isConnected(roomA, roomB)) {
+                dsu.union(roomA, roomB);
+                if (edge.isHorizontal()) {
+                    generateHorizontalPassage(roomA, roomB);
+                } else {
+                    generateVerticalPassage(roomA, roomB);
+                }
+            }
+        }
+    }
+
+    private void generateHorizontalPassage(int roomA, int roomB) {
+        Rooms room1 = rooms.get(roomA);
+        Rooms room2 = rooms.get(roomB);
+        int x1 = room1.getRightX();
+        int minY1 = room1.getTopY() + 1;
+        int maxY1 = room1.getBottomY() - 1;
+        int y1 = getRandomInRange(minY1, maxY1);
+        int x2 = room2.getLeftX();
+        int minY2 = room2.getTopY() + 1;
+        int maxY2 = room2.getBottomY() - 1;
+        int y2 = getRandomInRange(minY2, maxY2);
+        Passage passage = new Passage();
+        if (y1 == y2) {
+            passage.addSegment(x1, y1, x2, y2);
+        } else {
+            int turnX = getRandomInRange(Math.min(x1, x2) + 1, Math.max(x1, x2) - 1);
+            passage.addSegment(x1, y1, turnX, y1);
+            passage.addSegment(turnX, Math.min(y1, y2), turnX, Math.max(y1, y2));
+            passage.addSegment(turnX, y2, x2, y2);
+        }
+        passages.add(passage);
+    }
+
+    private void generateVerticalPassage(int roomA, int roomB) {
+        Rooms room1 = rooms.get(roomA);
+        Rooms room2 = rooms.get(roomB);
+        int y1 = room1.getBottomY();
+        int minX1 = room1.getLeftX() + 1;
+        int maxX1 = room1.getRightX() - 1;
+        int x1 = getRandomInRange(minX1, maxX1);
+        int y2 = room2.getTopY();
+        int minX2 = room2.getLeftX() + 1;
+        int maxX2 = room2.getRightX() - 1;
+        int x2 = getRandomInRange(minX2, maxX2);
+        Passage passage = new Passage();
+        if (x1 == x2) {
+            passage.addSegment(x1, y1, x2, y2);
+        } else {
+            int turnY = getRandomInRange(Math.min(y1, y2) + 1, Math.max(y1, y2) - 1);
+            passage.addSegment(x1, y1, x1, turnY);
+            passage.addSegment(Math.min(x1, x2), turnY, Math.max(x1, x2), turnY);
+            passage.addSegment(x2, turnY, x2, y2);
+        }
+        passages.add(passage);
+    }
+
+    private int getRandomInRange(int min, int max) {
+        if (max < min) return min;
+        return min + rnd.nextInt(max - min + 1);
     }
 
     public String convertIntToString(int x, int y){
