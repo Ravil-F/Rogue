@@ -4,5 +4,6 @@ public enum StatusE {
     DOWN,
     UP,
     LEFT,
-    RIGHT;
+    RIGHT,
+    PAUSE;
 }

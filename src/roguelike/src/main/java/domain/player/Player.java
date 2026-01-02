@@ -4,8 +4,9 @@ import domain.abstact.Attributes;
 
 import domain.enums.ColorE;
 import domain.enums.StatusPlayer;
+import domain.interfaces.Move;
 
-public class Player extends Attributes {
+public class Player extends Attributes implements Move {
     private StatusPlayer status;
 
     public Player() {
@@ -35,5 +36,25 @@ public class Player extends Attributes {
 
     public void setStatus(StatusPlayer status) {
         this.status = status;
+    }
+
+    @Override
+    public int left(int x){
+        return --x;
+    }
+
+    @Override
+    public int right(int x) {
+        return ++x;
+    }
+
+    @Override
+    public int up(int y) {
+        return --y;
+    }
+
+    @Override
+    public int down(int y) {
+        return ++y;
     }
 }

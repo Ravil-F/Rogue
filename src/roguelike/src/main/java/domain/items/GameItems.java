@@ -76,7 +76,7 @@ public class GameItems implements Utils, GenerateRandom {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return false;
+        return true;
     }
 
     public List<Items> getItems() {

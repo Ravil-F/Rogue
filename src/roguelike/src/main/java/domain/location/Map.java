@@ -16,25 +16,18 @@ public class Map implements Utils {
         this.map = new int[this.common.getWidthHeight()][this.common.getWidthHeight()];
     }
 
-    public String convertIntToString(int x, int y){
-        String tmpstr =  getMap(x, y);
-        int tmpint = Integer.parseInt(tmpstr);
-        char tmpch = (char)tmpint;
-        return String.valueOf(tmpch);
-    }
-
     public void putZero(int x, int y) {
         if (isWithInBounds(x, y)) {
             map[x][y] = '0';
         }
     }
 
-    public String getMap(int x, int y) {
-        return String.valueOf(map[x][y]);
+    public int getMap(int x, int y) {
+        return map[x][y];
     }
 
-    public int getMapChar(int x, int y) {
-        return map[x][y];
+    public char getMapChar(int x, int y) {
+        return (char)map[x][y];
     }
 
     public void setMap(int x, int y, int value) {

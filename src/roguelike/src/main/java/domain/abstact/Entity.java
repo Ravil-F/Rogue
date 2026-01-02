@@ -1,6 +1,5 @@
 package domain.abstact;
 
-//import domain.enums.ColorE;
 import domain.common.Coord;
 
 //сущность

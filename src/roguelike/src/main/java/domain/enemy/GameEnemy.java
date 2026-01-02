@@ -73,7 +73,7 @@ public class GameEnemy implements Utils, GenerateRandom {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return false;
+        return true;
     }
 
 
