@@ -6,8 +6,11 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.TerminalSize;
 import domain.abstact.Items;
 import domain.enums.StatusPlayer;
+import domain.location.Rooms;
+import domain.location.Passage;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +27,9 @@ public class View {
     public View(Controller controller) {
         try {
             this.controller = controller;
-            this.terminal = new DefaultTerminalFactory().createTerminal();
+            DefaultTerminalFactory factory = new DefaultTerminalFactory();
+            factory.setInitialTerminalSize(new TerminalSize(100, 40)); // ширина x высота
+            this.terminal = factory.createTerminal();
             this.screen = new TerminalScreen(terminal);
             textGraphics = screen.newTextGraphics();
             screen.startScreen();
@@ -32,8 +37,8 @@ public class View {
             System.out.println(e.getMessage());
         }
 
-    }
 
+    }
 
     // VIEW WINDOWS
     public void startWindow(){
@@ -77,7 +82,59 @@ public class View {
                 }
             }
         }
+        for (Rooms room : controller.getModel().getMap().getRooms()) {
+            drawRectangle(textGraphics, room.getTopY(), room.getBottomY(),
+                    room.getLeftX(), room.getRightX());
+            drawRoomContent(textGraphics, room);
+        }
+        for (Passage passage : controller.getModel().getMap().getPassages()) {
+            drawPassageSegments(textGraphics, passage);
+        }
     }
+
+    private void drawRoomContent(TextGraphics tg, Rooms room) {
+        for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
+            for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
+                tg.putString(x, y, ".");
+            }
+        }
+    }
+
+    private void drawPassageSegments(TextGraphics tg, Passage passage) {
+        for (Passage.PassageSegment segment : passage.getSegments()) {
+            if (segment.isHorizontal()) {
+                int y = segment.getStartY();
+                for (int x = Math.min(segment.getStartX(), segment.getEndX());
+                     x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
+                    tg.putString(x, y, "#");
+                }
+            } else {
+                int x = segment.getStartX();
+                for (int y = Math.min(segment.getStartY(), segment.getEndY());
+                     y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
+                    tg.putString(x, y, "#");
+                }
+            }
+        }
+    }
+
+    public void drawRectangle(TextGraphics tg, int topY, int bottomY, int leftX, int rightX) {
+        tg.putString(leftX, topY, "┌");
+        tg.putString(rightX, topY, "┐");
+        tg.putString(leftX, bottomY, "└");
+        tg.putString(rightX, bottomY, "┘");
+
+        for (int x = leftX + 1; x < rightX; x++) {
+            tg.putString(x, topY, "─");
+            tg.putString(x, bottomY, "─");
+        }
+
+        for (int y = topY + 1; y < bottomY; y++) {
+            tg.putString(leftX, y, "│");
+            tg.putString(rightX, y, "│");
+        }
+    }
+
 
     private void viewInfo(){
         int count  = 2;

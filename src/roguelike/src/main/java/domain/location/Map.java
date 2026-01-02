@@ -2,7 +2,6 @@ package domain.location;
 
 import domain.interfaces.Utils;
 import utils.CommonProperties;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -18,9 +17,9 @@ public class Map implements Utils {
     private static final int REGION_HEIGHT = 10;
 
     private static final int MIN_ROOM_WIDTH = 6;
-    private static final int MAX_ROOM_WIDTH = REGION_WIDTH - 2;  // 25
+    private static final int MAX_ROOM_WIDTH = REGION_WIDTH - 2;
     private static final int MIN_ROOM_HEIGHT = 5;
-    private static final int MAX_ROOM_HEIGHT = REGION_HEIGHT - 2; // 8
+    private static final int MAX_ROOM_HEIGHT = REGION_HEIGHT - 2;
 
     public static final int MAP_WIDTH = ROOMS_IN_WIDTH * REGION_WIDTH;   // 81
     public static final int MAP_HEIGHT = ROOMS_IN_HEIGHT * REGION_HEIGHT; // 30
@@ -31,13 +30,17 @@ public class Map implements Utils {
     private List<Rooms> rooms = new ArrayList<>();
     private List<Passage> passages = new ArrayList<>();
 
-    public Map(){
+    public Map() {
         common = new CommonProperties();
-
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//        this.map = new int[MAP_HEIGHT][MAP_WIDTH];
+        this.map = new int[MAP_WIDTH][MAP_HEIGHT];
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            for (int y = 0; y < MAP_HEIGHT; y++) {
+                map[x][y] = '0';
+            }
+        }
         generateRoomsAndPassages();
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        sendRoomsIntoMap();
+        sendPassagesIntoMap();
     }
 
     public List<Rooms> getRooms() {
@@ -140,15 +143,54 @@ public class Map implements Utils {
         passages.add(passage);
     }
 
+    private void sendRoomsIntoMap() {
+        for (Rooms room : rooms) {
+            // Рисуем стены комнаты
+            for (int x = room.getLeftX(); x <= room.getRightX(); x++) {
+                map[x][room.getTopY()] = '#';
+                map[x][room.getBottomY()] = '#';
+            }
+            for (int y = room.getTopY(); y <= room.getBottomY(); y++) {
+                map[room.getLeftX()][y] = '#';
+                map[room.getRightX()][y] = '#';
+            }
+            for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
+                for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
+                    map[x][y] = '.';
+                }
+            }
+        }
+    }
+    
+    private void sendPassagesIntoMap() {
+        for (Passage passage : passages) {
+            for (Passage.PassageSegment segment : passage.getSegments()) {
+                if (segment.isHorizontal()) {
+                    int y = segment.getStartY();
+                    for (int x = Math.min(segment.getStartX(), segment.getEndX());
+                         x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
+                        map[x][y] = '#';
+                    }
+                } else {
+                    int x = segment.getStartX();
+                    for (int y = Math.min(segment.getStartY(), segment.getEndY());
+                         y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
+                        map[x][y] = '#';
+                    }
+                }
+            }
+        }
+    }
+
     private int getRandomInRange(int min, int max) {
         if (max < min) return min;
         return min + rnd.nextInt(max - min + 1);
     }
 
-    public String convertIntToString(int x, int y){
-        String tmpstr =  getMap(x, y);
+    public String convertIntToString(int x, int y) {
+        String tmpstr = getMap(x, y);
         int tmpint = Integer.parseInt(tmpstr);
-        char tmpch = (char)tmpint;
+        char tmpch = (char) tmpint;
         return String.valueOf(tmpch);
     }
 
@@ -167,17 +209,18 @@ public class Map implements Utils {
     }
 
     public void setMap(int x, int y, int value) {
-        this.map[x][y] = value;
+        if (isWithInBounds(x, y)) {
+            this.map[x][y] = value;
+        }
     }
 
     public int getWidth() {
-        return common.getWidthHeight();
+        return MAP_WIDTH;
     }
 
     public int getHeight() {
-        return common.getWidthHeight();
+        return MAP_HEIGHT;
     }
-
 
     @Override
     public boolean isWithInBounds(int x) {
@@ -186,6 +229,6 @@ public class Map implements Utils {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return x > 0 && y > 0 && x < common.getWidthHeight() && y < common.getWidthHeight();
+        return x >= 0 && y >= 0 && x < MAP_WIDTH && y < MAP_HEIGHT;
     }
 }
