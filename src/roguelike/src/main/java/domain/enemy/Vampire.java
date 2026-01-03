@@ -38,21 +38,23 @@ public class Vampire  extends Attributes implements Check, Action {
     @Override
     public int[] move(int x, int y, char symbol) {
         Random random = new Random();
+        int newX = x;
+        int newY = y;
         int direction = random.nextInt(8);
         switch (direction) {
-            case 0: x++; break;
-            case 1: x--; break;
-            case 2: y++; break;
-            case 3: y--; break;
-            case 4: x++; y++; break;
-            case 5: x++; y--; break;
-            case 6: x--; y++; break;
-            case 7: x--; y--; break;
+            case 0: newX++; break;
+            case 1: newX--; break;
+            case 2: newY++; break;
+            case 3: newY--; break;
+            case 4: newX++; newY++; break;
+            case 5: newX++; newY--; break;
+            case 6: newX--; newY++; break;
+            case 7: newX--; newY--; break;
         }
 
-        if(isWithInBounds(x, y) || checkingSymbols(symbol))
-            return move(x, y, symbol);
-        return new int[]{x, y};
+        if(isWithInBounds(newX, newY) || checkingSymbols(symbol))
+            return new int[]{x, y};
+        return new int[]{newX, newY};
     }
 
     @Override

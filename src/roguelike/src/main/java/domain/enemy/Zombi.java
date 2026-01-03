@@ -39,18 +39,19 @@ public class Zombi extends Attributes implements Check, Action {
     public int[] move(int x, int y, char symbol) {
         // Зомби в 4 направления
         Random random = new Random();
+        int newX = x;
+        int newY = y;
         int direction = random.nextInt(4);
         switch (direction) {
-            case 0: ++x; break;
-            case 1: --x; break;
-            case 2: ++y; break;
-            case 3: --y; break;
+            case 0: ++newX; break;
+            case 1: --newX; break;
+            case 2: ++newY; break;
+            case 3: --newY; break;
         }
 
-        if(isWithInBounds(x, y) || checkingSymbols(symbol))
-            move(x, y, symbol);
-
-        return new int[]{x, y};
+        if(isWithInBounds(newX, newY) || checkingSymbols(symbol))
+            return new int[]{x,y};
+        return new int[]{newX, newY};
     }
 
     @Override

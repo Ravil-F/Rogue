@@ -46,12 +46,10 @@ public class Grost extends Attributes implements Action, Check {
         if (random.nextInt(100) < 50) {
             newX = random.nextInt(common.getWidthHeight());
             newY = random.nextInt(common.getWidthHeight());
-
-            if (!isWithInBounds(newX, newY)) {
-                newX = x;
-                newY = y;
-            }
         }
+
+        if(isWithInBounds(newX, newY) || checkingSymbols(symbol))
+            return new int[]{x, y};
         return new int[]{newX, newY};
     }
 
