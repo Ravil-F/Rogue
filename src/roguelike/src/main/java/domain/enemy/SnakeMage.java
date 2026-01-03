@@ -48,7 +48,7 @@ public class SnakeMage extends Attributes implements Check, Action {
             case 2: newX--; newY++; break;
             case 3: newX--; newY--; break;
         }
-        if(isWithInBounds(newX, newY) || checkingSymbols(symbol))
+        if(isWithInBounds(newX, newY))
             return new int[]{x, y};
         return new int[]{newX, newY};
     }

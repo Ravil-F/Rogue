@@ -208,15 +208,21 @@ public class Model implements Check {
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
             if(enemy instanceof Action moveEnemy) {
+                System.out.println("enemy.get(i) = " + enemy.getSymbol());
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
+
+                System.out.println("currentX = " + currentX);
+                System.out.println("currentY = " + currentY);
+
                 int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
                 int newX = newXY[0];
                 int newY = newXY[1];
-
                 if (isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
                     System.out.println("Not move enemy");
                 } else {
+                    System.out.println("newX = " + newX);
+                    System.out.println("newY = " + newY);
                     map.putZero(currentX, currentY);
                     map.setMap(newX, newY, enemy.getSymbol());
                     enemy.setCoord(newX, newY);

@@ -58,7 +58,7 @@ public class Orge extends Attributes implements Action, Check {
             }
         }
 
-        if(isWithInBounds(newX, newY) || checkingSymbols(symbol))
+        if(isWithInBounds(newX, newY))
             return new int[]{x, y};
         return new int[]{newX, newY};
     }

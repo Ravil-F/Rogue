@@ -52,7 +52,7 @@ public class Vampire  extends Attributes implements Check, Action {
             case 7: newX--; newY--; break;
         }
 
-        if(isWithInBounds(newX, newY) || checkingSymbols(symbol))
+        if(!isWithInBounds(newX, newY))
             return new int[]{x, y};
         return new int[]{newX, newY};
     }
