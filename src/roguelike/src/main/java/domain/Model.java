@@ -64,20 +64,16 @@ public class Model implements Check {
 
             switch (status) {
                 case DOWN:
-                    player.move(tmpY, true);
-//                    ++tmpY;
+                    tmpY = player.move(tmpY, true);
                     break;
                 case UP:
-                    player.move(tmpY, false);
-//                    --tmpY;
+                    tmpY = player.move(tmpY, false);
                     break;
                 case LEFT:
-                    player.move(tmpX, false);
-//                    --tmpX;
+                    tmpX = player.move(tmpX, false);
                     break;
                 case RIGHT:
-                    player.move(tmpX, true);
-//                    ++tmpX;
+                    tmpX = player.move(tmpX, true);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid status");
@@ -208,21 +204,16 @@ public class Model implements Check {
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
             if(enemy instanceof Action moveEnemy) {
-                System.out.println("enemy.get(i) = " + enemy.getSymbol());
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
-
-                System.out.println("currentX = " + currentX);
-                System.out.println("currentY = " + currentY);
 
                 int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
                 int newX = newXY[0];
                 int newY = newXY[1];
-                if (isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
+
+                if ( isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
                     System.out.println("Not move enemy");
                 } else {
-                    System.out.println("newX = " + newX);
-                    System.out.println("newY = " + newY);
                     map.putZero(currentX, currentY);
                     map.setMap(newX, newY, enemy.getSymbol());
                     enemy.setCoord(newX, newY);
@@ -239,7 +230,7 @@ public class Model implements Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x < 0 || x >= map.getWidth() || y < 0 || y >= map.getHeight());
+        return (x <= 0 || x >= map.getWidth() || y <= 0 || y >= map.getHeight());
     }
 
     @Override
