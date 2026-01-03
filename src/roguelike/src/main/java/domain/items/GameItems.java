@@ -3,14 +3,14 @@ package domain.items;
 import domain.abstact.Items;
 import domain.enums.*;
 import domain.interfaces.GenerateRandom;
-import domain.interfaces.Utils;
+import domain.interfaces.Check;
 import utils.CommonProperties;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class GameItems implements Utils, GenerateRandom {
+public class GameItems implements Check, GenerateRandom {
     CommonProperties common;
     private List<Items> items;
     private Random random;
@@ -77,6 +77,11 @@ public class GameItems implements Utils, GenerateRandom {
     @Override
     public boolean isWithInBounds(int x, int y) {
         return true;
+    }
+
+    @Override
+    public boolean checkingSymbols(char symbol) {
+        return false;
     }
 
     public List<Items> getItems() {

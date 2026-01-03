@@ -6,14 +6,15 @@ import domain.backpack.Backpack;
 import domain.enemy.GameEnemy;
 import domain.enums.StatusE;
 import domain.enums.StatusPlayer;
-import domain.interfaces.Utils;
+import domain.interfaces.Action;
+import domain.interfaces.Check;
 import domain.items.GameItems;
 import domain.location.Map;
 import domain.player.Player;
 
 import java.util.*;
 
-public class Model implements Utils {
+public class Model implements Check {
     private Player player;
     private Backpack backpack;
     private Map map;
@@ -108,7 +109,7 @@ public class Model implements Utils {
         if(items.getItems() == null || items.getItems().isEmpty()) return false;
 
         char cellChar = map.getMapChar(x, y);
-        if(isItemSymbol(cellChar)) {
+        if(checkingSymbols(cellChar)) {
             int index = equalsMapItems(x, y, items);
             if (index != -1) {
                 Items item = items.getItems().get(index);
@@ -206,105 +207,24 @@ public class Model implements Utils {
     private void enemyMovement(){
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
-            int currentX = enemy.getCoord().getX();
-            int currentY = enemy.getCoord().getY();
-            int[] newXY = genetateEnemyMove(currentX, currentY, enemy);
-            int newX = newXY[0];
-            int newY = newXY[1];
+            if(enemy instanceof Action moveEnemy) {
+                int currentX = enemy.getCoord().getX();
+                int currentY = enemy.getCoord().getY();
+                int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
+                int newX = newXY[0];
+                int newY = newXY[1];
 
-            if(isWithInBounds(newX, newY)){
-                System.out.println("Not move enemy");
-            }
-            else{
-                map.putZero(currentX, currentY);
-                map.setMap(newX, newY, enemy.getSymbol());
-                enemy.setCoord(newX, newY);
+                if (isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
+                    System.out.println("Not move enemy");
+                } else {
+                    map.putZero(currentX, currentY);
+                    map.setMap(newX, newY, enemy.getSymbol());
+                    enemy.setCoord(newX, newY);
+                }
             }
 
         }
     }
-
-    private int[] genetateEnemyMove(int currentX, int currentY, Attributes enemy){
-        int newX = currentX;
-        int newY = currentY;
-        Random random = new Random();
-        int direction;
-
-        switch (enemy.getName()){
-            case "Zombi":
-                // Зомби в 4 направления
-                direction = random.nextInt(4);
-                switch (direction) {
-                    case 0: newX = currentX + 1; break; // вправо
-                    case 1: newX = currentX - 1; break; // влево
-                    case 2: newY = currentY + 1; break; // вниз
-                    case 3: newY = currentY - 1; break; // вверх
-                }
-                break;
-            case "Vampire":
-                // Вампир - во все 8 направлений (включая диагонали)
-                direction = random.nextInt(8);
-                switch (direction) {
-                    case 0: newX++; break;
-                    case 1: newX--; break;
-                    case 2: newY++; break;
-                    case 3: newY--; break;
-                    case 4: newX++; newY++; break;
-                    case 5: newX++; newY--; break;
-                    case 6: newX--; newY++; break;
-                    case 7: newX--; newY--; break;
-                }
-                break;
-
-            case "Grost":
-                // Привидение - телепортируется в случайное место
-                // С вероятностью 50% телепортируется, иначе стоит на месте
-                if (random.nextInt(100) < 50) {
-                    newX = random.nextInt(map.getWidth());
-                    newY = random.nextInt(map.getHeight());
-
-                    if (!isWithInBounds(newX, newY)) {
-                        newX = currentX;
-                        newY = currentY;
-                    }
-                }
-                break;
-
-            case "Orge":
-                // Огр - на 2 клетки, если не может, то на одну
-                direction = random.nextInt(4);
-                switch (direction) {
-                    case 0: newX = currentX + 2; break;
-                    case 1: newX = currentX - 2; break;
-                    case 2: newY = currentY + 2; break;
-                    case 3: newY = currentY - 2; break;
-                }
-
-                if (!isWithInBounds(newX, newY)) {
-                    switch (direction) {
-                        case 0: newX = currentX + 1; break;
-                        case 1: newX = currentX - 1; break;
-                        case 2: newY = currentY + 1; break;
-                        case 3: newY = currentY - 1; break;
-                    }
-                }
-                break;
-
-            case "SnakeMage":
-                // Змей - только по диагонали (4 направления)
-                direction = random.nextInt(4);
-                switch (direction) {
-                    case 0: newX++; newY++; break;
-                    case 1: newX++; newY--; break;
-                    case 2: newX--; newY++; break;
-                    case 3: newX--; newY--; break;
-                }
-                break;
-        }
-
-        return new int[]{newX, newY};
-    }
-
 
     @Override
     public boolean isWithInBounds(int x) {
@@ -313,12 +233,12 @@ public class Model implements Utils {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        if (x < 0 || x >= map.getWidth() || y < 0 || y >= map.getHeight()) {
-            return true;
-        }
+        return (x < 0 || x >= map.getWidth() || y < 0 || y >= map.getHeight());
+    }
 
-        char cellChar = (char) map.getMap(x, y);
-        return cellChar == 's' || cellChar == 'w' || cellChar == '@' ||
-                cellChar == 'f' || cellChar == 'e';
+    @Override
+    public boolean checkingSymbols(char symbol){
+        return symbol == 's' || symbol == 'w' ||
+                symbol == 'f' || symbol == 'e';
     }
 }

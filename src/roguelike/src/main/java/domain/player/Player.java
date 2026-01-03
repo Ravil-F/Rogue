@@ -38,8 +38,7 @@ public class Player extends Attributes implements Action {
     }
 
     @Override
-    public int[] move(int x, int y) {
-
+    public int[] move(int x, int y, char symbol) {
         return new int[]{x, y};
     }
 

@@ -1,11 +1,11 @@
 package domain.location;
 
-import domain.interfaces.Utils;
+import domain.interfaces.Check;
 import utils.CommonProperties;
 
 import java.util.List;
 
-public class Map implements Utils {
+public class Map implements Check {
     private List<Rooms> room;
     private List<Passage> passages;
     private CommonProperties common;
@@ -18,7 +18,7 @@ public class Map implements Utils {
 
     public void putZero(int x, int y) {
         if (isWithInBounds(x, y)) {
-            map[x][y] = '0';
+            map[x][y] = ' ';
         }
     }
 
@@ -51,5 +51,10 @@ public class Map implements Utils {
     @Override
     public boolean isWithInBounds(int x, int y) {
         return x > 0 && y > 0 && x < common.getWidthHeight() && y < common.getWidthHeight();
+    }
+
+    @Override
+    public boolean checkingSymbols(char symbol) {
+        return false;
     }
 }

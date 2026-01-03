@@ -2,14 +2,14 @@ package domain.enemy;
 
 import domain.abstact.Attributes;
 import domain.interfaces.GenerateRandom;
-import domain.interfaces.Utils;
+import domain.interfaces.Check;
 import utils.CommonProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GameEnemy implements Utils, GenerateRandom {
+public class GameEnemy implements Check, GenerateRandom {
     private List<Attributes> enemy;
     CommonProperties common;
     private Random random;
@@ -76,6 +76,10 @@ public class GameEnemy implements Utils, GenerateRandom {
         return true;
     }
 
+    @Override
+    public boolean checkingSymbols(char symbol) {
+        return false;
+    }
 
     public List<Attributes> getEnemy() {
         return enemy;

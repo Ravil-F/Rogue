@@ -1,17 +1,21 @@
 package domain.enemy;
 
 import domain.interfaces.Action;
+import domain.interfaces.Check;
+import utils.CommonProperties;
 import utils.EntityProperties;
 import domain.abstact.Attributes;
 
 import java.util.Random;
 
-public class Zombi extends Attributes implements Action {
+public class Zombi extends Attributes implements Check, Action {
     private final EntityProperties properties;
     private final int hostility;
+    private CommonProperties common;
 
     public Zombi(int x, int y) {
         this(createProperties(), x, y);
+        this.common = new CommonProperties();
     }
 
     private Zombi(EntityProperties properties, int x, int y){
@@ -32,24 +36,42 @@ public class Zombi extends Attributes implements Action {
     }
 
     @Override
-    public int[] move(int x, int y) {
+    public int[] move(int x, int y, char symbol) {
         // Зомби в 4 направления
         Random random = new Random();
-        int newX = x;
-        int newY = y;
         int direction = random.nextInt(4);
         switch (direction) {
-            case 0: newX = x + 1; break; // вправо
-            case 1: newX = x - 1; break; // влево
-            case 2: newY = y + 1; break; // вниз
-            case 3: newY = y - 1; break; // вверх
+            case 0: ++x; break;
+            case 1: --x; break;
+            case 2: ++y; break;
+            case 3: --y; break;
         }
 
-        return new int[]{newX, newY};
+        if(isWithInBounds(x, y) || checkingSymbols(symbol))
+            move(x, y, symbol);
+
+        return new int[]{x, y};
     }
 
     @Override
     public int move(int xy, boolean sign) {
         return 0;
+    }
+
+    @Override
+    public boolean isWithInBounds(int x) {
+        return false;
+    }
+
+    @Override
+    public boolean isWithInBounds(int x, int y) {
+        return (x < 0 || x >= common.getWidthHeight() || y < 0 || y >= common.getWidthHeight());
+    }
+
+    @Override
+    public boolean checkingSymbols(char symbol){
+        return symbol == 's' || symbol == 'w' || symbol == 'f' ||
+                symbol == 'e' || symbol == 'Z' || symbol == 'G' ||
+                symbol == 'S' || symbol == 'O' || symbol == 'V';
     }
 }
