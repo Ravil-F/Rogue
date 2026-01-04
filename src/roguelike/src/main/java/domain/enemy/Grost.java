@@ -1,6 +1,5 @@
 package domain.enemy;
 
-
 import domain.interfaces.Action;
 import domain.interfaces.Check;
 import utils.CommonProperties;
@@ -76,7 +75,10 @@ public class Grost extends Attributes implements Action, Check {
     }
 
     @Override
-    public void attack(Attributes enemy) {
-
+    public void attack(Attributes entity) {
+        boolean isHit = (Math.random() * 100) <= this.getAgility();
+        if(isHit){;
+            entity.setHealth(entity.getHealth() - this.getStrength());
+        }
     }
 }

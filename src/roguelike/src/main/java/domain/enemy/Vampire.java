@@ -80,7 +80,10 @@ public class Vampire  extends Attributes implements Check, Action {
     }
 
     @Override
-    public void attack(Attributes enemy) {
-
+    public void attack(Attributes entity) {
+        boolean isHit = (Math.random() * 100) <= this.getAgility();
+        if(isHit){
+            entity.setHealth(entity.getHealth() - this.getStrength());
+        }
     }
 }

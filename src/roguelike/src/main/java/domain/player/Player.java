@@ -1,21 +1,29 @@
 package domain.player;
 
 import domain.abstact.Attributes;
-
 import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
+import utils.PlayerProperties;
 
 public class Player extends Attributes implements Action {
+    private final PlayerProperties properties;
     private StatusPlayer status;
-    public final int defaultStrength = 25;
 
-    public Player() {
-        super("Player", '@', "RED", 100, 100, 90, 0, 5, 5);
+    public Player(int x, int y) {
+        this(createProperties(), x, y);
         status = StatusPlayer.START;
     }
 
-    public Player(String name, char symbol, String color, int maxHealth, int health, int agility, int strength, int x, int y) {
-        super(name, symbol, color, maxHealth, health, agility, strength, x, y);
+    private Player(PlayerProperties properties, int x, int y){
+        super(properties.getName(), properties.getSymbol(),
+                properties.getColor(), properties.getMaxHealth(),
+                properties.getHealth(), properties.getAgility(),
+                properties.getStrength(), x, y);
+        this.properties = properties;
+    }
+
+    private static PlayerProperties createProperties(){
+        return new PlayerProperties("player");
     }
 
     public void increaseStrenght(int xp){
@@ -49,22 +57,11 @@ public class Player extends Attributes implements Action {
     }
 
     @Override
-    public void attack(Attributes enemy) {
-        // Получаем необходимые характеристики
-        System.out.println("enemy in attack in player = " + enemy.getSymbol());
-        System.out.println("Health enemy start = " + enemy.getHealth());
-
+    public void attack(Attributes entity) {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
-        System.out.println("isHit = " + isHit);
-
         if(isHit){
-            int damage = this.getStrength() + defaultStrength;
-            System.out.println("damage = " + damage);
-            enemy.setHealth(enemy.getHealth() - damage);
+            entity.setHealth(entity.getHealth() - this.getStrength());
         }
-
-
-        System.out.println("Health enemy finish = " + enemy.getHealth());
     }
 
 

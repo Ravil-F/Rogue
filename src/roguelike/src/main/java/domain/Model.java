@@ -23,7 +23,7 @@ public class Model implements Check {
     private int level;
 
     public Model(){
-        player = new Player();
+        player = new Player(5, 5);
         backpack = new Backpack();
         map = new Map();
         items = new GameItems();
@@ -87,6 +87,7 @@ public class Model implements Check {
                     System.out.println("index = " + index);
                     System.out.println("symbol = " + enemys.getEnemy().get(index).getSymbol());
                     player.attack(enemys.getEnemy().get(index));
+                    System.out.println("enemy health = " + enemys.getEnemy().get(index).getHealth());
                     player.setStatus(StatusPlayer.MOVE);
                 } else if (!checkItems(tmpX, tmpY)) {
                     map.putZero(oldX, oldY);
