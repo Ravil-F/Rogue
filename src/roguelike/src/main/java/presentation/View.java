@@ -74,12 +74,11 @@ public class View {
     }
 
     private void viewMap(){
-        String tmp = "0";
         for(int x = 0; x < controller.getModel().getMap().getWidth(); ++x){
             for (int y = 0; y < controller.getModel().getMap().getHeight(); ++y){
-                if (!controller.getModel().getMap().getMap(x, y).equals(tmp) && controller.getModel().getMap().getMapChar(x, y) != '0'){
-                    textGraphics.putString(x, y, controller.getModel().getMap().convertIntToString(x, y));
-                }
+                int cellChar = controller.getModel().getMap().getMap(x, y);
+                if (cellChar != 0)
+                    textGraphics.putString(x, y, String.valueOf((char)cellChar));
             }
         }
         for (Rooms room : controller.getModel().getMap().getRooms()) {
@@ -159,7 +158,7 @@ public class View {
         int tmpX = controller.getModel().getMap().getHeight();
         textGraphics.putString(tmpX + 2, 1, "Enter number items (0-8), Escape - exit");
         if (controller.getModel().getBackpack().getScreenOutput().isEmpty())
-            textGraphics.putString(2, 2, "Not Items in Backpack");
+            textGraphics.putString(tmpX + 2, 2, "Not Items in Backpack");
         else {
             List<Items> item = controller.getModel().getBackpack().getScreenOutput();
             for (int i = 0; i < item.size(); ++i) {

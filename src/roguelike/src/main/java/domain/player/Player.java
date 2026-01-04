@@ -2,10 +2,10 @@ package domain.player;
 
 import domain.abstact.Attributes;
 
-import domain.enums.ColorE;
 import domain.enums.StatusPlayer;
+import domain.interfaces.Action;
 
-public class Player extends Attributes {
+public class Player extends Attributes implements Action {
     private StatusPlayer status;
 
     public Player() {
@@ -35,5 +35,15 @@ public class Player extends Attributes {
 
     public void setStatus(StatusPlayer status) {
         this.status = status;
+    }
+
+    @Override
+    public int[] move(int x, int y, char symbol) {
+        return new int[]{x, y};
+    }
+
+    @Override
+    public int move(int xy, boolean sign){ //true ++, false --
+        return sign ? ++xy : --xy;
     }
 }

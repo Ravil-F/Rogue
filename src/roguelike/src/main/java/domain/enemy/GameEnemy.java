@@ -2,14 +2,14 @@ package domain.enemy;
 
 import domain.abstact.Attributes;
 import domain.interfaces.GenerateRandom;
-import domain.interfaces.Utils;
+import domain.interfaces.Check;
 import utils.CommonProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GameEnemy implements Utils, GenerateRandom {
+public class GameEnemy implements Check, GenerateRandom {
     private List<Attributes> enemy;
     CommonProperties common;
     private Random random;
@@ -26,7 +26,7 @@ public class GameEnemy implements Utils, GenerateRandom {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
+        for (int i = 0; i <  common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countEnemy);
             switch (countRandom){
                 case 0:
@@ -52,9 +52,9 @@ public class GameEnemy implements Utils, GenerateRandom {
     public int checkDifference(int level) {
         int result = 16;
         if (level <= 5) result = 16;
-        else if (level <= 10) result = 17;
-        else if (level <= 15) result = 18;
-        else if (level <= 20) result = 19;
+        else if (level <= 10) result = 15;
+        else if (level <= 15) result = 14;
+        else if (level <= 20) result = 13;
         return result;
     }
 
@@ -73,9 +73,13 @@ public class GameEnemy implements Utils, GenerateRandom {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return false;
+        return true;
     }
 
+    @Override
+    public boolean checkingSymbols(char symbol) {
+        return false;
+    }
 
     public List<Attributes> getEnemy() {
         return enemy;
