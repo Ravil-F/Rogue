@@ -59,8 +59,8 @@ public class Orge extends Attributes implements Action, Check {
         }
 
         if(isWithInBounds(newX, newY))
-            return new int[]{x, y};
-        return new int[]{newX, newY};
+            return new int[]{newX, newY};
+        return new int[]{x, y};
     }
 
     @Override
@@ -75,10 +75,7 @@ public class Orge extends Attributes implements Action, Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        if (x < 0 || x >= common.getWidthHeight() || y < 0 || y >= common.getWidthHeight()) {
-            return true;
-        }
-        return false;
+        return (x >= 0 && x <= common.getWidthHeight() && y >= 0 && y <= common.getWidthHeight());
     }
 
     @Override

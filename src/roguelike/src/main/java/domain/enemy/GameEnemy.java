@@ -13,7 +13,7 @@ public class GameEnemy implements Check, GenerateRandom {
     private List<Attributes> enemy;
     CommonProperties common;
     private Random random;
-    private final int countEnemy = 1;
+    private final int countEnemy = 5;
 
     public GameEnemy(){
         enemy = new ArrayList<>();
@@ -26,24 +26,24 @@ public class GameEnemy implements Check, GenerateRandom {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-        for (int i = 0; i <1; i++) {
+        for (int i = 0; i <  common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countEnemy);
             switch (countRandom){
-//                case 0:
-//                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 1:
-//                    enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
                 case 0:
+                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 1:
+                    enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 2:
                     enemy.add(new Grost(randomXY(tmpXY), randomXY(tmpXY)));
                     break;
-//                case 3:
-//                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 4:
-//                    enemy.add(new SnakeMage(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
+                case 3:
+                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 4:
+                    enemy.add(new SnakeMage(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
             }
         }
     }
@@ -52,9 +52,9 @@ public class GameEnemy implements Check, GenerateRandom {
     public int checkDifference(int level) {
         int result = 16;
         if (level <= 5) result = 16;
-        else if (level <= 10) result = 17;
-        else if (level <= 15) result = 18;
-        else if (level <= 20) result = 19;
+        else if (level <= 10) result = 15;
+        else if (level <= 15) result = 14;
+        else if (level <= 20) result = 13;
         return result;
     }
 

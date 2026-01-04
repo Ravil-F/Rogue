@@ -79,25 +79,20 @@ public class Model implements Check {
                     throw new IllegalArgumentException("Invalid status");
             }
 
-            if(checkEnemy(tmpX, tmpY)){
-                player.setStatus(StatusPlayer.ATTAC);
-                System.out.println("Enemy");
-//                enemyAttac();
-                player.setStatus(StatusPlayer.MOVE);
-            }
-            else if (tryMove(tmpX, tmpY)) {
-                map.putZero(oldX, oldY);
-                map.putZero(tmpX, tmpY);
-                player.setCoord(tmpX, tmpY);
+            if(isWithInBounds(tmpX, tmpY)) {
+//                if (checkEnemy(tmpX, tmpY)) {
+//                    player.setStatus(StatusPlayer.ATTAC);
+//                    System.out.println("Enemy");
+////                enemyAttac();
+//                    player.setStatus(StatusPlayer.MOVE);
+//                } else
+                if (!checkItems(tmpX, tmpY)) {
+                    map.putZero(oldX, oldY);
+                    map.putZero(tmpX, tmpY);
+                    player.setCoord(tmpX, tmpY);
+                }
             }
         }
-    }
-
-    private boolean tryMove(int x, int y) {
-        if (map.isWithInBounds(x, y) && !checkItems(x, y)) {
-            return true;
-        }
-        return false;
     }
 
     // все что связано с предметами
@@ -211,7 +206,7 @@ public class Model implements Check {
                 int newX = newXY[0];
                 int newY = newXY[1];
 
-                if ( isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
+                if (!isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
                     System.out.println("Not move enemy");
                 } else {
                     map.putZero(currentX, currentY);
@@ -230,7 +225,7 @@ public class Model implements Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x <= 0 || x >= map.getWidth() || y <= 0 || y >= map.getHeight());
+        return (x >= 0 && x < map.getWidth() && y >= 0 && y < map.getHeight());
     }
 
     @Override

@@ -50,8 +50,8 @@ public class Zombi extends Attributes implements Check, Action {
         }
 
         if(isWithInBounds(newX, newY))
-            return new int[]{x,y};
-        return new int[]{newX, newY};
+            return new int[]{newX,newY};
+        return new int[]{x, y};
     }
 
     @Override
@@ -66,7 +66,7 @@ public class Zombi extends Attributes implements Check, Action {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x < 0 || x >= common.getWidthHeight() || y < 0 || y >= common.getWidthHeight());
+        return (x >= 0 && x <= common.getWidthHeight() && y >= 0 && y <= common.getWidthHeight());
     }
 
     @Override

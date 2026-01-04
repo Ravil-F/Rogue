@@ -50,7 +50,7 @@ public class Map implements Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return x > 0 && y > 0 && x < common.getWidthHeight() && y < common.getWidthHeight();
+        return x >= 0 && y >= 0 && x < common.getWidthHeight() && y < common.getWidthHeight();
     }
 
     @Override
