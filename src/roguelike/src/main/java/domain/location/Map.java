@@ -35,7 +35,7 @@ public class Map implements Check {
         this.map = new int[MAP_WIDTH][MAP_HEIGHT];
         for (int x = 0; x < MAP_WIDTH; x++) {
             for (int y = 0; y < MAP_HEIGHT; y++) {
-                map[x][y] = '0';
+                map[x][y] = ' ';
             }
         }
         generateRoomsAndPassages();
