@@ -75,7 +75,7 @@ public class Orge extends Attributes implements Action, Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x >= 0 && x <= common.getWidthHeight() && y >= 0 && y <= common.getWidthHeight());
+        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
     }
 
     @Override

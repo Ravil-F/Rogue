@@ -52,7 +52,7 @@ public class Vampire  extends Attributes implements Check, Action {
             case 7: newX--; newY--; break;
         }
 
-        if(!isWithInBounds(newX, newY))
+        if(isWithInBounds(newX, newY))
             return new int[]{newX, newY};
         return new int[]{x, y};
     }
@@ -76,6 +76,6 @@ public class Vampire  extends Attributes implements Check, Action {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x >= 0 && x <= common.getWidthHeight() && y >= 0 && y <= common.getWidthHeight());
+        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
     }
 }
