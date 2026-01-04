@@ -74,20 +74,22 @@ public class View {
     }
 
     private void viewMap(){
+//        for (Rooms room : controller.getModel().getMap().getRooms()) {
+//            drawRectangle(textGraphics, room.getTopY(), room.getBottomY(),
+//                    room.getLeftX(), room.getRightX());
+//            drawRoomContent(textGraphics, room);
+//        }
+//
+//        for (Passage passage : controller.getModel().getMap().getPassages()) {
+//            drawPassageSegments(textGraphics, passage);
+//        }
+
         for(int x = 0; x < controller.getModel().getMap().getWidth(); ++x){
             for (int y = 0; y < controller.getModel().getMap().getHeight(); ++y){
                 int cellChar = controller.getModel().getMap().getMap(x, y);
                 if (cellChar != 0)
                     textGraphics.putString(x, y, String.valueOf((char)cellChar));
             }
-        }
-        for (Rooms room : controller.getModel().getMap().getRooms()) {
-            drawRectangle(textGraphics, room.getTopY(), room.getBottomY(),
-                    room.getLeftX(), room.getRightX());
-            drawRoomContent(textGraphics, room);
-        }
-        for (Passage passage : controller.getModel().getMap().getPassages()) {
-            drawPassageSegments(textGraphics, passage);
         }
     }
 

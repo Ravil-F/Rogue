@@ -48,7 +48,7 @@ public class Model implements Check {
 
     public void gameSession(){
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
-        enemyMovement();
+//        enemyMovement();
     }
 
     public void passName(String line){
@@ -80,13 +80,15 @@ public class Model implements Check {
             }
 
             if(isWithInBounds(tmpX, tmpY)) {
-//                if (checkEnemy(tmpX, tmpY)) {
-//                    player.setStatus(StatusPlayer.ATTAC);
-//                    System.out.println("Enemy");
-////                enemyAttac();
-//                    player.setStatus(StatusPlayer.MOVE);
-//                } else
-                if (!checkItems(tmpX, tmpY)) {
+                if (checkEnemy(tmpX, tmpY)) {
+                    player.setStatus(StatusPlayer.ATTAC);
+                    System.out.println("Enemy");
+                    int index = enemys.getIndex(tmpX, tmpY);
+                    System.out.println("index = " + index);
+                    System.out.println("symbol = " + enemys.getEnemy().get(index).getSymbol());
+                    player.attack(enemys.getEnemy().get(index));
+                    player.setStatus(StatusPlayer.MOVE);
+                } else if (!checkItems(tmpX, tmpY)) {
                     map.putZero(oldX, oldY);
                     map.putZero(tmpX, tmpY);
                     player.setCoord(tmpX, tmpY);

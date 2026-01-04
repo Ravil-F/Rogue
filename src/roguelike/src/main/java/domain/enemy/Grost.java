@@ -74,4 +74,9 @@ public class Grost extends Attributes implements Action, Check {
                 symbol == 'e' || symbol == 'Z' || symbol == 'G' ||
                 symbol == 'S' || symbol == 'O' || symbol == 'V';
     }
+
+    @Override
+    public void attack(Attributes enemy) {
+
+    }
 }

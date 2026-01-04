@@ -7,9 +7,10 @@ import domain.interfaces.Action;
 
 public class Player extends Attributes implements Action {
     private StatusPlayer status;
+    public final int defaultStrength = 25;
 
     public Player() {
-        super("Player", '@', "RED", 100, 100, 0, 0, 5, 5);
+        super("Player", '@', "RED", 100, 100, 90, 0, 5, 5);
         status = StatusPlayer.START;
     }
 
@@ -46,4 +47,25 @@ public class Player extends Attributes implements Action {
     public int move(int xy, boolean sign){ //true ++, false --
         return sign ? ++xy : --xy;
     }
+
+    @Override
+    public void attack(Attributes enemy) {
+        // Получаем необходимые характеристики
+        System.out.println("enemy in attack in player = " + enemy.getSymbol());
+        System.out.println("Health enemy start = " + enemy.getHealth());
+
+        boolean isHit = (Math.random() * 100) <= this.getAgility();
+        System.out.println("isHit = " + isHit);
+
+        if(isHit){
+            int damage = this.getStrength() + defaultStrength;
+            System.out.println("damage = " + damage);
+            enemy.setHealth(enemy.getHealth() - damage);
+        }
+
+
+        System.out.println("Health enemy finish = " + enemy.getHealth());
+    }
+
+
 }

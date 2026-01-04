@@ -75,4 +75,9 @@ public class Zombi extends Attributes implements Check, Action {
                 symbol == 'e' || symbol == 'Z' || symbol == 'G' ||
                 symbol == 'S' || symbol == 'O' || symbol == 'V';
     }
+
+    @Override
+    public void attack(Attributes enemy) {
+
+    }
 }
