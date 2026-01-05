@@ -5,7 +5,7 @@ public enum StatusPlayer {
     ACTION,
     TAKE,
     MOVE,
-    OVER,
+    GAMEOVER,
     PAUSE,
     ATTAC;
 }

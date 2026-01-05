@@ -18,7 +18,7 @@ public class Player extends Attributes implements Action {
         super(properties.getName(), properties.getSymbol(),
                 properties.getColor(), properties.getMaxHealth(),
                 properties.getHealth(), properties.getAgility(),
-                properties.getStrength(), x, y);
+                properties.getStrength(), 0, x, y);
         this.properties = properties;
     }
 

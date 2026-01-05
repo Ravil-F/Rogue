@@ -88,6 +88,9 @@ public class Model implements Check {
                     System.out.println("symbol = " + enemys.getEnemy().get(index).getSymbol());
                     player.attack(enemys.getEnemy().get(index));
                     System.out.println("enemy health = " + enemys.getEnemy().get(index).getHealth());
+                    if(enemys.getEnemy().get(index).getHealth() <= 0){
+                        enemys.getEnemy().remove(index);
+                    }
                     player.setStatus(StatusPlayer.MOVE);
                 } else if (!checkItems(tmpX, tmpY)) {
                     map.putZero(oldX, oldY);
@@ -208,21 +211,22 @@ public class Model implements Check {
                     if (isPlayerAdjacent(currentX, currentY)) {
                         System.out.println("Player adjacent! Attack!");
                         ((Action) enemy).attack(player);
+                        if(player.getHealth() <= 0)
+                            player.setStatus(StatusPlayer.GAMEOVER);
                         System.out.println("health player = " + player.getHealth());
                         continue;
                     }
 
-                    int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
+                    int[] newXY;
+                    if(canSeePlayer(enemy ,currentX, currentY)){
+                        newXY = moveTowardsPlayer(currentX, currentY, player.getCoord().getX(), player.getCoord().getY());
+                    }else
+                        newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
+
                     int newX = newXY[0];
                     int newY = newXY[1];
 
-                    if (!isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
-                        System.out.println("Not move enemy");
-                    } else if (map.getMap(newX, newY) == player.getSymbol()) {
-                        System.out.println("Atack player");
-                        ((Action) enemy).attack(player);
-                        System.out.println("health player = " + player.getHealth());
-                    } else {
+                    if (isWithInBounds(newX, newY)) {
                         map.putZero(currentX, currentY);
                         map.setMap(newX, newY, enemy.getSymbol());
                         enemy.setCoord(newX, newY);
@@ -250,6 +254,55 @@ public class Model implements Check {
         return false;
     }
 
+    private boolean canSeePlayer(Attributes enemy, int x, int y){
+       int distance = Math.max(
+               Math.abs(x - player.getCoord().getX()),
+               Math.abs(y - player.getCoord().getY())
+       );
+       return distance <= enemy.getHostility();
+    }
+
+    private int[] moveTowardsPlayer(int enemyX, int enemyY, int playerX, int playerY) {
+        int diffX = playerX - enemyX;
+        int diffY = playerY - enemyY;
+
+        int moveX = 0;
+        int moveY = 0;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+                moveX = Integer.compare(diffX, 0);
+        } else {
+                  moveY = Integer.compare(diffY, 0);
+        }
+
+        int newX = enemyX + moveX;
+        int newY = enemyY + moveY;
+
+        if (isWithInBounds(newX, newY) && !isCellBlocked(newX, newY)) {
+            return new int[]{newX, newY};
+        }
+
+        if (moveX != 0) {
+            newX = enemyX;
+            newY = enemyY + Integer.compare(diffY, 0);
+            if (isWithInBounds(newX, newY) && !isCellBlocked(newX, newY)) {
+                return new int[]{newX, newY};
+            }
+        } else {
+            newX = enemyX + Integer.compare(diffX, 0);
+            newY = enemyY;
+            if (isWithInBounds(newX, newY) && !isCellBlocked(newX, newY)) {
+                return new int[]{newX, newY};
+            }
+        }
+
+        return new int[]{enemyX, enemyY};
+    }
+
+    private boolean isCellBlocked(int x, int y) {
+        char cell = (char) map.getMap(x, y);
+          return cell != 0 && cell != ' ' && cell != '.' && cell != '@' && !checkingSymbols(cell);
+    }
 
     @Override
     public boolean isWithInBounds(int x) {
@@ -263,7 +316,7 @@ public class Model implements Check {
 
     @Override
     public boolean checkingSymbols(char symbol){
-        return symbol == 's' || symbol == 'w' ||
-                symbol == 'f' || symbol == 'e';
+        return symbol == 's' && symbol == 'w' &&
+                symbol == 'f' && symbol == 'e';
     }
 }

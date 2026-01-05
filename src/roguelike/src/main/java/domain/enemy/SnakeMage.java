@@ -10,7 +10,6 @@ import java.util.Random;
 
 public class SnakeMage extends Attributes implements Check, Action {
     private final EntityProperties properties;
-    private final int hostility;
     private CommonProperties common;
 
     public SnakeMage(int x, int y) {
@@ -22,9 +21,8 @@ public class SnakeMage extends Attributes implements Check, Action {
         super(properties.getName(), properties.getSymbol(),
                 properties.getColor(), properties.getMaxHealth(),
                 properties.getHealth(), properties.getAgility(),
-                properties.getStrength(), x, y);
+                properties.getStrength(), properties.getHostility(), x, y);
         this.properties = properties;
-        this.hostility = properties.getHostility();
     }
 
     private static EntityProperties createProperties(){

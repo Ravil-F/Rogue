@@ -56,7 +56,7 @@ public class Controller {
                             break;
                     }
                 } else if (key.getKeyType() == KeyType.Escape) {
-                    getModel().getPlayer().setStatus(StatusPlayer.OVER);
+                    getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
                 }
             }
 

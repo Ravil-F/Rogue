@@ -7,18 +7,20 @@ public abstract class Attributes extends Entity{
     private int health;
     private int agility;
     private int strength;
+    private int hostility;
 
 //    constructor
     public Attributes(String name, char symbol,
                       String color, int maxHealth,
                       int health, int agility,
-                      int strength, int x, int y){
+                      int strength, int hostility, int x, int y){
 
         super(name, symbol, color, x, y);
         this.maxHealth = maxHealth;
         this.health= health;
         this.agility = agility;
         this.strength = strength;
+        this.hostility = hostility;
     }
 
     //setter and getter
@@ -54,4 +56,7 @@ public abstract class Attributes extends Entity{
         this.strength = strength;
     }
 
- }
+    public int getHostility() {
+        return hostility;
+    }
+}

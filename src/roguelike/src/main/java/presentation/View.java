@@ -202,7 +202,7 @@ public class View {
     public void gameLoop() throws IOException {
         controller.getModel().gameInitialization();
         try{
-            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.OVER){
+            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER){
                 screen.clear();
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
