@@ -48,7 +48,7 @@ public class Model implements Check {
 
     public void gameSession(){
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
-//        enemyMovement();
+        enemyMovement();
     }
 
     public void passName(String line){
@@ -201,25 +201,55 @@ public class Model implements Check {
     private void enemyMovement(){
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
-            if(enemy instanceof Action moveEnemy) {
-                int currentX = enemy.getCoord().getX();
-                int currentY = enemy.getCoord().getY();
+                if(enemy instanceof Action moveEnemy) {
+                    int currentX = enemy.getCoord().getX();
+                    int currentY = enemy.getCoord().getY();
 
-                int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
-                int newX = newXY[0];
-                int newY = newXY[1];
+                    if (isPlayerAdjacent(currentX, currentY)) {
+                        System.out.println("Player adjacent! Attack!");
+                        ((Action) enemy).attack(player);
+                        System.out.println("health player = " + player.getHealth());
+                        continue;
+                    }
 
-                if (!isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
-                    System.out.println("Not move enemy");
-                } else {
-                    map.putZero(currentX, currentY);
-                    map.setMap(newX, newY, enemy.getSymbol());
-                    enemy.setCoord(newX, newY);
+                    int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
+                    int newX = newXY[0];
+                    int newY = newXY[1];
+
+                    if (!isWithInBounds(newX, newY)) { //возможно нужно поменять проверки
+                        System.out.println("Not move enemy");
+                    } else if (map.getMap(newX, newY) == player.getSymbol()) {
+                        System.out.println("Atack player");
+                        ((Action) enemy).attack(player);
+                        System.out.println("health player = " + player.getHealth());
+                    } else {
+                        map.putZero(currentX, currentY);
+                        map.setMap(newX, newY, enemy.getSymbol());
+                        enemy.setCoord(newX, newY);
+                    }
+
                 }
-            }
-
         }
     }
+
+    private boolean isPlayerAdjacent(int enemyX, int enemyY) {
+        int[][] directions = {
+                {-1, -1}, {-1, 0}, {-1, 1},
+                {0, -1},           {0, 1},
+                {1, -1},  {1, 0},  {1, 1}
+        };
+
+        for (int[] dir : directions) {
+            int checkX = enemyX + dir[0];
+            int checkY = enemyY + dir[1];
+
+            if (map.getMap(checkX, checkY) == player.getSymbol()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public boolean isWithInBounds(int x) {

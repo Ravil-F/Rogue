@@ -55,8 +55,8 @@ public class Zombi extends Attributes implements Check, Action {
     }
 
     @Override
-    public int move(int xy, boolean sign) {
-        return 0;
+    public int move(int xy, boolean sign){ //true ++, false --
+        return sign ? ++xy : --xy;
     }
 
     @Override
