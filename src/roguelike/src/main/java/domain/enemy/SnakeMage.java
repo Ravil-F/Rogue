@@ -3,6 +3,7 @@ package domain.enemy;
 import domain.abstact.Attributes;
 import domain.interfaces.Action;
 import domain.interfaces.Check;
+import domain.player.Player;
 import utils.CommonProperties;
 import utils.EntityProperties;
 
@@ -11,6 +12,7 @@ import java.util.Random;
 public class SnakeMage extends Attributes implements Check, Action {
     private final EntityProperties properties;
     private CommonProperties common;
+    private static final int probabilityOfSleep = 30;
 
     public SnakeMage(int x, int y) {
         this(createProperties(), x, y);
@@ -78,6 +80,12 @@ public class SnakeMage extends Attributes implements Check, Action {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if(isHit){
             entity.setHealth(entity.getHealth() - this.getStrength());
+            if(Math.random() * 100 < probabilityOfSleep){
+                if(entity instanceof Player){
+                    Player player = (Player) entity;
+                    player.putSleep(1);
+                }
+            }
         }
     }
 }

@@ -5,13 +5,17 @@ import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
 import utils.PlayerProperties;
 
+import javax.swing.*;
+
 public class Player extends Attributes implements Action {
     private final PlayerProperties properties;
     private StatusPlayer status;
+    private int sleep;
 
     public Player(int x, int y) {
         this(createProperties(), x, y);
         status = StatusPlayer.START;
+        this.sleep = 0;
     }
 
     private Player(PlayerProperties properties, int x, int y){
@@ -44,6 +48,20 @@ public class Player extends Attributes implements Action {
 
     public void setStatus(StatusPlayer status) {
         this.status = status;
+    }
+
+    public void updateSleep(){
+        if(sleep > 0){
+            --sleep;
+            if(sleep <= 0){
+                status = StatusPlayer.ACTION;
+            }
+        }
+    }
+
+    public void putSleep(int sleep){
+        this.sleep = sleep;
+        this.status = StatusPlayer.SLEEP;
     }
 
     @Override

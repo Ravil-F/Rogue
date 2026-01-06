@@ -48,7 +48,8 @@ public class Model implements Check {
 
     public void gameSession(){
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
-        enemyMovement();
+        if(!player.getStatus().equals(StatusPlayer.PAUSE))
+            enemyMovement();
     }
 
     public void passName(String line){
@@ -56,7 +57,7 @@ public class Model implements Check {
     }
 
     public void movePlayer(final StatusE status) {
-        if (getPlayer().getStatus() == StatusPlayer.MOVE) {
+        if (getPlayer().getStatus() == StatusPlayer.ACTION) {
             int tmpX = player.getCoord().getX();
             int tmpY = player.getCoord().getY();
             int oldX = tmpX;
@@ -80,8 +81,7 @@ public class Model implements Check {
             }
 
             if(isWithInBounds(tmpX, tmpY)) {
-                if (checkEnemy(tmpX, tmpY)) {
-                    player.setStatus(StatusPlayer.ATTAC);
+                if (checkEnemy(tmpX, tmpY) && player.getStatus().equals(StatusPlayer.ACTION)) {
                     System.out.println("Enemy");
                     int index = enemys.getIndex(tmpX, tmpY);
                     System.out.println("index = " + index);
@@ -91,7 +91,6 @@ public class Model implements Check {
                     if(enemys.getEnemy().get(index).getHealth() <= 0){
                         enemys.getEnemy().remove(index);
                     }
-                    player.setStatus(StatusPlayer.MOVE);
                 } else if (!checkItems(tmpX, tmpY)) {
                     map.putZero(oldX, oldY);
                     map.putZero(tmpX, tmpY);
@@ -121,10 +120,6 @@ public class Model implements Check {
         return false;
     }
 
-    private boolean isItemSymbol(char c) {
-        return c == 'w' || c == 'f' || c == 's' || c == 'e';
-    }
-
     private int equalsMapItems(int x, int y, GameItems items){
             for (int i = 0; i < items.getItems().size(); i++) {
                 if (items.getItems().get(i).getCoord().getX() == x &&
@@ -135,7 +130,7 @@ public class Model implements Check {
     }
 
     public void openBackpack(final char symbol){
-//        player.setStatus();
+        player.setStatus(StatusPlayer.PAUSE);
         getBackpack().getScreenOutput().clear();
         getBackpack().getScreenOutput().addAll(getBackpack().getPackItems(symbol));
     }
@@ -195,7 +190,6 @@ public class Model implements Check {
     }
 
     //все что связано с врагами
-    //чекает есть ли враг
      private boolean checkEnemy(int x, int y){
         char c = getMap().getMapChar(x, y);
      return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
@@ -316,7 +310,7 @@ public class Model implements Check {
 
     @Override
     public boolean checkingSymbols(char symbol){
-        return symbol == 's' && symbol == 'w' &&
-                symbol == 'f' && symbol == 'e';
+        return symbol == 's' || symbol == 'w' ||
+                symbol == 'f' || symbol == 'e';
     }
 }

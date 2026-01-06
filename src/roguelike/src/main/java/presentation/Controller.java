@@ -26,7 +26,7 @@ public class Controller {
                             Character.toLowerCase(key.getCharacter()) == 's'  ||
                             Character.toLowerCase(key.getCharacter()) == 'a'  ||
                             Character.toLowerCase(key.getCharacter()) == 'd' )
-                        getModel().getPlayer().setStatus(StatusPlayer.MOVE);
+                        getModel().getPlayer().setStatus(StatusPlayer.ACTION);
                     switch (Character.toLowerCase(key.getCharacter())) {
                         case 'w':
                             model.movePlayer(StatusE.UP);
@@ -82,6 +82,7 @@ public class Controller {
                 }
             }
             model.getBackpack().getPackItems(symbol).remove(Character.getNumericValue(key.getCharacter()));
+            model.getPlayer().setStatus(StatusPlayer.ACTION);
         }
 
     }
