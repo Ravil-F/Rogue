@@ -26,42 +26,40 @@ public class Controller {
                             Character.toLowerCase(key.getCharacter()) == 's'  ||
                             Character.toLowerCase(key.getCharacter()) == 'a'  ||
                             Character.toLowerCase(key.getCharacter()) == 'd' )
-                        getModel().getPlayer().setStatus(StatusPlayer.ACTION);
-                    switch (Character.toLowerCase(key.getCharacter())) {
-                        case 'w':
-                            model.movePlayer(StatusE.UP);
-                            break;
-                        case 's':
-                            model.movePlayer(StatusE.DOWN);
-                            break;
-                        case 'a':
-                            model.movePlayer(StatusE.LEFT);
-                            break;
-                        case 'd':
-                            model.movePlayer(StatusE.RIGHT);
-                            break;
-                        case 'h':
-                            model.openBackpack('w');
-                            break;
-                        case 'j':
-                            model.openBackpack('f');
-                            break;
-                        case 'k':
-                            model.openBackpack('e');
-                            break;
-                        case 'e':
-                            model.openBackpack('s');
-                            break;
-                        default:
-                            break;
+
+                        switch (Character.toLowerCase(key.getCharacter())) {
+                            case 'w':
+                                model.movePlayer(StatusE.UP);
+                                break;
+                            case 's':
+                                model.movePlayer(StatusE.DOWN);
+                                break;
+                            case 'a':
+                                model.movePlayer(StatusE.LEFT);
+                                break;
+                            case 'd':
+                                model.movePlayer(StatusE.RIGHT);
+                                break;
+                            case 'h':
+                                model.openBackpack('w');
+                                break;
+                            case 'j':
+                                model.openBackpack('f');
+                                break;
+                            case 'k':
+                                model.openBackpack('e');
+                                break;
+                            case 'e':
+                                model.openBackpack('s');
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 } else if (key.getKeyType() == KeyType.Escape) {
                     getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
                 }
             }
-
-        }
-        getModel().getPlayer().setStatus(StatusPlayer.ACTION);
         model.gameSession();
     }
 

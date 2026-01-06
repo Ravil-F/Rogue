@@ -13,6 +13,7 @@ public class SnakeMage extends Attributes implements Check, Action {
     private final EntityProperties properties;
     private CommonProperties common;
     private static final int probabilityOfSleep = 30;
+    private static final int stepSleep = 1;
 
     public SnakeMage(int x, int y) {
         this(createProperties(), x, y);
@@ -83,7 +84,7 @@ public class SnakeMage extends Attributes implements Check, Action {
             if(Math.random() * 100 < probabilityOfSleep){
                 if(entity instanceof Player){
                     Player player = (Player) entity;
-                    player.putSleep(1);
+                    player.putSleep(stepSleep);
                 }
             }
         }

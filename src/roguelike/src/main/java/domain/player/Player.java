@@ -50,6 +50,10 @@ public class Player extends Attributes implements Action {
         this.status = status;
     }
 
+    public int getSleep() {
+        return sleep;
+    }
+
     public void updateSleep(){
         if(sleep > 0){
             --sleep;
@@ -62,6 +66,10 @@ public class Player extends Attributes implements Action {
     public void putSleep(int sleep){
         this.sleep = sleep;
         this.status = StatusPlayer.SLEEP;
+    }
+
+    public boolean isSleep(){
+        return this.sleep > 0;
     }
 
     @Override

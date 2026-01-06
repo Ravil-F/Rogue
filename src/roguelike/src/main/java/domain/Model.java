@@ -57,6 +57,11 @@ public class Model implements Check {
     }
 
     public void movePlayer(final StatusE status) {
+        if(player.getStatus().equals(StatusPlayer.SLEEP)){
+            player.updateSleep();
+            return;
+        }
+
         if (getPlayer().getStatus() == StatusPlayer.ACTION) {
             int tmpX = player.getCoord().getX();
             int tmpY = player.getCoord().getY();
@@ -81,11 +86,8 @@ public class Model implements Check {
             }
 
             if(isWithInBounds(tmpX, tmpY)) {
-                if (checkEnemy(tmpX, tmpY) && player.getStatus().equals(StatusPlayer.ACTION)) {
-                    System.out.println("Enemy");
+                if (checkEnemy(tmpX, tmpY)) {
                     int index = enemys.getIndex(tmpX, tmpY);
-                    System.out.println("index = " + index);
-                    System.out.println("symbol = " + enemys.getEnemy().get(index).getSymbol());
                     player.attack(enemys.getEnemy().get(index));
                     System.out.println("enemy health = " + enemys.getEnemy().get(index).getHealth());
                     if(enemys.getEnemy().get(index).getHealth() <= 0){
@@ -196,38 +198,37 @@ public class Model implements Check {
      }
 
     private void enemyMovement(){
-        for(int i = 0; i < enemys.getEnemy().size(); ++i){
+        for(int i = 0; i < enemys.getEnemy().size() && !player.getStatus().equals(StatusPlayer.GAMEOVER); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
-                if(enemy instanceof Action moveEnemy) {
-                    int currentX = enemy.getCoord().getX();
-                    int currentY = enemy.getCoord().getY();
+            if(enemy instanceof Action moveEnemy) {
+                int currentX = enemy.getCoord().getX();
+                int currentY = enemy.getCoord().getY();
 
-                    if (isPlayerAdjacent(currentX, currentY)) {
-                        System.out.println("Player adjacent! Attack!");
-                        ((Action) enemy).attack(player);
-                        if(player.getHealth() <= 0)
-                            player.setStatus(StatusPlayer.GAMEOVER);
-                        System.out.println("health player = " + player.getHealth());
-                        continue;
-                    }
-
-                    int[] newXY;
-                    if(canSeePlayer(enemy ,currentX, currentY)){
-                        newXY = moveTowardsPlayer(currentX, currentY, player.getCoord().getX(), player.getCoord().getY());
-                    }else
-                        newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
-
-                    int newX = newXY[0];
-                    int newY = newXY[1];
-
-                    if (isWithInBounds(newX, newY)) {
-                        map.putZero(currentX, currentY);
-                        map.setMap(newX, newY, enemy.getSymbol());
-                        enemy.setCoord(newX, newY);
-                    }
-
+                if (isPlayerAdjacent(currentX, currentY)) {
+                    ((Action) enemy).attack(player);
+                    if(player.getHealth() <= 0)
+                        player.setStatus(StatusPlayer.GAMEOVER);
+                    System.out.println("health player = " + player.getHealth());
+                    continue;
                 }
+
+                int[] newXY;
+                if(canSeePlayer(enemy ,currentX, currentY)){
+                    newXY = moveTowardsPlayer(currentX, currentY, player.getCoord().getX(), player.getCoord().getY());
+                }else
+                    newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
+
+                int newX = newXY[0];
+                int newY = newXY[1];
+
+                if (isWithInBounds(newX, newY)) {
+                    map.putZero(currentX, currentY);
+                    map.setMap(newX, newY, enemy.getSymbol());
+                    enemy.setCoord(newX, newY);
+                }
+            }
         }
+        System.out.println("End enemy move");
     }
 
     private boolean isPlayerAdjacent(int enemyX, int enemyY) {

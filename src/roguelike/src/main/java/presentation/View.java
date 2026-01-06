@@ -210,7 +210,7 @@ public class View {
                         break;
                     }
 
-                    if (this.key.getKeyType() == KeyType.Character && (controller.getModel().getPlayer().getStatus() == StatusPlayer.ACTION)) {
+                    if (this.key.getKeyType() == KeyType.Character) {
                         controller.userInput(this.key, true);
                         viewController();
                     }
@@ -222,6 +222,9 @@ public class View {
                     setKey();
                 }
             }
+
+            if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER))
+                viewGameOver();
 
         }catch (Exception e){
             System.out.println(e.getMessage());
