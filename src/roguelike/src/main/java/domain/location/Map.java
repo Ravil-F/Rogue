@@ -1,13 +1,13 @@
 package domain.location;
 
-import domain.interfaces.Utils;
+import domain.interfaces.Check;
 import utils.CommonProperties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Random;
 
-public class Map implements Utils {
+public class Map implements Check {
     private CommonProperties common;
     private int[][] map;
 
@@ -35,7 +35,7 @@ public class Map implements Utils {
         this.map = new int[MAP_WIDTH][MAP_HEIGHT];
         for (int x = 0; x < MAP_WIDTH; x++) {
             for (int y = 0; y < MAP_HEIGHT; y++) {
-                map[x][y] = '0';
+                map[x][y] = ' ';
             }
         }
         generateRoomsAndPassages();
@@ -160,7 +160,7 @@ public class Map implements Utils {
             }
         }
     }
-    
+
     private void sendPassagesIntoMap() {
         for (Passage passage : passages) {
             for (Passage.PassageSegment segment : passage.getSegments()) {
@@ -186,26 +186,20 @@ public class Map implements Utils {
         return min + rnd.nextInt(max - min + 1);
     }
 
-    public String convertIntToString(int x, int y) {
-        String tmpstr = getMap(x, y);
-        int tmpint = Integer.parseInt(tmpstr);
-        char tmpch = (char) tmpint;
-        return String.valueOf(tmpch);
-    }
-
     public void putZero(int x, int y) {
         if (isWithInBounds(x, y)) {
-            map[x][y] = '0';
+            map[x][y] = ' ';
         }
     }
 
-    public String getMap(int x, int y) {
-        return String.valueOf(map[x][y]);
-    }
-
-    public int getMapChar(int x, int y) {
+    public int getMap(int x, int y) {
         return map[x][y];
     }
+
+    public char getMapChar(int x, int y) {
+        return (char)map[x][y];
+    }
+
 
     public void setMap(int x, int y, int value) {
         if (isWithInBounds(x, y)) {
@@ -227,5 +221,10 @@ public class Map implements Utils {
 
     public boolean isWithInBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < MAP_WIDTH && y < MAP_HEIGHT;
+    }
+
+    @Override
+    public boolean checkingSymbols(char symbol) {
+        return false;
     }
 }
