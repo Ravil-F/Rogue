@@ -24,28 +24,49 @@ public class Model implements Check {
     private int level;
 
     public Model(){
-        player = new Player(5, 5);
         backpack = new Backpack();
         map = new Map();
+        int[] startPos = map.getRandomPosition();
+        player = new Player(startPos[0], startPos[1]);
         items = new GameItems();
         enemys = new GameEnemy();
         level = 1;
     }
 
+//    public void gameInitialization(){
+//        player.setStatus(StatusPlayer.ACTION);
+//        map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+//
+//        items.generateRandom(level);
+//        for(int i = 0; i < items.getItems().size(); ++i) {
+//            map.setMap(items.getItems().get(i).getCoord().getX(), items.getItems().get(i).getCoord().getY(), items.getItems().get(i).getSymbol());
+//        }
+//
+//        enemys.generateRandom(level);
+//        for(int i = 0; i < enemys.getEnemy().size(); ++i){
+//            map.setMap(enemys.getEnemy().get(i).getCoord().getX(), enemys.getEnemy().get(i).getCoord().getY(), enemys.getEnemy().get(i).getSymbol());
+//        }
+//    }
+
     public void gameInitialization(){
         player.setStatus(StatusPlayer.ACTION);
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
-
         items.generateRandom(level);
         for(int i = 0; i < items.getItems().size(); ++i) {
-            map.setMap(items.getItems().get(i).getCoord().getX(), items.getItems().get(i).getCoord().getY(), items.getItems().get(i).getSymbol());
+            Items item = items.getItems().get(i);
+            int[] roomPos = map.getFreePosition();
+            item.setCoord(roomPos[0], roomPos[1]);
+            map.setMap(item.getCoord().getX(), item.getCoord().getY(), item.getSymbol());
         }
-
         enemys.generateRandom(level);
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
-            map.setMap(enemys.getEnemy().get(i).getCoord().getX(), enemys.getEnemy().get(i).getCoord().getY(), enemys.getEnemy().get(i).getSymbol());
+            Attributes enemy = enemys.getEnemy().get(i);
+            int[] roomPos = map.getFreePosition();
+            enemy.setCoord(roomPos[0], roomPos[1]);
+            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
         }
     }
+
 
     public void gameSession(){
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
@@ -57,50 +78,119 @@ public class Model implements Check {
         player.setName(line);
     }
 
-    public void movePlayer(final StatusE status) {
-        if(player.getStatus().equals(StatusPlayer.SLEEP)){
-            player.updateSleep();
-            return;
+//    public void movePlayer(final StatusE status) {
+//        if(player.getStatus().equals(StatusPlayer.SLEEP)){
+//            player.updateSleep();
+//            return;
+//        }
+//
+//        if (getPlayer().getStatus() == StatusPlayer.ACTION) {
+//            int tmpX = player.getCoord().getX();
+//            int tmpY = player.getCoord().getY();
+//            int oldX = tmpX;
+//            int oldY = tmpY;
+//
+//            switch (status) {
+//                case DOWN:
+//                    tmpY = player.move(tmpY, true);
+//                    break;
+//                case UP:
+//                    tmpY = player.move(tmpY, false);
+//                    break;
+//                case LEFT:
+//                    tmpX = player.move(tmpX, false);
+//                    break;
+//                case RIGHT:
+//                    tmpX = player.move(tmpX, true);
+//                    break;
+//                default:
+//                    throw new IllegalArgumentException("Invalid status");
+//            }
+//
+////            if(isWithInBounds(tmpX, tmpY)) {
+////                if (checkEnemy(tmpX, tmpY)) {
+////                    int index = enemys.getIndex(tmpX, tmpY);
+////                    player.attack(enemys.getEnemy().get(index));
+////                    if(enemys.getEnemy().get(index).getHealth() <= 0){
+////                        enemys.getEnemy().remove(index);
+////                    }
+////                } else if (!checkItems(tmpX, tmpY)) {
+////                    map.putZero(oldX, oldY);
+////                    map.putZero(tmpX, tmpY);
+////                    player.setCoord(tmpX, tmpY);
+////                }
+////            }
+//            if (!isWithInBounds(tmpX, tmpY)) {
+//                return;
+//            }
+//            char cellChar = map.getMapChar(tmpX, tmpY);
+//            if (cellChar == '#' || cellChar == ' ') {
+//                return;
+//            }
+//            if (checkEnemy(tmpX, tmpY)) {
+//                int index = enemys.getIndex(tmpX, tmpY);
+//                player.attack(enemys.getEnemy().get(index));
+//                if(enemys.getEnemy().get(index).getHealth() <= 0){
+//                    enemys.getEnemy().remove(index);
+//                }
+//            } else if (!checkItems(tmpX, tmpY)) {
+//                // Свободная клетка - перемещаемся
+//                map.putZero(oldX, oldY);
+//                map.putZero(tmpX, tmpY);
+//                player.setCoord(tmpX, tmpY);
+//            }
+//        }
+//    }
+
+public void movePlayer(final StatusE status) {
+    if(player.getStatus().equals(StatusPlayer.SLEEP)){
+        player.updateSleep();
+        return;
+    }
+    if (getPlayer().getStatus() == StatusPlayer.ACTION) {
+        int tmpX = player.getCoord().getX();
+        int tmpY = player.getCoord().getY();
+        int oldX = tmpX;
+        int oldY = tmpY;
+        switch (status) {
+            case DOWN:
+                tmpY = player.move(tmpY, true);
+                break;
+            case UP:
+                tmpY = player.move(tmpY, false);
+                break;
+            case LEFT:
+                tmpX = player.move(tmpX, false);
+                break;
+            case RIGHT:
+                tmpX = player.move(tmpX, true);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid status");
         }
-
-        if (getPlayer().getStatus() == StatusPlayer.ACTION) {
-            int tmpX = player.getCoord().getX();
-            int tmpY = player.getCoord().getY();
-            int oldX = tmpX;
-            int oldY = tmpY;
-
-            switch (status) {
-                case DOWN:
-                    tmpY = player.move(tmpY, true);
-                    break;
-                case UP:
-                    tmpY = player.move(tmpY, false);
-                    break;
-                case LEFT:
-                    tmpX = player.move(tmpX, false);
-                    break;
-                case RIGHT:
-                    tmpX = player.move(tmpX, true);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid status");
-            }
-
-            if(isWithInBounds(tmpX, tmpY)) {
-                if (checkEnemy(tmpX, tmpY)) {
-                    int index = enemys.getIndex(tmpX, tmpY);
-                    player.attack(enemys.getEnemy().get(index));
-                    if(enemys.getEnemy().get(index).getHealth() <= 0){
-                        enemys.getEnemy().remove(index);
-                    }
-                } else if (!checkItems(tmpX, tmpY)) {
-                    map.putZero(oldX, oldY);
-                    map.putZero(tmpX, tmpY);
-                    player.setCoord(tmpX, tmpY);
+        if (!isWithInBounds(tmpX, tmpY)) {
+            return; // Выходим за границы - отменяем
+        }
+        char cellChar = map.getMapChar(tmpX, tmpY);
+        if (cellChar == '#' || cellChar == ' ' || cellChar == 0) {
+            return; // Стена или пустота - отменяем
+        }
+        if (checkEnemy(tmpX, tmpY)) {
+            int index = enemys.getIndex(tmpX, tmpY);
+            if (index >= 0 && index < enemys.getEnemy().size()) {
+                player.attack(enemys.getEnemy().get(index));
+                if(enemys.getEnemy().get(index).getHealth() <= 0){
+                    enemys.getEnemy().remove(index);
                 }
             }
+        } else if (!checkItems(tmpX, tmpY)) {
+            map.putZero(oldX, oldY);
+            map.putZero(tmpX, tmpY);
+            player.setCoord(tmpX, tmpY);
         }
     }
+}
+
 
     // все что связано с предметами
     private boolean checkItems(int x, int y){
@@ -193,8 +283,11 @@ public class Model implements Check {
 
     //все что связано с врагами
      private boolean checkEnemy(int x, int y){
+         if (!isWithInBounds(x, y)) {
+             return false;
+         }
         char c = getMap().getMapChar(x, y);
-     return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
+        return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
      }
 
     private void enemyMovement(){
@@ -246,6 +339,10 @@ public class Model implements Check {
         for (int[] dir : directions) {
             int checkX = enemyX + dir[0];
             int checkY = enemyY + dir[1];
+
+            if (!isWithInBounds(checkX, checkY)) {
+                continue;
+            }
 
             if (map.getMap(checkX, checkY) == player.getSymbol()) {
                 return true;
