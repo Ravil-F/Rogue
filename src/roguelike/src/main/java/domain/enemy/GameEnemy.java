@@ -13,7 +13,7 @@ public class GameEnemy implements Check, GenerateRandom {
     private List<Attributes> enemy;
     CommonProperties common;
     private Random random;
-    private final int countEnemy = 1;
+    private final int countEnemy = 5;
 
     public GameEnemy(){
         enemy = new ArrayList<>();
@@ -26,22 +26,22 @@ public class GameEnemy implements Check, GenerateRandom {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-        for (int i = 0; i <  1/*common.getMaxlevel() - tmpDifference*/; i++) {
+        for (int i = 0; i <  common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countEnemy);
             switch (countRandom){
-//                case 0:
-//                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 1:
-//                    enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 2:
-//                    enemy.add(new Grost(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
-//                case 3:
-//                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
-//                    break;
                 case 0:
+                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 1:
+                    enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 2:
+                    enemy.add(new Grost(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 3:
+                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
+                    break;
+                case 4:
                     enemy.add(new SnakeMage(randomXY(tmpXY), randomXY(tmpXY)));
                     break;
             }

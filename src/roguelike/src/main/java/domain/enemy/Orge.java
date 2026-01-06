@@ -11,10 +11,13 @@ import java.util.Random;
 public class Orge extends Attributes implements Action, Check {
     private final EntityProperties properties;
     private CommonProperties common;
+    private int attackRest;
+    private static final int stepAttackRest = 1;
 
     public Orge(int x, int y) {
         this(createProperties(), x, y);
         this.common = new CommonProperties();
+        this.attackRest = 0;
     }
 
     private Orge(EntityProperties properties, int x, int y){
@@ -33,8 +36,21 @@ public class Orge extends Attributes implements Action, Check {
         return properties;
     }
 
+    public void updateAtackRest(){
+        if (attackRest > 0)
+            attackRest--;
+    }
+
+    public boolean isAttackRest(){
+        return attackRest == 0;
+    }
+
     @Override
     public int[] move(int x, int y, char symbol) {
+        if (!isAttackRest())
+            return new int[]{x,y};
+
+
         // Огр - на 2 клетки, если не может, то на одну
         Random random = new Random();
         int newX = x;
@@ -85,9 +101,13 @@ public class Orge extends Attributes implements Action, Check {
 
     @Override
     public void attack(Attributes entity) {
+        if(!isAttackRest())
+            return;
+
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if(isHit){;
             entity.setHealth(entity.getHealth() - this.getStrength());
+            this.attackRest = stepAttackRest;
         }
     }
 }

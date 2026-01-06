@@ -24,7 +24,6 @@ public class Backpack {
     }
 
    public void add(Items item,  final char symbol ){
-       System.out.println("add items" + symbol);
         switch (symbol){
             case 'w':
                 packWeapon.add(item);
@@ -42,7 +41,6 @@ public class Backpack {
    }
 
    public List<Items> getPackItems(final char symbol){
-        System.out.println("getPackItems" + symbol);
         switch (symbol){
             case 'w':
                 return packWeapon;

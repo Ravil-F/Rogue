@@ -4,6 +4,7 @@ import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.backpack.Backpack;
 import domain.enemy.GameEnemy;
+import domain.enemy.Orge;
 import domain.enums.StatusE;
 import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
@@ -89,7 +90,6 @@ public class Model implements Check {
                 if (checkEnemy(tmpX, tmpY)) {
                     int index = enemys.getIndex(tmpX, tmpY);
                     player.attack(enemys.getEnemy().get(index));
-                    System.out.println("enemy health = " + enemys.getEnemy().get(index).getHealth());
                     if(enemys.getEnemy().get(index).getHealth() <= 0){
                         enemys.getEnemy().remove(index);
                     }
@@ -200,6 +200,8 @@ public class Model implements Check {
     private void enemyMovement(){
         for(int i = 0; i < enemys.getEnemy().size() && !player.getStatus().equals(StatusPlayer.GAMEOVER); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
+
+
             if(enemy instanceof Action moveEnemy) {
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
@@ -208,8 +210,12 @@ public class Model implements Check {
                     ((Action) enemy).attack(player);
                     if(player.getHealth() <= 0)
                         player.setStatus(StatusPlayer.GAMEOVER);
-                    System.out.println("health player = " + player.getHealth());
                     continue;
+                }
+
+                if(enemy instanceof Orge){
+                    Orge orge = (Orge) enemy;
+                    orge.updateAtackRest();
                 }
 
                 int[] newXY;
@@ -228,7 +234,6 @@ public class Model implements Check {
                 }
             }
         }
-        System.out.println("End enemy move");
     }
 
     private boolean isPlayerAdjacent(int enemyX, int enemyY) {
