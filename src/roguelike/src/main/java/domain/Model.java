@@ -121,10 +121,9 @@ public class Model implements Check {
             int index = equalsMapItems(x, y, items);
             if (index != -1) {
                 Items item = items.getItems().get(index);
-                System.out.println("chekcItems item = " + item);
                 backpack.add(item, item.getSymbol());
                 map.putZero(x, y);
-                Items remove = items.getItems().remove(index);
+                items.getItems().remove(index);
                 map.putZero(player.getCoord().getX(), player.getCoord().getY());
                 player.setCoord(x, y);
                 return true;
