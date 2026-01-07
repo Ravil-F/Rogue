@@ -50,6 +50,26 @@ public class GameItems implements Check, GenerateRandom {
         }
     }
 
+    public Items generateRandom(int x, int y) {
+        int countRandom = random.nextInt(0, countItems);
+        switch (countRandom){
+            case 0:
+                ElixirE randomElixir = ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
+                return new Elixir(randomElixir, 60, x, y);
+            case 1:
+                FoodE randomFood = FoodE.values()[random.nextInt(0, FoodE.values().length)];
+                return new Food(randomFood, x, y);
+            case 2:
+                ScrollE randomScroll = ScrollE.values()[random.nextInt(0, ScrollE.values().length)];
+                return new Scroll(randomScroll, x, y);
+            case 3:
+                WeaponE randomWeapon = WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
+                return new Weapon(randomWeapon, x, y);
+            default:
+                return null;
+        }
+    }
+
     @Override
     public int checkDifference(int level){
         int result = 16;
