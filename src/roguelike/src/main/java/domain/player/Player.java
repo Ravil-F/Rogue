@@ -10,12 +10,14 @@ import javax.swing.*;
 public class Player extends Attributes implements Action {
     private final PlayerProperties properties;
     private StatusPlayer status;
+    private int treasure;
     private int sleep;
 
     public Player(int x, int y) {
         this(createProperties(), x, y);
         status = StatusPlayer.START;
         this.sleep = 0;
+        this.treasure = 0;
     }
 
     private Player(PlayerProperties properties, int x, int y){
@@ -52,6 +54,14 @@ public class Player extends Attributes implements Action {
 
     public int getSleep() {
         return sleep;
+    }
+
+    public int getTreasure() {
+        return treasure;
+    }
+
+    public void setTreasure(int treasure) {
+        this.treasure = treasure;
     }
 
     public void updateSleep(){

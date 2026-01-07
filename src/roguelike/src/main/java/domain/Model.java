@@ -116,20 +116,35 @@ public class Model implements Check {
     private boolean checkItems(int x, int y){
         if(items.getItems() == null || items.getItems().isEmpty()) return false;
 
+        boolean flag = false;
+
         char cellChar = map.getMapChar(x, y);
-        if(checkingSymbols(cellChar)) {
-            int index = equalsMapItems(x, y, items);
-            if (index != -1) {
+        int index = equalsMapItems(x, y, items);
+        if(index != -1) {
+            if (checkingSymbols(cellChar)) {
                 Items item = items.getItems().get(index);
                 backpack.add(item, item.getSymbol());
-                map.putZero(x, y);
-                items.getItems().remove(index);
-                map.putZero(player.getCoord().getX(), player.getCoord().getY());
-                player.setCoord(x, y);
-                return true;
+//                map.putZero(x, y);
+//                items.getItems().remove(index);
+//                map.putZero(player.getCoord().getX(), player.getCoord().getY());
+//                player.setCoord(x, y);
+                flag = true;
+            }
+
+            if (cellChar == 't') {
+                player.setTreasure(items.getItems().get(index).getIncrease());
+                flag = true;
             }
         }
-        return false;
+
+        if(flag){
+            map.putZero(x, y);
+            items.getItems().remove(index);
+            map.putZero(player.getCoord().getX(), player.getCoord().getY());
+            player.setCoord(x, y);
+        }
+
+        return flag;
     }
 
     private int equalsMapItems(int x, int y, GameItems items){

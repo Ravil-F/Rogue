@@ -143,6 +143,7 @@ public class View {
         textGraphics.putString( 2, controller.getModel().getMap().getHeight() + (count + 1),"Health: " + controller.getModel().getPlayer().getHealth());
         textGraphics.putString( 20, controller.getModel().getMap().getHeight() + count,"Agility: " + controller.getModel().getPlayer().getAgility());
         textGraphics.putString( 20, controller.getModel().getMap().getHeight() + (count + 1),"Strength: " + controller.getModel().getPlayer().getStrength());
+        textGraphics.putString( 2, controller.getModel().getMap().getHeight() + (count + 2),"Treasure: " + controller.getModel().getPlayer().getTreasure());
     }
 
     private void viewGameOver(){
