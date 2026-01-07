@@ -89,7 +89,6 @@ public class Model implements Check {
             if(isWithInBounds(tmpX, tmpY)) {
                 if (checkEnemy(tmpX, tmpY)) {
                     int index = enemys.getIndex(tmpX, tmpY);
-                    System.out.println("index = " + index);
                     player.attack(enemys.getEnemy().get(index));
                     if(enemys.getEnemy().get(index).getHealth() <= 0) {
                         int enemyX = enemys.getEnemy().get(index).getCoord().getX();
@@ -101,13 +100,13 @@ public class Model implements Check {
                         if (singleItem != null) {
                             items.getItems().add(singleItem);
                             map.setMap(enemyX, enemyY, singleItem.getSymbol());
-
                         }
                     }
                 } else if (!checkItems(tmpX, tmpY)) {
                     map.putZero(oldX, oldY);
                     map.putZero(tmpX, tmpY);
                     player.setCoord(tmpX, tmpY);
+                    map.setMap(tmpX, tmpY, player.getSymbol());
                 }
             }
         }
@@ -124,8 +123,8 @@ public class Model implements Check {
                 Items item = items.getItems().get(index);
                 backpack.add(item, item.getSymbol());
                 map.putZero(x, y);
-                items.getItems().remove(index);
-//                map.putZero(player.getCoord().getX(), player.getCoord().getY());
+                Items remove = items.getItems().remove(index);
+                map.putZero(player.getCoord().getX(), player.getCoord().getY());
                 player.setCoord(x, y);
                 return true;
             }
