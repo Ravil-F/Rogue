@@ -15,52 +15,46 @@ public class Controller {
 
     public Controller(Model model){
         this.model = model;
-
     }
 
-    public void userInput(KeyStroke key, boolean flag){
+    public void userInput(KeyStroke key, boolean flag) {
         if (flag) {
             if (key != null) {
                 if (key.getKeyType() == KeyType.Character) {
-                    if (Character.toLowerCase(key.getCharacter()) == 'w'  ||
-                            Character.toLowerCase(key.getCharacter()) == 's'  ||
-                            Character.toLowerCase(key.getCharacter()) == 'a'  ||
-                            Character.toLowerCase(key.getCharacter()) == 'd' )
-
-                        switch (Character.toLowerCase(key.getCharacter())) {
-                            case 'w':
-                                model.movePlayer(StatusE.UP);
-                                break;
-                            case 's':
-                                model.movePlayer(StatusE.DOWN);
-                                break;
-                            case 'a':
-                                model.movePlayer(StatusE.LEFT);
-                                break;
-                            case 'd':
-                                model.movePlayer(StatusE.RIGHT);
-                                break;
-                            case 'h':
-                                model.openBackpack('w');
-                                break;
-                            case 'j':
-                                model.openBackpack('f');
-                                break;
-                            case 'k':
-                                model.openBackpack('e');
-                                break;
-                            case 'e':
-                                model.openBackpack('s');
-                                break;
-                            default:
-                                break;
-                        }
+                    switch (Character.toLowerCase(key.getCharacter())) {
+                        case 'w':
+                            model.movePlayer(StatusE.UP);
+                            break;
+                        case 's':
+                            model.movePlayer(StatusE.DOWN);
+                            break;
+                        case 'a':
+                            model.movePlayer(StatusE.LEFT);
+                            break;
+                        case 'd':
+                            model.movePlayer(StatusE.RIGHT);
+                            break;
+                        case 'h':
+                            model.openBackpack('w');
+                            break;
+                        case 'j':
+                            model.openBackpack('f');
+                            break;
+                        case 'k':
+                            model.openBackpack('e');
+                            break;
+                        case 'e':
+                            model.openBackpack('s');
+                            break;
+                        default:
+                            break;
                     }
                 } else if (key.getKeyType() == KeyType.Escape) {
                     getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
                 }
             }
-        model.gameSession();
+            model.gameSession();
+        }
     }
 
     public void userInputBackpack(KeyStroke key, final char symbol ){
