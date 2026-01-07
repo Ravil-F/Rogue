@@ -96,7 +96,7 @@ public class Model implements Check {
                         map.putZero(enemyX, enemyY);
                         enemys.getEnemy().remove(index);
 
-                        Items singleItem = items.generateRandom(enemyX, enemyY);
+                        Items singleItem = items.generateTreasure(enemyX, enemyY);
                         if (singleItem != null) {
                             items.getItems().add(singleItem);
                             map.setMap(enemyX, enemyY, singleItem.getSymbol());
