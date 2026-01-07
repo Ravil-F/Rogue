@@ -20,15 +20,14 @@ public class GameItems implements Check, GenerateRandom {
         items = new LinkedList<Items>();
         random = new Random();
         common = new CommonProperties();
-//        generateRandomItems();
     }
 
     @Override
     public void generateRandom(int level) {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
-
-        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
+        int i = items.size();
+        for (; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countItems);
             switch (countRandom){
                 case 0:
@@ -71,7 +70,7 @@ public class GameItems implements Check, GenerateRandom {
 
     @Override
     public boolean isWithInBounds(int x) {
-        return x > 0 && x < common.getWidthHeight();
+        return x >= 0 && x < common.getWidthHeight();
     }
 
     @Override

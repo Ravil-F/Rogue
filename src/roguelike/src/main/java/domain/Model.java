@@ -89,9 +89,17 @@ public class Model implements Check {
             if(isWithInBounds(tmpX, tmpY)) {
                 if (checkEnemy(tmpX, tmpY)) {
                     int index = enemys.getIndex(tmpX, tmpY);
+                    System.out.println("index = " + index);
                     player.attack(enemys.getEnemy().get(index));
                     if(enemys.getEnemy().get(index).getHealth() <= 0){
+                        map.putZero(enemys.getEnemy().get(index).getCoord().getX(), enemys.getEnemy().get(index).getCoord().getY());
                         enemys.getEnemy().remove(index);
+//                        int i = items.getItems().size();
+//                        items.generateRandom(20);
+//                        for(; i < items.getItems().size(); ++i) {
+//                            items.getItems().get(i).setCoord(tmpX + 1, tmpY +1);
+//                            map.setMap(items.getItems().get(i).getCoord().getX(), items.getItems().get(i).getCoord().getY(), items.getItems().get(i).getSymbol());
+//                        }
                     }
                 } else if (!checkItems(tmpX, tmpY)) {
                     map.putZero(oldX, oldY);
@@ -114,7 +122,7 @@ public class Model implements Check {
                 backpack.add(item, item.getSymbol());
                 map.putZero(x, y);
                 items.getItems().remove(index);
-                map.putZero(player.getCoord().getX(), player.getCoord().getY());
+//                map.putZero(player.getCoord().getX(), player.getCoord().getY());
                 player.setCoord(x, y);
                 return true;
             }
@@ -194,7 +202,7 @@ public class Model implements Check {
     //все что связано с врагами
      private boolean checkEnemy(int x, int y){
         char c = getMap().getMapChar(x, y);
-     return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
+         return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
      }
 
     private void enemyMovement(){
@@ -227,7 +235,7 @@ public class Model implements Check {
                 int newX = newXY[0];
                 int newY = newXY[1];
 
-                if (isWithInBounds(newX, newY)) {
+                if (isWithInBounds(newX, newY) && !isCellBlocked(newX,newY) && !checkEnemy(newX, newY)) {
                     map.putZero(currentX, currentY);
                     map.setMap(newX, newY, enemy.getSymbol());
                     enemy.setCoord(newX, newY);

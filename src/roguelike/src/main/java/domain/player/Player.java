@@ -89,6 +89,4 @@ public class Player extends Attributes implements Action {
             entity.setHealth(entity.getHealth() - this.getStrength());
         }
     }
-
-
 }

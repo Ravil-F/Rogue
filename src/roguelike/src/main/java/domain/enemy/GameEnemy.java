@@ -79,7 +79,7 @@ public class GameEnemy implements Check, GenerateRandom {
 
     @Override
     public boolean isWithInBounds(int x) {
-        return x > 0 && x < common.getWidthHeight();
+        return x >= 0 && x < common.getWidthHeight();
     }
 
     @Override
