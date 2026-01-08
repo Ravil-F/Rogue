@@ -1,21 +1,18 @@
 package domain.enums;
 
-
 public enum ElixirE {
-    HEALTH_E('e', "health elixir", 20, ColorE.BLUE),
-    AGILITY_E('e', "agility elixir",  30, ColorE.BLUE),
-    STRENGTH_E('e', "strength elixir", 10, ColorE.BLUE);
+    HEALTH_E('e', "health elixir", 20),
+    AGILITY_E('e', "agility elixir",  30),
+    STRENGTH_E('e', "strength elixir", 10);
 
     private final char symbol;
     private final String name;
     private final int increase;
-    private final ColorE color;
 
-    ElixirE(char symbol, String name, int increase, ColorE color) {
+    ElixirE(char symbol, String name, int increase) {
         this.symbol = symbol;
         this.name = name;
         this.increase = increase;
-        this.color = color;
     }
 
     public char getSymbol() {
@@ -30,7 +27,4 @@ public enum ElixirE {
         return increase;
     }
 
-    public ColorE getColor() {
-        return color;
-    }
 }
