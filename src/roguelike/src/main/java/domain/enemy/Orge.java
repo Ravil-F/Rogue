@@ -50,7 +50,6 @@ public class Orge extends Attributes implements Action, Check {
         if (!isAttackRest())
             return new int[]{x,y};
 
-
         // Огр - на 2 клетки, если не может, то на одну
         Random random = new Random();
         int newX = x;

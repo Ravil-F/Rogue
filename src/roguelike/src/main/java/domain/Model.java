@@ -237,6 +237,11 @@ public class Model implements Check {
     private void enemyMovement(){
         for(int i = 0; i < enemys.getEnemy().size() && !player.getStatus().equals(StatusPlayer.GAMEOVER); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
+            if(enemy instanceof Orge){
+                Orge orge = (Orge) enemy;
+                orge.updateAtackRest();
+            }
+
             if(enemy instanceof Action moveEnemy) {
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
@@ -248,10 +253,7 @@ public class Model implements Check {
                     continue;
                 }
 
-                if(enemy instanceof Orge){
-                    Orge orge = (Orge) enemy;
-                    orge.updateAtackRest();
-                }
+
 
                 int[] newXY;
                 if(canSeePlayer(enemy ,currentX, currentY)){
