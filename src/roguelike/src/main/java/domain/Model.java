@@ -131,17 +131,12 @@ public class Model implements Check {
         if(index != -1) {
             Items item = items.getItems().get(index);
             if (checkingSymbols(cellChar)) {
-
                 backpack.add(item, item.getSymbol());
-//                map.putZero(x, y);
-//                items.getItems().remove(index);
-//                map.putZero(player.getCoord().getX(), player.getCoord().getY());
-//                player.setCoord(x, y);
                 flag = true;
             }
 
             if (cellChar == 't') {
-                player.setTreasure(item.getIncrease());
+                player.increaseTreasure(item.getIncrease());
                 flag = true;
             }
         }
@@ -169,6 +164,7 @@ public class Model implements Check {
         player.setStatus(StatusPlayer.PAUSE);
         getBackpack().getScreenOutput().clear();
         getBackpack().getScreenOutput().addAll(getBackpack().getPackItems(symbol));
+        player.setStatus(StatusPlayer.ACTION);
     }
 
     //get - set metod

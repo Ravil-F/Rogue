@@ -14,7 +14,7 @@ public class GameItems implements Check, GenerateRandom {
     CommonProperties common;
     private List<Items> items;
     private Random random;
-    private final int countItems = 5;
+    private final int countItems = 1;
 
     public GameItems(){
         items = new LinkedList<Items>();
@@ -30,23 +30,23 @@ public class GameItems implements Check, GenerateRandom {
         for (; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countItems);
             switch (countRandom){
+//                case 0:
+//                    ElixirE randomElixir = ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
+//                    items.add(new Elixir(randomElixir, 60, randomXY(tmpXY), randomXY(tmpXY)));
+//                    break;
+//                case 1:
+//                    FoodE randomFood = FoodE.values()[random.nextInt(0, FoodE.values().length)];
+//                    items.add(new Food(randomFood, randomXY(tmpXY), randomXY(tmpXY)));
+//                    break;
+//                case 2:
+//                    ScrollE randomScroll = ScrollE.values()[random.nextInt(0, ScrollE.values().length)];
+//                    items.add(new Scroll(randomScroll, randomXY(tmpXY), randomXY(tmpXY)));
+//                    break;
+//                case 3:
+//                    WeaponE randomWeapon = WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
+//                    items.add(new Weapon(randomWeapon, randomXY(tmpXY), randomXY(tmpXY)));
+//                    break;
                 case 0:
-                    ElixirE randomElixir = ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
-                    items.add(new Elixir(randomElixir, 60, randomXY(tmpXY), randomXY(tmpXY)));
-                    break;
-                case 1:
-                    FoodE randomFood = FoodE.values()[random.nextInt(0, FoodE.values().length)];
-                    items.add(new Food(randomFood, randomXY(tmpXY), randomXY(tmpXY)));
-                    break;
-                case 2:
-                    ScrollE randomScroll = ScrollE.values()[random.nextInt(0, ScrollE.values().length)];
-                    items.add(new Scroll(randomScroll, randomXY(tmpXY), randomXY(tmpXY)));
-                    break;
-                case 3:
-                    WeaponE randomWeapon = WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
-                    items.add(new Weapon(randomWeapon, randomXY(tmpXY), randomXY(tmpXY)));
-                    break;
-                case 4:
                     TreasureE randomTreasure = TreasureE.values()[random.nextInt(0, TreasureE.values().length)];
                     items.add(new Treasure(randomTreasure, randomXY(tmpXY), randomXY(tmpXY)));
             }

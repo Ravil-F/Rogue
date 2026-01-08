@@ -40,6 +40,10 @@ public class Player extends Attributes implements Action {
         setHealth(getHealth() + xp);
     }
 
+    public void increaseTreasure(int xp){
+        setTreasure(getTreasure() + xp);
+    }
+
     public void increaseAgility(int xp){
         setAgility(getAgility() + xp);
     }
