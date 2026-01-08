@@ -10,6 +10,7 @@ import java.util.Random;
 public class Map implements Check {
     private CommonProperties common;
     private int[][] map;
+    private int[][] floor;
 
     private static final int ROOMS_IN_WIDTH = 3;
     private static final int ROOMS_IN_HEIGHT = 3;
@@ -33,9 +34,11 @@ public class Map implements Check {
     public Map() {
         common = new CommonProperties();
         this.map = new int[MAP_WIDTH][MAP_HEIGHT];
+        this.floor = new int[MAP_WIDTH][MAP_HEIGHT];
         for (int x = 0; x < MAP_WIDTH; x++) {
             for (int y = 0; y < MAP_HEIGHT; y++) {
                 map[x][y] = ' ';
+                floor[x][y] = ' ';
             }
         }
         generateRoomsAndPassages();
@@ -148,14 +151,19 @@ public class Map implements Check {
             for (int x = room.getLeftX(); x <= room.getRightX(); x++) {
                 map[x][room.getTopY()] = '#';
                 map[x][room.getBottomY()] = '#';
+                floor[x][room.getTopY()] = '#';
+                floor[x][room.getBottomY()] = '#';
             }
             for (int y = room.getTopY(); y <= room.getBottomY(); y++) {
                 map[room.getLeftX()][y] = '#';
                 map[room.getRightX()][y] = '#';
+                floor[room.getLeftX()][y] = '#';
+                floor[room.getRightX()][y] = '#';
             }
             for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
                 for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
                     map[x][y] = '.';
+                    floor[x][y] = '.';
                 }
             }
         }
@@ -168,13 +176,15 @@ public class Map implements Check {
                     int y = segment.getStartY();
                     for (int x = Math.min(segment.getStartX(), segment.getEndX());
                          x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
-                        map[x][y] = '#';
+                        map[x][y] = '.';
+                        floor[x][y] = '.';
                     }
                 } else {
                     int x = segment.getStartX();
                     for (int y = Math.min(segment.getStartY(), segment.getEndY());
                          y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
-                        map[x][y] = '#';
+                        map[x][y] = '.';
+                        floor[x][y] = '.';
                     }
                 }
             }
@@ -188,8 +198,37 @@ public class Map implements Check {
 
     public void putZero(int x, int y) {
         if (isWithInBounds(x, y)) {
-            map[x][y] = ' ';
+            map[x][y] = floor[x][y];
         }
+    }
+
+    public int[] getRandomPosition() {
+        Rooms randomRoom = rooms.get(rnd.nextInt(rooms.size()));
+        int x = getRandomInRange(randomRoom.getLeftX() + 1, randomRoom.getRightX() - 1);
+        int y = getRandomInRange(randomRoom.getTopY() + 1, randomRoom.getBottomY() - 1);
+        return new int[]{x, y};
+    }
+    
+    public int[] getFreePosition() {
+        int maxAttempts = 100;
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            int[] pos = getRandomPosition();
+            int x = pos[0];
+            int y = pos[1];
+            char cell = getMapChar(x, y);
+            if (cell == '.') {
+                return pos;
+            }
+        }
+        return getRandomPosition();
+    }
+
+
+    public char getFloorChar(int x, int y) {
+        if (isWithInBounds(x, y)) {
+            return (char) floor[x][y];
+        }
+        return ' ';
     }
 
     public int getMap(int x, int y) {
@@ -215,12 +254,10 @@ public class Map implements Check {
         return MAP_HEIGHT;
     }
 
-    @Override
     public boolean isWithInBounds(int x) {
         return false;
     }
 
-    @Override
     public boolean isWithInBounds(int x, int y) {
         return x >= 0 && y >= 0 && x < MAP_WIDTH && y < MAP_HEIGHT;
     }

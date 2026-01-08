@@ -27,6 +27,8 @@ public class Model implements Check {
         player = new Player(5, 5);
         backpack = new Backpack();
         map = new Map();
+        int[] startPos = map.getRandomPosition();
+        player = new Player(startPos[0], startPos[1]);
         items = new GameItems();
         enemys = new GameEnemy();
         level = 1;
@@ -38,12 +40,18 @@ public class Model implements Check {
 
         items.generateRandom(level);
         for(int i = 0; i < items.getItems().size(); ++i) {
-            map.setMap(items.getItems().get(i).getCoord().getX(), items.getItems().get(i).getCoord().getY(), items.getItems().get(i).getSymbol());
+            Items item = items.getItems().get(i);
+            int[] roomPos = map.getFreePosition();
+            item.setCoord(roomPos[0], roomPos[1]);
+            map.setMap(item.getCoord().getX(), item.getCoord().getY(), item.getSymbol());
         }
 
         enemys.generateRandom(level);
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
-            map.setMap(enemys.getEnemy().get(i).getCoord().getX(), enemys.getEnemy().get(i).getCoord().getY(), enemys.getEnemy().get(i).getSymbol());
+            Attributes enemy = enemys.getEnemy().get(i);
+            int[] roomPos = map.getFreePosition();
+            enemy.setCoord(roomPos[0], roomPos[1]);
+            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
         }
     }
 
@@ -219,8 +227,11 @@ public class Model implements Check {
 
     //все что связано с врагами
      private boolean checkEnemy(int x, int y){
+         if (!isWithInBounds(x, y)) {
+             return false;
+         }
         char c = getMap().getMapChar(x, y);
-         return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
+        return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
      }
 
     private void enemyMovement(){
@@ -270,6 +281,10 @@ public class Model implements Check {
         for (int[] dir : directions) {
             int checkX = enemyX + dir[0];
             int checkY = enemyY + dir[1];
+
+            if (!isWithInBounds(checkX, checkY)) {
+                continue;
+            }
 
             if (map.getMap(checkX, checkY) == player.getSymbol()) {
                 return true;
