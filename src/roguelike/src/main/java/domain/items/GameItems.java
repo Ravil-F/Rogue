@@ -54,7 +54,7 @@ public class GameItems implements Check, GenerateRandom {
     }
 
     public Items generateTreasure(int x, int y) {
-        TreasureE randomTreasure = TreasureE.values()[random.nextInt(0, ElixirE.values().length)];
+        TreasureE randomTreasure = TreasureE.values()[random.nextInt(0, TreasureE.values().length)];
         return new Treasure(randomTreasure, x, y);
     }
 

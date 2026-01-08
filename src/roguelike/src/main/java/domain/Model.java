@@ -94,28 +94,32 @@ public class Model implements Check {
                     throw new IllegalArgumentException("Invalid status");
             }
 
-            if(isWithInBounds(tmpX, tmpY)) {
-                if (checkEnemy(tmpX, tmpY)) {
-                    int index = enemys.getIndex(tmpX, tmpY);
-                    player.attack(enemys.getEnemy().get(index));
-                    if(enemys.getEnemy().get(index).getHealth() <= 0) {
-                        int enemyX = enemys.getEnemy().get(index).getCoord().getX();
-                        int enemyY = enemys.getEnemy().get(index).getCoord().getY();
-                        map.putZero(enemyX, enemyY);
-                        enemys.getEnemy().remove(index);
+            playerAction(tmpX, tmpY, oldX, oldY);
+        }
+    }
 
-                        Items singleItem = items.generateTreasure(enemyX, enemyY);
-                        if (singleItem != null) {
-                            items.getItems().add(singleItem);
-                            map.setMap(enemyX, enemyY, singleItem.getSymbol());
-                        }
+    private void playerAction(int tmpX, int tmpY, int oldX, int oldY){
+        if(isWithInBounds(tmpX, tmpY)) {
+            if (checkEnemy(tmpX, tmpY)) {
+                int index = enemys.getIndex(tmpX, tmpY);
+                player.attack(enemys.getEnemy().get(index));
+                if(enemys.getEnemy().get(index).getHealth() <= 0) {
+                    int enemyX = enemys.getEnemy().get(index).getCoord().getX();
+                    int enemyY = enemys.getEnemy().get(index).getCoord().getY();
+                    map.putZero(enemyX, enemyY);
+                    enemys.getEnemy().remove(index);
+
+                    Items singleItem = items.generateTreasure(enemyX, enemyY);
+                    if (singleItem != null) {
+                        items.getItems().add(singleItem);
+                        map.setMap(enemyX, enemyY, singleItem.getSymbol());
                     }
-                } else if (!checkItems(tmpX, tmpY)) {
-                    map.putZero(oldX, oldY);
-                    map.putZero(tmpX, tmpY);
-                    player.setCoord(tmpX, tmpY);
-                    map.setMap(tmpX, tmpY, player.getSymbol());
                 }
+            } else if (!checkItems(tmpX, tmpY)) {
+                map.putZero(oldX, oldY);
+                map.putZero(tmpX, tmpY);
+                player.setCoord(tmpX, tmpY);
+                map.setMap(tmpX, tmpY, player.getSymbol());
             }
         }
     }
