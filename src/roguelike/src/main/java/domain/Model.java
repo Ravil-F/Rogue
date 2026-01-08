@@ -121,8 +121,9 @@ public class Model implements Check {
         char cellChar = map.getMapChar(x, y);
         int index = equalsMapItems(x, y, items);
         if(index != -1) {
+            Items item = items.getItems().get(index);
             if (checkingSymbols(cellChar)) {
-                Items item = items.getItems().get(index);
+
                 backpack.add(item, item.getSymbol());
 //                map.putZero(x, y);
 //                items.getItems().remove(index);
@@ -132,7 +133,7 @@ public class Model implements Check {
             }
 
             if (cellChar == 't') {
-                player.setTreasure(items.getItems().get(index).getIncrease());
+                player.setTreasure(item.getIncrease());
                 flag = true;
             }
         }
