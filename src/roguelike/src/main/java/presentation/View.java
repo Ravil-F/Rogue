@@ -38,8 +38,6 @@ public class View {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
-
     }
 
     // VIEW WINDOWS

@@ -1,7 +1,5 @@
 package domain.abstact;
 
-//import domain.enums.ColorE;
-
 import com.googlecode.lanterna.TextColor;
 
 public abstract class Attributes extends Entity{

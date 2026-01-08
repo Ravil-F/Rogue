@@ -1,6 +1,5 @@
 package domain;
 
-import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.backpack.Backpack;
@@ -257,12 +256,10 @@ public class Model implements Check {
 
                 if (isPlayerAdjacent(currentX, currentY)) {
                     ((Action) enemy).attack(player);
-//                    if(player.getHealth() <= 0)
-//                        player.setStatus(StatusPlayer.GAMEOVER);
+                    if(player.getHealth() <= 0)
+                        player.setStatus(StatusPlayer.GAMEOVER);
                     continue;
                 }
-
-
 
                 int[] newXY;
                 if(canSeePlayer(enemy ,currentX, currentY)){

@@ -1,6 +1,5 @@
 package domain.player;
 
-import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
 import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
@@ -55,10 +54,6 @@ public class Player extends Attributes implements Action {
 
     public void setStatus(StatusPlayer status) {
         this.status = status;
-    }
-
-    public int getSleep() {
-        return sleep;
     }
 
     public int getTreasure() {
