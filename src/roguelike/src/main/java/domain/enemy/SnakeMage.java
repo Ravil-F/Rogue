@@ -22,7 +22,7 @@ public class SnakeMage extends Attributes implements Check, Action {
 
     private SnakeMage(EntityProperties properties, int x, int y){
         super(properties.getName(), properties.getSymbol(),
-                properties.getColor(), properties.getMaxHealth(),
+                properties.getTextColor(), properties.getMaxHealth(),
                 properties.getHealth(), properties.getAgility(),
                 properties.getStrength(), properties.getHostility(), x, y);
         this.properties = properties;

@@ -1,5 +1,6 @@
 package presentation;
 
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -7,6 +8,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.TerminalSize;
+import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.enums.StatusPlayer;
 import domain.location.Rooms;
@@ -73,25 +75,7 @@ public class View {
         return res.toString().trim();
     }
 
-    private void viewMap(){
-//        for (Rooms room : controller.getModel().getMap().getRooms()) {
-//            drawRectangle(textGraphics, room.getTopY(), room.getBottomY(),
-//                    room.getLeftX(), room.getRightX());
-//            drawRoomContent(textGraphics, room);
-//        }
-//
-//        for (Passage passage : controller.getModel().getMap().getPassages()) {
-//            drawPassageSegments(textGraphics, passage);
-//        }
-//
-//        for(int x = 0; x < controller.getModel().getMap().getWidth(); ++x){
-//            for (int y = 0; y < controller.getModel().getMap().getHeight(); ++y){
-//                int cellChar = controller.getModel().getMap().getMap(x, y);
-//                if (cellChar != 0)
-//                    textGraphics.putString(x, y, String.valueOf((char)cellChar));
-//            }
-//        }
-
+    private void viewMap() {
         for (Rooms room : controller.getModel().getMap().getRooms()) {
             drawRectangle(textGraphics, room.getTopY(), room.getBottomY(),
                     room.getLeftX(), room.getRightX());
@@ -102,14 +86,39 @@ public class View {
             drawPassageSegments(textGraphics, passage);
         }
 
-        for(int x = 0; x < controller.getModel().getMap().getWidth(); ++x){
-            for (int y = 0; y < controller.getModel().getMap().getHeight(); ++y){
+        for (int x = 0; x < controller.getModel().getMap().getWidth(); ++x) {
+            for (int y = 0; y < controller.getModel().getMap().getHeight(); ++y) {
                 char cellChar = controller.getModel().getMap().getMapChar(x, y);
                 if (cellChar != 0 && cellChar != ' ' && cellChar != '#' && cellChar != '.') {
+                    TextColor color = getCellColor(x, y, cellChar);
+                    textGraphics.setForegroundColor(color);
                     textGraphics.putString(x, y, String.valueOf(cellChar));
+                    textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
                 }
             }
         }
+    }
+
+    private TextColor getCellColor(int x, int y, char symbol) {
+        if (controller.getModel().getPlayer().getCoord().getX() == x &&
+                controller.getModel().getPlayer().getCoord().getY() == y) {
+            return controller.getModel().getPlayer().getColor();
+        }
+
+        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
+            if (enemy.getCoord().getX() == x && enemy.getCoord().getY() == y) {
+                return enemy.getColor();
+            }
+        }
+
+        for (Items item : controller.getModel().getItems().getItems()) {
+            if (item.getCoord().getX() == x && item.getCoord().getY() == y) {
+                return item.getColor();
+            }
+        }
+
+        // Цвет по умолчанию для символа
+        return TextColor.ANSI.WHITE;
     }
 
     private void drawRoomContent(TextGraphics tg, Rooms room) {

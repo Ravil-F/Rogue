@@ -1,5 +1,6 @@
 package domain.player;
 
+import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
 import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
@@ -22,7 +23,7 @@ public class Player extends Attributes implements Action {
 
     private Player(PlayerProperties properties, int x, int y){
         super(properties.getName(), properties.getSymbol(),
-                properties.getColor(), properties.getMaxHealth(),
+                properties.getTextColor(), properties.getMaxHealth(),
                 properties.getHealth(), properties.getAgility(),
                 properties.getStrength(), 0, x, y);
         this.properties = properties;

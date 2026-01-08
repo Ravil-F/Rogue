@@ -2,6 +2,8 @@ package domain.abstact;
 
 //import domain.enums.ColorE;
 
+import com.googlecode.lanterna.TextColor;
+
 public abstract class Attributes extends Entity{
     private int maxHealth;
     private int health;
@@ -11,7 +13,7 @@ public abstract class Attributes extends Entity{
 
 //    constructor
     public Attributes(String name, char symbol,
-                      String color, int maxHealth,
+                      TextColor color, int maxHealth,
                       int health, int agility,
                       int strength, int hostility, int x, int y){
 
@@ -59,4 +61,5 @@ public abstract class Attributes extends Entity{
     public int getHostility() {
         return hostility;
     }
+
 }

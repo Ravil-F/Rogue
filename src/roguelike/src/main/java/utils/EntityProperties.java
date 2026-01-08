@@ -1,5 +1,7 @@
 package utils;
 
+import com.googlecode.lanterna.TextColor;
+
 public class EntityProperties extends MainProperties {
     private String entityId;
 
@@ -40,5 +42,8 @@ public class EntityProperties extends MainProperties {
         return getIntProperty(this.entityId + ".hostility", 2);
     }
 
+    public TextColor getTextColor() {
+        return parseColor(getColor());
+    }
 
 }

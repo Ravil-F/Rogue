@@ -1,5 +1,7 @@
 package utils;
 
+import com.googlecode.lanterna.TextColor;
+
 public class PlayerProperties extends MainProperties {
     private String entityId;
 
@@ -34,5 +36,9 @@ public class PlayerProperties extends MainProperties {
 
     public int getStrength(){
         return getIntProperty(this.entityId + ".strength", 40);
+    }
+
+    public TextColor getTextColor() {
+        return parseColor(getColor());
     }
 }

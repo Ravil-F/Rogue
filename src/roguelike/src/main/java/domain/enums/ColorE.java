@@ -6,6 +6,7 @@ public enum ColorE {
     GREEN (TextColor.ANSI.GREEN),
     RED(TextColor.ANSI.RED),
     WHITE(TextColor.ANSI.WHITE),
+    BLUE(TextColor.ANSI.BLUE),
     YELLOW(TextColor.ANSI.YELLOW);
 
     private final TextColor.ANSI color;

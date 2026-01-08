@@ -1,5 +1,7 @@
 package utils;
 
+import com.googlecode.lanterna.TextColor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -42,9 +44,21 @@ public abstract class MainProperties {
         }
     }
 
-        public char getCharProperty(String key, char defaultParam){
-            String value = properties.getProperty(key, String.valueOf(defaultParam));
-            return  (value != null && !value.isEmpty()) ? value.charAt(0) : defaultParam;
-        }
+    public char getCharProperty(String key, char defaultParam){
+        String value = properties.getProperty(key, String.valueOf(defaultParam));
+        return  (value != null && !value.isEmpty()) ? value.charAt(0) : defaultParam;
+    }
 
+    public TextColor parseColor(String color){
+        if(color == null || color.isEmpty())
+            return TextColor.ANSI.WHITE;
+        System.out.println("color enemy start = " + color);
+        switch (color.trim().toUpperCase()){
+            case "GREEN": return TextColor.ANSI.GREEN;
+            case "RED": return TextColor.ANSI.RED;
+            case "WHITE": return TextColor.ANSI.WHITE;
+            case "YELLOW": return TextColor.ANSI.YELLOW;
+        }
+        return TextColor.ANSI.WHITE;
+    }
 }

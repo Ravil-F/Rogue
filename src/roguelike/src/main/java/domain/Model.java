@@ -1,5 +1,6 @@
 package domain;
 
+import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.backpack.Backpack;
@@ -188,6 +189,14 @@ public class Model implements Check {
         return backpack;
     }
 
+    public GameItems getItems() {
+        return items;
+    }
+
+    public GameEnemy getEnemys() {
+        return enemys;
+    }
+
     // действия предметов из рюкзака
     public void actionOfItems(final char symbol, final int index){
         List<Items> item = getBackpack().getPackItems(symbol);
@@ -360,4 +369,5 @@ public class Model implements Check {
         return symbol == 's' || symbol == 'w' ||
                 symbol == 'f' || symbol == 'e';
     }
+
 }
