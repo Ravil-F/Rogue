@@ -8,7 +8,7 @@ public class Scroll extends Items {
     private ScrollE scroll;
 
     public Scroll(ScrollE scroll, int x, int y){
-        super(scroll.getSymbol(), scroll.getName(), scroll.getIncrease(), x, y);
+        super(scroll.getSymbol(), scroll.getName(), scroll.getIncrease(), scroll.getColor(), x, y);
         this.scroll = scroll;
     }
 

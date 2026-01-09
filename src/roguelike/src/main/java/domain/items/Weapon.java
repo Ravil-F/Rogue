@@ -8,7 +8,7 @@ public class Weapon extends Items {
     private WeaponE weapon;
 
     public Weapon(WeaponE weapon, int x, int y){
-        super(weapon.getSymbol(), weapon.getName(), weapon.getIncrease(), x, y);
+        super(weapon.getSymbol(), weapon.getName(), weapon.getIncrease(), weapon.getColor(), x, y);
         this.weapon = weapon;
     }
 

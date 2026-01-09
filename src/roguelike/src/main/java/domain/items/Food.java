@@ -8,7 +8,7 @@ public class Food extends Items {
     private FoodE food;
 
     public Food(FoodE food, int x, int y){
-        super(food.getSymbol(), food.getName(), food.getIncrease(), x, y);
+        super(food.getSymbol(), food.getName(), food.getIncrease(), food.getColor(), x, y);
         this.food = food;
     }
 
