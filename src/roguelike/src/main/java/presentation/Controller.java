@@ -21,6 +21,7 @@ public class Controller {
         if (flag) {
             if (key != null) {
                 if (key.getKeyType() == KeyType.Character) {
+
                     switch (Character.toLowerCase(key.getCharacter())) {
                         case 'w':
                             model.movePlayer(StatusE.UP);
@@ -53,7 +54,10 @@ public class Controller {
                     getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
                 }
             }
-            model.gameSession();
+            if(key.getCharacter() == 'w' || key.getCharacter() == 's' || key.getCharacter() == 'a' ||
+                    key.getCharacter() == 'd' || key.getCharacter() == 'h' || key.getCharacter() == 'j' ||
+                    key.getCharacter() == 'k' || key.getCharacter() == 'e')
+                model.gameSession();
         }
     }
 

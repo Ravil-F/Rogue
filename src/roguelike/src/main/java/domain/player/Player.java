@@ -78,10 +78,6 @@ public class Player extends Attributes implements Action {
         this.status = StatusPlayer.SLEEP;
     }
 
-    public boolean isSleep(){
-        return this.sleep > 0;
-    }
-
     @Override
     public int[] move(int x, int y, char symbol) {
         return new int[]{x, y};
@@ -97,6 +93,7 @@ public class Player extends Attributes implements Action {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if(isHit){
             entity.setHealth(entity.getHealth() - this.getStrength());
+            entity.setAgility(entity.getAgility() - 5);
         }
     }
 }

@@ -81,6 +81,7 @@ public class SnakeMage extends Attributes implements Check, Action {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if(isHit){
             entity.setHealth(entity.getHealth() - this.getStrength());
+            entity.setAgility(entity.getAgility() - 5);
             if(Math.random() * 100 < probabilityOfSleep){
                 if(entity instanceof Player){
                     Player player = (Player) entity;

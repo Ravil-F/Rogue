@@ -79,6 +79,7 @@ public class Zombi extends Attributes implements Check, Action {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if(isHit){
             entity.setHealth(entity.getHealth() - this.getStrength());
+            entity.setAgility(entity.getAgility() - 5);
         }
     }
 }
