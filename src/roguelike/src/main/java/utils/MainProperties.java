@@ -52,7 +52,7 @@ public abstract class MainProperties {
     public TextColor parseColor(String color){
         if(color == null || color.isEmpty())
             return TextColor.ANSI.WHITE;
-        System.out.println("color enemy start = " + color);
+
         switch (color.trim().toUpperCase()){
             case "GREEN": return TextColor.ANSI.GREEN;
             case "RED": return TextColor.ANSI.RED;

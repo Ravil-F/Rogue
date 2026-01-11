@@ -10,6 +10,7 @@ import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
 import domain.interfaces.Check;
 import domain.items.GameItems;
+import domain.items.Weapon;
 import domain.location.Map;
 import domain.player.Player;
 
@@ -22,6 +23,8 @@ public class Model implements Check {
     private GameItems items;
     private GameEnemy enemys;
     private int level;
+    private boolean wasTakenItem;
+    private Weapon weaponTaken;
 
     public Model(){
         player = new Player(5, 5);
@@ -32,6 +35,8 @@ public class Model implements Check {
         items = new GameItems();
         enemys = new GameEnemy();
         level = 1;
+        this.wasTakenItem = false;
+        this.weaponTaken = new Weapon(null, 0, 0);
     }
 
     public void gameInitialization(){
@@ -46,13 +51,13 @@ public class Model implements Check {
             map.setMap(item.getCoord().getX(), item.getCoord().getY(), item.getSymbol());
         }
 
-        enemys.generateRandom(level);
-        for(int i = 0; i < enemys.getEnemy().size(); ++i){
-            Attributes enemy = enemys.getEnemy().get(i);
-            int[] roomPos = map.getFreePosition();
-            enemy.setCoord(roomPos[0], roomPos[1]);
-            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
-        }
+//        enemys.generateRandom(level);
+//        for(int i = 0; i < enemys.getEnemy().size(); ++i){
+//            Attributes enemy = enemys.getEnemy().get(i);
+//            int[] roomPos = map.getFreePosition();
+//            enemy.setCoord(roomPos[0], roomPos[1]);
+//            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
+//        }
     }
 
     public void gameSession(){
@@ -202,6 +207,20 @@ public class Model implements Check {
         int value = item.get(index).getIncrease();
         switch (symbol){
             case 'w':
+                if(wasTakenItem){
+                    wasTakenItem = false;
+                    System.out.println("wasTakenItem = " + wasTakenItem);
+                }else {
+                    Items tmpItem = item.get(index);
+                    if(tmpItem instanceof Weapon){
+                        wasTakenItem = true;
+                        System.out.println("item name = " + item.get(index).getName());
+                        weaponTaken = (domain.items.Weapon) tmpItem;
+                        System.out.println("wasTakenItem = " + wasTakenItem);
+                        System.out.println("weaponTaken name = " + weaponTaken.getName());
+                    }
+
+                }
                 getPlayer().increaseStrenght(value);
                 break;
             case 'f':
@@ -215,6 +234,9 @@ public class Model implements Check {
                 actionWithElixirScroll(item.get(index).getName(), value);
                 break;
         }
+
+        getBackpack().getPackItems(symbol).remove(index);
+        getPlayer().setStatus(StatusPlayer.ACTION);
     }
 
     public void actionWithElixirScroll(final String name, final int value){

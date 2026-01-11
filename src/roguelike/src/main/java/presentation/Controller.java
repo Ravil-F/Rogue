@@ -77,8 +77,6 @@ public class Controller {
                         break;
                 }
             }
-            model.getBackpack().getPackItems(symbol).remove(Character.getNumericValue(key.getCharacter()));
-            model.getPlayer().setStatus(StatusPlayer.ACTION);
         }
 
     }
