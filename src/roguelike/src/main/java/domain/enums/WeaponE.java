@@ -33,4 +33,5 @@ public enum WeaponE {
     public int getIncrease() {
         return increase;
     }
+
 }

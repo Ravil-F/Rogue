@@ -207,32 +207,29 @@ public class Model implements Check {
         int value = item.get(index).getIncrease();
         switch (symbol){
             case 'w':
-                if(wasTakenItem){ // здесь у нас должен оружие упасть рядом с игроком и уменьшить силу.
-                    wasTakenItem = false;
-                    System.out.println("wasTakenItem = " + wasTakenItem);
+                int resIncrease = getPlayer().getStrength() - weaponTaken.getIncrease();
+                System.out.println("resIncrease = " + resIncrease);
+                getPlayer().setStrength(resIncrease);
+
+                getPlayer().increaseStrenght(value);
+                weaponTaken = (domain.items.Weapon) item.get(index);
+                wasTakenItem = true;
+                if(weaponTaken.getClass() != null) {
                     int xPlayer = getPlayer().getCoord().getX();
                     int yPlayer = getPlayer().getCoord().getY();
                     int XY[] = isThereAnEmptyCellNearby(xPlayer, yPlayer);
                     weaponTaken.setCoord(XY[0], XY[1]);
                     items.getItems().add(weaponTaken);
                     map.setMap(XY[0], XY[1], weaponTaken.getSymbol());
-                    int resIncrease = getPlayer().getStrength() - weaponTaken.getIncrease();
-                    getPlayer().setStrength(resIncrease);
-
-                }else {
-                    Items tmpItem = item.get(index);
-                    if(tmpItem instanceof Weapon){ //здесь мы положили данные оружия в отдельный объект, потому что он удалится у нас из списка
-                        wasTakenItem = true;
-                        System.out.println("item name = " + item.get(index).getName());
-                        System.out.println("item increase = " + item.get(index).getIncrease());
-                        weaponTaken = (domain.items.Weapon) tmpItem;
-                        System.out.println("wasTakenItem = " + wasTakenItem);
-                        System.out.println("weaponTaken name = " + weaponTaken.getName());
-                        System.out.println("weapinTaken increase = " + weaponTaken.getIncrease());
-                    }
-
                 }
-                getPlayer().increaseStrenght(value);
+//                if(getBackpack().getPackItems('w').size() > 1){
+//                    int xPlayer = getPlayer().getCoord().getX();
+//                    int yPlayer = getPlayer().getCoord().getY();
+//                    int XY[] = isThereAnEmptyCellNearby(xPlayer, yPlayer);
+//                    weaponTaken.setCoord(XY[0], XY[1]);
+//                    items.getItems().add(weaponTaken);
+//                    map.setMap(XY[0], XY[1], weaponTaken.getSymbol());
+//                }
                 break;
             case 'f':
                 if (getPlayer().getHealth() <= 100)
@@ -280,23 +277,20 @@ public class Model implements Check {
             checkX = x + dir[0];
             checkY = y + dir[1];
 
-            if (checkEnemy(checkX, checkY) ||
-                    checkingSymbols(map.getMapChar(checkX, checkY)) ||
-                    map.getMap(checkX, checkY) == player.getSymbol()) {
-                continue;
+            if (!checkEnemy(checkX, checkY) &&
+                    !checkingSymbols(map.getMapChar(checkX, checkY)) &&
+                    map.getMap(checkX, checkY) != player.getSymbol()) {
+                return new int[]{checkX, checkY};
             }
 
         }
-        return new int[]{checkX, checkY};
+        return new int[]{x, y};
     }
 
     //все что связано с врагами
      private boolean checkEnemy(int x, int y){
-         if (!isWithInBounds(x, y)) {
-             return true; //было false
-         }
         char c = getMap().getMapChar(x, y);
-        return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
+        return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S' || !isWithInBounds(x, y);
      }
 
     private void enemyMovement(){
