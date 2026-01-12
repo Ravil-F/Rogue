@@ -14,7 +14,7 @@ public class GameItems implements Check, GenerateRandom {
     CommonProperties common;
     private List<Items> items;
     private Random random;
-    private final int countItems = 5;
+    private final int countItems = 1 /*5*/;
 
     public GameItems(){
         items = new LinkedList<Items>();
@@ -27,7 +27,7 @@ public class GameItems implements Check, GenerateRandom {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
         int i = items.size();
-        for (; i < 1 /*common.getMaxlevel() - tmpDifference*/; i++) {
+        for (; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countItems);
             switch (countRandom){
 //                case 0:

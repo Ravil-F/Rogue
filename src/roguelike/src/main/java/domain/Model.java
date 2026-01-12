@@ -207,17 +207,28 @@ public class Model implements Check {
         int value = item.get(index).getIncrease();
         switch (symbol){
             case 'w':
-                if(wasTakenItem){
+                if(wasTakenItem){ // здесь у нас должен оружие упасть рядом с игроком и уменьшить силу.
                     wasTakenItem = false;
                     System.out.println("wasTakenItem = " + wasTakenItem);
+                    int xPlayer = getPlayer().getCoord().getX();
+                    int yPlayer = getPlayer().getCoord().getY();
+                    int XY[] = isThereAnEmptyCellNearby(xPlayer, yPlayer);
+                    weaponTaken.setCoord(XY[0], XY[1]);
+                    items.getItems().add(weaponTaken);
+                    map.setMap(XY[0], XY[1], weaponTaken.getSymbol());
+                    int resIncrease = getPlayer().getStrength() - weaponTaken.getIncrease();
+                    getPlayer().setStrength(resIncrease);
+
                 }else {
                     Items tmpItem = item.get(index);
-                    if(tmpItem instanceof Weapon){
+                    if(tmpItem instanceof Weapon){ //здесь мы положили данные оружия в отдельный объект, потому что он удалится у нас из списка
                         wasTakenItem = true;
                         System.out.println("item name = " + item.get(index).getName());
+                        System.out.println("item increase = " + item.get(index).getIncrease());
                         weaponTaken = (domain.items.Weapon) tmpItem;
                         System.out.println("wasTakenItem = " + wasTakenItem);
                         System.out.println("weaponTaken name = " + weaponTaken.getName());
+                        System.out.println("weapinTaken increase = " + weaponTaken.getIncrease());
                     }
 
                 }
@@ -255,10 +266,34 @@ public class Model implements Check {
         }
     }
 
+    private int[] isThereAnEmptyCellNearby(int x, int y){
+        int[][] directions = {
+                {-1, -1}, {-1, 0}, {-1, 1},
+                {0, -1},           {0, 1},
+                {1, -1},  {1, 0},  {1, 1}
+        };
+
+        int checkX = 0;
+        int checkY = 0;
+
+        for (int[] dir : directions) {
+            checkX = x + dir[0];
+            checkY = y + dir[1];
+
+            if (checkEnemy(checkX, checkY) ||
+                    checkingSymbols(map.getMapChar(checkX, checkY)) ||
+                    map.getMap(checkX, checkY) == player.getSymbol()) {
+                continue;
+            }
+
+        }
+        return new int[]{checkX, checkY};
+    }
+
     //все что связано с врагами
      private boolean checkEnemy(int x, int y){
          if (!isWithInBounds(x, y)) {
-             return false;
+             return true; //было false
          }
         char c = getMap().getMapChar(x, y);
         return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
