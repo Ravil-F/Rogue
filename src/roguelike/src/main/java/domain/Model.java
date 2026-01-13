@@ -23,7 +23,6 @@ public class Model implements Check {
     private GameItems items;
     private GameEnemy enemys;
     private int level;
-    private boolean wasTakenItem;
     private Weapon weaponTaken;
 
     public Model(){
@@ -35,7 +34,6 @@ public class Model implements Check {
         items = new GameItems();
         enemys = new GameEnemy();
         level = 1;
-        this.wasTakenItem = false;
         this.weaponTaken = new Weapon(null, 0, 0);
     }
 
@@ -208,13 +206,9 @@ public class Model implements Check {
         switch (symbol){
             case 'w':
                 int resIncrease = getPlayer().getStrength() - weaponTaken.getIncrease();
-                System.out.println("resIncrease = " + resIncrease);
                 getPlayer().setStrength(resIncrease);
-
                 getPlayer().increaseStrenght(value);
-                weaponTaken = (domain.items.Weapon) item.get(index);
-                wasTakenItem = true;
-                if(weaponTaken.getClass() != null) {
+                if(getBackpack().getPackItems('w').size() >= 1 &&  weaponTaken.getClass() != null){
                     int xPlayer = getPlayer().getCoord().getX();
                     int yPlayer = getPlayer().getCoord().getY();
                     int XY[] = isThereAnEmptyCellNearby(xPlayer, yPlayer);
@@ -222,14 +216,7 @@ public class Model implements Check {
                     items.getItems().add(weaponTaken);
                     map.setMap(XY[0], XY[1], weaponTaken.getSymbol());
                 }
-//                if(getBackpack().getPackItems('w').size() > 1){
-//                    int xPlayer = getPlayer().getCoord().getX();
-//                    int yPlayer = getPlayer().getCoord().getY();
-//                    int XY[] = isThereAnEmptyCellNearby(xPlayer, yPlayer);
-//                    weaponTaken.setCoord(XY[0], XY[1]);
-//                    items.getItems().add(weaponTaken);
-//                    map.setMap(XY[0], XY[1], weaponTaken.getSymbol());
-//                }
+                weaponTaken = (domain.items.Weapon) item.get(index);
                 break;
             case 'f':
                 if (getPlayer().getHealth() <= 100)
