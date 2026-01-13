@@ -1,5 +1,4 @@
 package org.example;
-
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
 import domain.enums.StatusPlayer;
@@ -10,7 +9,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
-        startGame();
+                startGame();
     }
 
     private static void startGame() throws IOException, InterruptedException {
@@ -44,6 +43,7 @@ public class Main {
                 }
                 if (view.getKey().getKeyType() == KeyType.Escape) {
                     controller.getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
+                    controller.getModel().savePlayer();
                 }
             }
         }

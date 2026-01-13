@@ -13,6 +13,8 @@ import domain.items.GameItems;
 import domain.items.Weapon;
 import domain.location.Map;
 import domain.player.Player;
+import utils.SavePlayer;
+import java.io.File;
 
 import java.util.*;
 
@@ -24,6 +26,9 @@ public class Model implements Check {
     private GameEnemy enemys;
     private int level;
     private Weapon weaponTaken;
+
+    private static final String FOLDER = "save_json/";
+    private static final String FILE_NAME_PLAUER = FOLDER + "player.json";
 
     public Model(){
         player = new Player(5, 5);
@@ -62,6 +67,10 @@ public class Model implements Check {
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
         if(!player.getStatus().equals(StatusPlayer.PAUSE))
             enemyMovement();
+        if(player.getStatus().equals(StatusPlayer.GAMEOVER)){
+           System.out.println("save Player");
+            savePlayer();
+        }
     }
 
     public void passName(String line){
@@ -405,4 +414,18 @@ public class Model implements Check {
                 symbol == 'f' || symbol == 'e';
     }
 
+
+    //для работы с json
+    public void savePlayer(){
+        System.out.println("Save Player function in Model");
+        new File(FOLDER).mkdirs();
+        SavePlayer.savePlayer(player, FILE_NAME_PLAUER);
+    }
+
+    public void loadPlayer(){
+        Player loadPlayer = SavePlayer.loadPlayer(FILE_NAME_PLAUER);
+        if(loadPlayer != null){
+            this.player = loadPlayer;
+        }
+    }
 }
