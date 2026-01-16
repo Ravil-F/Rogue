@@ -11,6 +11,8 @@ import java.util.Random;
 public class Zombi extends Attributes implements Check, Action {
     private final EntityProperties properties;
     private CommonProperties common;
+    public static final int MAP_WIDTH = 81;
+    public static final int MAP_HEIGHT = 30;
 
     public Zombi(int x, int y) {
         this(createProperties(), x, y);
@@ -64,7 +66,8 @@ public class Zombi extends Attributes implements Check, Action {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
+//        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
+        return (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT);
     }
 
     @Override

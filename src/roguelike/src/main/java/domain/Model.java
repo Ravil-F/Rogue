@@ -26,7 +26,6 @@ public class Model implements Check {
     private Weapon weaponTaken;
 
     public Model(){
-        player = new Player(5, 5);
         backpack = new Backpack();
         map = new Map();
         int[] startPos = map.getRandomPosition();
@@ -41,6 +40,7 @@ public class Model implements Check {
         player.setStatus(StatusPlayer.ACTION);
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
 
+//        // Генерация предметов
         items.generateRandom(level);
         for(int i = 0; i < items.getItems().size(); ++i) {
             Items item = items.getItems().get(i);
@@ -48,14 +48,15 @@ public class Model implements Check {
             item.setCoord(roomPos[0], roomPos[1]);
             map.setMap(item.getCoord().getX(), item.getCoord().getY(), item.getSymbol());
         }
-
-//        enemys.generateRandom(level);
-//        for(int i = 0; i < enemys.getEnemy().size(); ++i){
-//            Attributes enemy = enemys.getEnemy().get(i);
-//            int[] roomPos = map.getFreePosition();
-//            enemy.setCoord(roomPos[0], roomPos[1]);
-//            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
-//        }
+//
+        // Генерация врагов (активная логика)
+        enemys.generateRandom(level);
+        for(int i = 0; i < enemys.getEnemy().size(); ++i){
+            Attributes enemy = enemys.getEnemy().get(i);
+            int[] roomPos = map.getFreePosition();
+            enemy.setCoord(roomPos[0], roomPos[1]);
+            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
+        }
     }
 
     public void gameSession(){
@@ -102,28 +103,35 @@ public class Model implements Check {
     }
 
     private void playerAction(int tmpX, int tmpY, int oldX, int oldY){
-        if(isWithInBounds(tmpX, tmpY)) {
-            if (checkEnemy(tmpX, tmpY)) {
-                int index = enemys.getIndex(tmpX, tmpY);
+        if (!isWithInBounds(tmpX, tmpY)) {
+            return;
+        }
+        char cellChar = map.getMapChar(tmpX, tmpY);
+        if (cellChar == '#' || cellChar == ' ' || cellChar == 0) {
+            return;
+        }
+        if (checkEnemy(tmpX, tmpY)) {
+            int index = enemys.getIndex(tmpX, tmpY);
+            if (index >= 0 && index < enemys.getEnemy().size()) {
                 player.attack(enemys.getEnemy().get(index));
                 if(enemys.getEnemy().get(index).getHealth() <= 0) {
                     int enemyX = enemys.getEnemy().get(index).getCoord().getX();
                     int enemyY = enemys.getEnemy().get(index).getCoord().getY();
                     map.putZero(enemyX, enemyY);
                     enemys.getEnemy().remove(index);
-
                     Items singleItem = items.generateTreasure(enemyX, enemyY);
                     if (singleItem != null) {
                         items.getItems().add(singleItem);
                         map.setMap(enemyX, enemyY, singleItem.getSymbol());
                     }
                 }
-            } else if (!checkItems(tmpX, tmpY)) {
-                map.putZero(oldX, oldY);
-                map.putZero(tmpX, tmpY);
-                player.setCoord(tmpX, tmpY);
-                map.setMap(tmpX, tmpY, player.getSymbol());
             }
+            return;
+        }
+        if (!checkItems(tmpX, tmpY)) {
+            map.putZero(oldX, oldY);
+            player.setCoord(tmpX, tmpY);
+            map.setMap(tmpX, tmpY, player.getSymbol());
         }
     }
 
@@ -159,11 +167,11 @@ public class Model implements Check {
     }
 
     private int equalsMapItems(int x, int y, GameItems items){
-            for (int i = 0; i < items.getItems().size(); i++) {
-                if (items.getItems().get(i).getCoord().getX() == x &&
-                        items.getItems().get(i).getCoord().getY() == y)
-                    return i;
-            }
+        for (int i = 0; i < items.getItems().size(); i++) {
+            if (items.getItems().get(i).getCoord().getX() == x &&
+                    items.getItems().get(i).getCoord().getY() == y)
+                return i;
+        }
         return -1;
     }
 
@@ -197,6 +205,10 @@ public class Model implements Check {
 
     public GameEnemy getEnemys() {
         return enemys;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     // действия предметов из рюкзака
@@ -275,10 +287,13 @@ public class Model implements Check {
     }
 
     //все что связано с врагами
-     private boolean checkEnemy(int x, int y){
+    private boolean checkEnemy(int x, int y){
+        if (!isWithInBounds(x, y)) {
+            return false;
+        }
         char c = getMap().getMapChar(x, y);
-        return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S' || !isWithInBounds(x, y);
-     }
+        return c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S';
+    }
 
     private void enemyMovement(){
         for(int i = 0; i < enemys.getEnemy().size() && !player.getStatus().equals(StatusPlayer.GAMEOVER); ++i){
@@ -287,11 +302,9 @@ public class Model implements Check {
                 Orge orge = (Orge) enemy;
                 orge.updateAtackRest();
             }
-
             if(enemy instanceof Action moveEnemy) {
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
-
                 if (isPlayerAdjacent(currentX, currentY)) {
                     ((Action) enemy).attack(player);
                     if(player.getHealth() <= 0)
@@ -300,21 +313,43 @@ public class Model implements Check {
                 }
 
                 int[] newXY;
-                if(canSeePlayer(enemy ,currentX, currentY)){
-                    newXY = moveTowardsPlayer(currentX, currentY, player.getCoord().getX(), player.getCoord().getY());
-                }else
-                    newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
-
+                if(canSeePlayer(enemy, currentX, currentY)){
+                    newXY = moveTowardsPlayer(currentX, currentY,
+                            player.getCoord().getX(),
+                            player.getCoord().getY());
+                } else {
+                    newXY = findValidMove(enemy, moveEnemy, currentX, currentY);
+                }
                 int newX = newXY[0];
                 int newY = newXY[1];
-
-                if (isWithInBounds(newX, newY) && !isCellBlocked(newX,newY) && !checkEnemy(newX, newY)) {
+                if (newX == currentX && newY == currentY) {
+                    continue;
+                }
+                if (isWithInBounds(newX, newY) &&
+                        !isCellBlocked(newX, newY) &&
+                        !checkEnemy(newX, newY)) {
                     map.putZero(currentX, currentY);
                     map.setMap(newX, newY, enemy.getSymbol());
                     enemy.setCoord(newX, newY);
                 }
             }
         }
+    }
+
+    private int[] findValidMove(Attributes enemy, Action moveEnemy, int currentX, int currentY) {
+        int maxAttempts = 10;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            int[] newXY = moveEnemy.move(currentX, currentY, enemy.getSymbol());
+            int newX = newXY[0];
+            int newY = newXY[1];
+            if (isWithInBounds(newX, newY) &&
+                    !isCellBlocked(newX, newY) &&
+                    !checkEnemy(newX, newY)) {
+                return new int[]{newX, newY};
+            }
+        }
+        return new int[]{currentX, currentY};
     }
 
     private boolean isPlayerAdjacent(int enemyX, int enemyY) {
@@ -340,11 +375,11 @@ public class Model implements Check {
     }
 
     private boolean canSeePlayer(Attributes enemy, int x, int y){
-       int distance = Math.max(
-               Math.abs(x - player.getCoord().getX()),
-               Math.abs(y - player.getCoord().getY())
-       );
-       return distance <= enemy.getHostility();
+        int distance = Math.max(
+                Math.abs(x - player.getCoord().getX()),
+                Math.abs(y - player.getCoord().getY())
+        );
+        return distance <= enemy.getHostility();
     }
 
     private int[] moveTowardsPlayer(int enemyX, int enemyY, int playerX, int playerY) {
@@ -355,9 +390,9 @@ public class Model implements Check {
         int moveY = 0;
 
         if (Math.abs(diffX) > Math.abs(diffY)) {
-                moveX = Integer.compare(diffX, 0);
+            moveX = Integer.compare(diffX, 0);
         } else {
-                  moveY = Integer.compare(diffY, 0);
+            moveY = Integer.compare(diffY, 0);
         }
 
         int newX = enemyX + moveX;
@@ -385,8 +420,15 @@ public class Model implements Check {
     }
 
     private boolean isCellBlocked(int x, int y) {
-        char cell = (char) map.getMap(x, y);
-          return cell != 0 && cell != ' ' && cell != '.' && cell != '@' && !checkingSymbols(cell);
+//        char cell = (char) map.getMap(x, y);
+//        return cell != 0 && cell != ' ' && cell != '.' && cell != '@' && !checkingSymbols(cell);
+        if (isWithInBounds(x, y)) {
+            char cell = (char) map.getMap(x, y);
+            if (cell == '.') {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -404,5 +446,4 @@ public class Model implements Check {
         return symbol == 's' || symbol == 'w' ||
                 symbol == 'f' || symbol == 'e';
     }
-
 }

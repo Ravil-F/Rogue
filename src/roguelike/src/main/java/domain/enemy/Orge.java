@@ -13,6 +13,8 @@ public class Orge extends Attributes implements Action, Check {
     private CommonProperties common;
     private int attackRest;
     private static final int stepAttackRest = 1;
+    public static final int MAP_WIDTH = 81;
+    public static final int MAP_HEIGHT = 30;
 
     public Orge(int x, int y) {
         this(createProperties(), x, y);
@@ -88,7 +90,8 @@ public class Orge extends Attributes implements Action, Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
+//        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
+        return (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT);
     }
 
     @Override

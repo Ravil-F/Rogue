@@ -1,6 +1,5 @@
 package presentation;
 
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -8,7 +7,6 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.TerminalSize;
-import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.enums.StatusPlayer;
 import domain.location.Rooms;
@@ -35,9 +33,12 @@ public class View {
             this.screen = new TerminalScreen(terminal);
             textGraphics = screen.newTextGraphics();
             screen.startScreen();
+            screen.setCursorPosition(null);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+
+
     }
 
     // VIEW WINDOWS
@@ -73,73 +74,53 @@ public class View {
         return res.toString().trim();
     }
 
-    private void viewMap() {
+    private void viewMap(){
+        int mapWidth = controller.getModel().getMap().getWidth();
+        int mapHeight = controller.getModel().getMap().getHeight();
+        int offsetX = 1;
+        int offsetY = 1;
+        drawRectangle(textGraphics, offsetY - 1, mapHeight + offsetY,
+                offsetX - 1, mapWidth + offsetX);
         for (Rooms room : controller.getModel().getMap().getRooms()) {
-            drawRectangle(textGraphics, room.getTopY(), room.getBottomY(),
-                    room.getLeftX(), room.getRightX());
-            drawRoomContent(textGraphics, room);
+            drawRectangle(textGraphics,
+                    room.getTopY() + offsetY, room.getBottomY() + offsetY,
+                    room.getLeftX() + offsetX, room.getRightX() + offsetX);
+            drawRoomContent(textGraphics, room, offsetX, offsetY);
         }
-
         for (Passage passage : controller.getModel().getMap().getPassages()) {
-            drawPassageSegments(textGraphics, passage);
+            drawPassageSegments(textGraphics, passage, offsetX, offsetY);
         }
-
-        for (int x = 0; x < controller.getModel().getMap().getWidth(); ++x) {
-            for (int y = 0; y < controller.getModel().getMap().getHeight(); ++y) {
+        for(int x = 0; x < mapWidth; ++x){
+            for (int y = 0; y < mapHeight; ++y){
                 char cellChar = controller.getModel().getMap().getMapChar(x, y);
                 if (cellChar != 0 && cellChar != ' ' && cellChar != '#' && cellChar != '.') {
-                    TextColor color = getCellColor(x, y, cellChar);
-                    textGraphics.setForegroundColor(color);
-                    textGraphics.putString(x, y, String.valueOf(cellChar));
-                    textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+                    textGraphics.putString(x + offsetX, y + offsetY, String.valueOf(cellChar));
                 }
             }
         }
     }
 
-    private TextColor getCellColor(int x, int y, char symbol) {
-        if (controller.getModel().getPlayer().getCoord().getX() == x &&
-                controller.getModel().getPlayer().getCoord().getY() == y) {
-            return controller.getModel().getPlayer().getColor();
-        }
-
-        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
-            if (enemy.getCoord().getX() == x && enemy.getCoord().getY() == y) {
-                return enemy.getColor();
-            }
-        }
-
-        for (Items item : controller.getModel().getItems().getItems()) {
-            if (item.getCoord().getX() == x && item.getCoord().getY() == y) {
-                return item.getColor();
-            }
-        }
-
-        // Цвет по умолчанию для символа
-        return TextColor.ANSI.WHITE;
-    }
-
-    private void drawRoomContent(TextGraphics tg, Rooms room) {
+    private void drawRoomContent(TextGraphics tg, Rooms room, int offsetX, int offsetY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
             for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
-                tg.putString(x, y, ".");
+                tg.putString(x + offsetX, y + offsetY, ".");
             }
         }
     }
 
-    private void drawPassageSegments(TextGraphics tg, Passage passage) {
+    private void drawPassageSegments(TextGraphics tg, Passage passage, int offsetX, int offsetY) {
         for (Passage.PassageSegment segment : passage.getSegments()) {
             if (segment.isHorizontal()) {
-                int y = segment.getStartY();
+                int y = segment.getStartY() + offsetY;
                 for (int x = Math.min(segment.getStartX(), segment.getEndX());
                      x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
-                    tg.putString(x, y, "#");
+                    tg.putString(x + offsetX, y, "#");
                 }
             } else {
-                int x = segment.getStartX();
+                int x = segment.getStartX() + offsetX;
                 for (int y = Math.min(segment.getStartY(), segment.getEndY());
                      y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
-                    tg.putString(x, y, "#");
+                    tg.putString(x, y + offsetY, "#");
                 }
             }
         }
@@ -162,14 +143,28 @@ public class View {
         }
     }
 
-
     private void viewInfo(){
-        int count  = 2;
-        textGraphics.putString( 2, controller.getModel().getMap().getHeight() + count,"Max health: " + controller.getModel().getPlayer().getMaxHealth());
-        textGraphics.putString( 2, controller.getModel().getMap().getHeight() + (count + 1),"Health: " + controller.getModel().getPlayer().getHealth());
-        textGraphics.putString( 20, controller.getModel().getMap().getHeight() + count,"Agility: " + controller.getModel().getPlayer().getAgility());
-        textGraphics.putString( 20, controller.getModel().getMap().getHeight() + (count + 1),"Strength: " + controller.getModel().getPlayer().getStrength());
-        textGraphics.putString( 2, controller.getModel().getMap().getHeight() + (count + 2),"Treasure: " + controller.getModel().getPlayer().getTreasure());
+        int mapWidth = controller.getModel().getMap().getWidth();
+        int mapHeight = controller.getModel().getMap().getHeight();
+        int offsetX = 1;
+        int offsetY = 1;
+        int infoY = mapHeight + offsetY + 2;
+        String info = String.format(
+                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d",
+                controller.getModel().getLevel(),
+                controller.getModel().getPlayer().getHealth(),
+                controller.getModel().getPlayer().getMaxHealth(),
+                controller.getModel().getPlayer().getAgility(),
+                controller.getModel().getPlayer().getStrength()
+        );
+        int infoRectWidth = mapWidth + offsetX;
+        drawRectangle(textGraphics, infoY - 1, infoY + 1,
+                offsetX - 1, infoRectWidth);
+        int infoTextWidth = info.length();
+        int rectWidth = infoRectWidth - offsetX + 1;
+        int centerX = offsetX + (rectWidth - infoTextWidth) / 2;
+
+        textGraphics.putString(centerX, infoY, info);
     }
 
     private void viewGameOver(){
