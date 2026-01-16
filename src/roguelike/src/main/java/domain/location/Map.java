@@ -21,7 +21,6 @@ public class Map implements Check {
     private static final int MAX_ROOM_WIDTH = REGION_WIDTH - 2;
     private static final int MIN_ROOM_HEIGHT = 5;
     private static final int MAX_ROOM_HEIGHT = REGION_HEIGHT - 2;
-
     public static final int MAP_WIDTH = ROOMS_IN_WIDTH * REGION_WIDTH;
     public static final int MAP_HEIGHT = ROOMS_IN_HEIGHT * REGION_HEIGHT;
 
