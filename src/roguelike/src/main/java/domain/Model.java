@@ -13,7 +13,7 @@ import domain.items.GameItems;
 import domain.items.Weapon;
 import domain.location.Map;
 import domain.player.Player;
-import utils.SavePlayer;
+import utils.SaveGame;
 import java.io.File;
 
 import java.util.*;
@@ -28,7 +28,8 @@ public class Model implements Check {
     private Weapon weaponTaken;
 
     private static final String FOLDER = "save_json/";
-    private static final String FILE_NAME_PLAUER = FOLDER + "player.json";
+    private static final String FILE_NAME_PLAYER = FOLDER + "player.json";
+    private static final String FILE_NAME_BACKPACK = FOLDER + "backpack.json";
 
     public Model(){
         player = new Player(5, 5);
@@ -67,10 +68,10 @@ public class Model implements Check {
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
         if(!player.getStatus().equals(StatusPlayer.PAUSE))
             enemyMovement();
-        if(player.getStatus().equals(StatusPlayer.GAMEOVER)){
-           System.out.println("save Player");
-            savePlayer();
-        }
+//        if(player.getStatus().equals(StatusPlayer.GAMEOVER)){
+//           System.out.println("save Player");
+//            savePlayer();
+//        }
     }
 
     public void passName(String line){
@@ -416,16 +417,39 @@ public class Model implements Check {
 
 
     //для работы с json
-    public void savePlayer(){
+    public void saveGame(){
         System.out.println("Save Player function in Model");
         new File(FOLDER).mkdirs();
-        SavePlayer.savePlayer(player, FILE_NAME_PLAUER);
+        SaveGame.savePlayer(player, FILE_NAME_PLAYER);
+        SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
     }
 
-    public void loadPlayer(){
-        Player loadPlayer = SavePlayer.loadPlayer(FILE_NAME_PLAUER);
-        if(loadPlayer != null){
-            this.player = loadPlayer;
+    public void loadGame() {
+        Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
+        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
+
+        if (loadedPlayer != null && loadedBackpack != null) {
+            this.player = loadedPlayer;
+            this.backpack = loadedBackpack;
+            restoreGameAfterLoad();
+        } else {
+            player = new Player(5, 5);
+        }
+    }
+
+    public void saveBackpack(){
+        System.out.println("Save Backpack function in Model");
+        new File(FOLDER).mkdirs();
+        SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
+    }
+
+    private void restoreGameAfterLoad() {
+        map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+
+        if (player.getHealth() <= 0) {
+            player.setStatus(StatusPlayer.GAMEOVER);
+        } else {
+            player.setStatus(StatusPlayer.ACTION);
         }
     }
 }

@@ -35,7 +35,8 @@ public class Main {
                             view.gameLoop();
                             break;
                         case '2':
-                            System.out.println("world");
+                            controller.getModel().loadGame();
+                            view.gameLoop();
                             break;
                         default:
                             break;
@@ -43,7 +44,7 @@ public class Main {
                 }
                 if (view.getKey().getKeyType() == KeyType.Escape) {
                     controller.getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
-                    controller.getModel().savePlayer();
+                    controller.getModel().saveGame();
                 }
             }
         }

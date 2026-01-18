@@ -10,7 +10,7 @@ import utils.PlayerProperties;
 import javax.swing.*;
 
 public class Player extends Attributes implements Action {
-    private  PlayerProperties properties;
+    private transient PlayerProperties properties;
     private StatusPlayer status;
     private int treasure;
     private int sleep;
