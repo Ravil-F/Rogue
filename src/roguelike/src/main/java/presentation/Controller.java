@@ -51,11 +51,6 @@ public class Controller {
                             break;
                     }
                 }
-//                else if (key.getKeyType() == KeyType.Escape) {
-//                    getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
-//                    System.out.println("Save Player in controller");
-//                    model.savePlayer();
-//                }
             }
             if(key.getCharacter() == 'w' || key.getCharacter() == 's' || key.getCharacter() == 'a' ||
                     key.getCharacter() == 'd' || key.getCharacter() == 'h' || key.getCharacter() == 'j' ||

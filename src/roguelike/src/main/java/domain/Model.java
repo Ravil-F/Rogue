@@ -54,13 +54,13 @@ public class Model implements Check {
             map.setMap(item.getCoord().getX(), item.getCoord().getY(), item.getSymbol());
         }
 
-//        enemys.generateRandom(level);
-//        for(int i = 0; i < enemys.getEnemy().size(); ++i){
-//            Attributes enemy = enemys.getEnemy().get(i);
-//            int[] roomPos = map.getFreePosition();
-//            enemy.setCoord(roomPos[0], roomPos[1]);
-//            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
-//        }
+        enemys.generateRandom(level);
+        for(int i = 0; i < enemys.getEnemy().size(); ++i){
+            Attributes enemy = enemys.getEnemy().get(i);
+            int[] roomPos = map.getFreePosition();
+            enemy.setCoord(roomPos[0], roomPos[1]);
+            map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
+        }
     }
 
     public void gameSession(){
