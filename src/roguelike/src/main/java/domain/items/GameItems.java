@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Random;
 
 public class GameItems implements Check, GenerateRandom {
-    CommonProperties common;
+    transient CommonProperties common;
     private List<Items> items;
-    private Random random;
-    private final int countItems = 5;
+    private transient Random random;
+    private transient final int countItems = 5;
 
     public GameItems(){
         items = new LinkedList<Items>();

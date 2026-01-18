@@ -7,6 +7,9 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.googlecode.lanterna.TextColor;
 import domain.backpack.Backpack;
+import domain.enemy.GameEnemy;
+import domain.items.GameItems;
+import domain.items.Weapon;
 import domain.player.Player;
 
 import java.io.*;
@@ -34,6 +37,30 @@ public class SaveGame {
         }
     }
 
+    public static void saveGameItems(GameItems gameItems, String fileName){
+        try (FileWriter writer = new FileWriter(fileName)){
+            gson.toJson(gameItems, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveGameEnemy(GameEnemy gameEnemy, String fileName){
+        try (FileWriter writer = new FileWriter(fileName)){
+            gson.toJson(gameEnemy, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveWeaponTaken(Weapon weapon, String fileName){
+        try (FileWriter writer = new FileWriter(fileName)){
+            gson.toJson(weapon, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // LOAD
     public static Player loadPlayer(String fileName){
         try(FileReader reader = new FileReader(fileName)){
@@ -48,6 +75,33 @@ public class SaveGame {
         try(FileReader reader = new FileReader(fileName)){
             Backpack backpack = gson.fromJson(reader, Backpack.class);
             return backpack;
+        } catch (IOException e){
+            return null;
+        }
+    }
+
+    public static GameItems loadGameItems(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            GameItems gameItems= gson.fromJson(reader, GameItems.class);
+            return gameItems;
+        } catch (IOException e){
+            return null;
+        }
+    }
+
+    public static GameEnemy loadGameEnemy(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            GameEnemy gameEnemy = gson.fromJson(reader, GameEnemy.class);
+            return gameEnemy;
+        } catch (IOException e){
+            return null;
+        }
+    }
+
+    public static Weapon loadWeaponTaken(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            Weapon weapon = gson.fromJson(reader, Weapon.class);
+            return weapon;
         } catch (IOException e){
             return null;
         }

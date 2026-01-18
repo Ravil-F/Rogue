@@ -30,6 +30,9 @@ public class Model implements Check {
     private static final String FOLDER = "save_json/";
     private static final String FILE_NAME_PLAYER = FOLDER + "player.json";
     private static final String FILE_NAME_BACKPACK = FOLDER + "backpack.json";
+    private static final String FILE_NAME_GAMEITEMS = FOLDER + "game_items.json";
+    private static final String FILE_NAME_GAMEENEMY = FOLDER + "game_enemy.json";
+    private static final String FILE_NAME_WEAPONTAKEN = FOLDER + "weapon_taken.json";
 
     public Model(){
         player = new Player(5, 5);
@@ -422,15 +425,18 @@ public class Model implements Check {
         new File(FOLDER).mkdirs();
         SaveGame.savePlayer(player, FILE_NAME_PLAYER);
         SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
+        SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
+        SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
+        SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
     }
 
     public void loadGame() {
         Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
-        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
+//        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
 
-        if (loadedPlayer != null && loadedBackpack != null) {
+        if (loadedPlayer != null) {
             this.player = loadedPlayer;
-            this.backpack = loadedBackpack;
+//            this.backpack = loadedBackpack;
             restoreGameAfterLoad();
         } else {
             player = new Player(5, 5);

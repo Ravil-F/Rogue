@@ -11,9 +11,9 @@ import java.util.Random;
 
 public class GameEnemy implements Check, GenerateRandom {
     private List<Attributes> enemy;
-    CommonProperties common;
-    private Random random;
-    private final int countEnemy = 5;
+    transient CommonProperties common;
+    private transient Random random;
+    private transient final int countEnemy = 5;
 
     public GameEnemy(){
         enemy = new ArrayList<>();
