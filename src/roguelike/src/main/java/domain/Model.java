@@ -433,11 +433,15 @@ public class Model implements Check {
     public void loadGame() {
         Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
         Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
+        GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
 
-        if ((loadedPlayer != null) && (loadedBackpack != null)) {
+        if ((loadedPlayer != null) && (loadedBackpack != null) &&
+            (loadedItems != null)) {
             this.player = loadedPlayer;
             this.backpack = loadedBackpack;
+            this.items = loadedItems;
             restoreGameAfterLoad();
+            restoreItemsOnMap();
         } else {
             System.out.println("Not JSON file");
             player = new Player(5, 5);
@@ -451,6 +455,16 @@ public class Model implements Check {
             player.setStatus(StatusPlayer.GAMEOVER);
         } else {
             player.setStatus(StatusPlayer.ACTION);
+        }
+    }
+
+    private void restoreItemsOnMap(){
+        for(Items item : items.getItems()){
+            if(item != null && item.getCoord() != null){
+                int x = item.getCoord().getX();
+                int y = item.getCoord().getY();
+                map.setMap(x, y, item.getSymbol());
+            }
         }
     }
 }
