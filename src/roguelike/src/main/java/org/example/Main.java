@@ -32,11 +32,11 @@ public class Main {
                             String namePlayer = view.inputScan();
                             if (namePlayer.equals(" "))
                                 view.passName(namePlayer);
-                            view.gameLoop();
+                            view.gameLoop(true);
                             break;
                         case '2':
                             controller.getModel().loadGame();
-                            view.gameLoop();
+                            view.gameLoop(false);
                             break;
                         default:
                             break;
