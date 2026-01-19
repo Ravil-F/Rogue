@@ -71,10 +71,6 @@ public class Model implements Check {
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
         if(!player.getStatus().equals(StatusPlayer.PAUSE))
             enemyMovement();
-//        if(player.getStatus().equals(StatusPlayer.GAMEOVER)){
-//           System.out.println("save Player");
-//            savePlayer();
-//        }
     }
 
     public void passName(String line){
@@ -210,6 +206,14 @@ public class Model implements Check {
 
     public GameEnemy getEnemys() {
         return enemys;
+    }
+
+    public Weapon getWeaponTaken() {
+        return weaponTaken;
+    }
+
+    public void setWeaponTaken(Weapon weaponTaken) {
+        this.weaponTaken = weaponTaken;
     }
 
     // действия предметов из рюкзака
@@ -434,13 +438,15 @@ public class Model implements Check {
         Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
         GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
         GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
+        Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
 
         if ((loadedPlayer != null) && (loadedBackpack != null) &&
-            (loadedItems != null) && loadedEnemies != null) {
+            (loadedItems != null) && loadedEnemies != null && loadedWeaponTaken != null) {
             this.player = loadedPlayer;
             this.backpack = loadedBackpack;
             this.items = loadedItems;
             this.enemys = loadedEnemies;
+            this.weaponTaken = loadedWeaponTaken;
             restoreEnemiesOnMap();
             restoreGameAfterLoad();
             restoreItemsOnMap();

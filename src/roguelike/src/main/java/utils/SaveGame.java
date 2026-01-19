@@ -28,6 +28,7 @@ public class SaveGame {
             .registerTypeAdapter(Backpack.class, new BackpackTypeAdapter())
             .registerTypeAdapter(Attributes.class, new AttributesTypeAdapter())
             .registerTypeAdapter(GameEnemy.class, new GameEnemyTypeAdapter())
+            .registerTypeAdapter(Weapon.class, new WeaponTypeAdapter())
             .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
             .create();
 
@@ -659,5 +660,77 @@ class GameEnemyTypeAdapter extends TypeAdapter<GameEnemy> {
             }
         }
         in.endArray();
+    }
+}
+
+
+// Специальный адаптер для Weapon
+class WeaponTypeAdapter extends TypeAdapter<Weapon> {
+    @Override
+    public void write(JsonWriter out, Weapon weapon) throws IOException {
+        out.beginObject();
+
+        if (weapon.getWeapon() != null) {
+            out.name("weaponEnum").value(weapon.getWeapon().name());
+        } else {
+            out.name("weaponEnum").nullValue();
+        }
+
+        out.name("name").value(weapon.getName());
+        out.name("symbol").value(String.valueOf(weapon.getSymbol()));
+        out.name("increase").value(weapon.getIncrease());
+        out.name("color").value(((TextColor.ANSI) weapon.getColor()).name());
+
+        if (weapon.getCoord() != null) {
+            out.name("coordX").value(weapon.getCoord().getX());
+            out.name("coordY").value(weapon.getCoord().getY());
+        }
+
+        out.endObject();
+    }
+
+    @Override
+    public Weapon read(JsonReader in) throws IOException {
+        String weaponEnum = null;
+        String name = "none";
+        String symbolStr = "?";
+        int increase = 0;
+        String colorStr = "RED";
+        int coordX = 0;
+        int coordY = 0;
+
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "weaponEnum":
+                    if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                        in.nextNull();
+                        weaponEnum = null;
+                    } else {
+                        weaponEnum = in.nextString();
+                    }
+                    break;
+                case "name": name = in.nextString(); break;
+                case "symbol": symbolStr = in.nextString(); break;
+                case "increase": increase = in.nextInt(); break;
+                case "color": colorStr = in.nextString(); break;
+                case "coordX": coordX = in.nextInt(); break;
+                case "coordY": coordY = in.nextInt(); break;
+                default: in.skipValue(); break;
+            }
+        }
+        in.endObject();
+
+        domain.enums.WeaponE weaponE = null;
+        if (weaponEnum != null) {
+            try {
+                weaponE = domain.enums.WeaponE.valueOf(weaponEnum);
+            } catch (Exception e) {
+                System.err.println("Invalid weapon enum: " + weaponEnum);
+            }
+        }
+
+        return new domain.items.Weapon(weaponE, coordX, coordY);
     }
 }
