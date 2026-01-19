@@ -421,7 +421,6 @@ public class Model implements Check {
 
     //для работы с json
     public void saveGame(){
-        System.out.println("Save Player function in Model");
         new File(FOLDER).mkdirs();
         SaveGame.savePlayer(player, FILE_NAME_PLAYER);
         SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
@@ -434,12 +433,15 @@ public class Model implements Check {
         Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
         Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
         GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
+        GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
 
         if ((loadedPlayer != null) && (loadedBackpack != null) &&
-            (loadedItems != null)) {
+            (loadedItems != null) && loadedEnemies != null) {
             this.player = loadedPlayer;
             this.backpack = loadedBackpack;
             this.items = loadedItems;
+            this.enemys = loadedEnemies;
+            restoreEnemiesOnMap();
             restoreGameAfterLoad();
             restoreItemsOnMap();
         } else {
@@ -467,4 +469,14 @@ public class Model implements Check {
             }
         }
     }
+
+   private void restoreEnemiesOnMap(){
+        for(Attributes enemy : enemys.getEnemy()){
+            if(enemy != null && enemy.getCoord() != null){
+                int x = enemy.getCoord().getX();
+                int y = enemy.getCoord().getY();
+                map.setMap(x, y, enemy.getSymbol());
+            }
+        }
+   }
 }

@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.googlecode.lanterna.TextColor;
+import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.backpack.Backpack;
 import domain.enemy.GameEnemy;
@@ -25,6 +26,8 @@ public class SaveGame {
             .registerTypeAdapter(TextColor.class, new TextColorTypeAdapter())
             .registerTypeAdapter(Items.class, new ItemsTypeAdapter())
             .registerTypeAdapter(Backpack.class, new BackpackTypeAdapter())
+            .registerTypeAdapter(Attributes.class, new AttributesTypeAdapter())
+            .registerTypeAdapter(GameEnemy.class, new GameEnemyTypeAdapter())
             .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
             .create();
 
@@ -492,5 +495,169 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
         in.endArray();
 
         backpack.setScreenOutput(screenOutput);
+    }
+}
+
+
+// Адаптер для Attributes (врагов)
+class AttributesTypeAdapter extends TypeAdapter<Attributes> {
+    @Override
+    public void write(JsonWriter out, Attributes enemy) throws IOException {
+        out.beginObject();
+        out.name("type").value(enemy.getClass().getSimpleName());
+        out.name("maxHealth").value(enemy.getMaxHealth());
+        out.name("health").value(enemy.getHealth());
+        out.name("agility").value(enemy.getAgility());
+        out.name("strength").value(enemy.getStrength());
+        out.name("hostility").value(enemy.getHostility());
+        out.name("name").value(enemy.getName());
+        out.name("symbol").value(String.valueOf(enemy.getSymbol()));
+
+        if (enemy.getColor() instanceof TextColor.ANSI) {
+            out.name("color").value(((TextColor.ANSI) enemy.getColor()).name());
+        }
+
+        if (enemy.getCoord() != null) {
+            out.name("coordX").value(enemy.getCoord().getX());
+            out.name("coordY").value(enemy.getCoord().getY());
+        }
+
+        out.endObject();
+    }
+
+    @Override
+    public Attributes read(JsonReader in) throws IOException {
+        String type = null;
+        int maxHealth = 0, health = 0, agility = 0, strength = 0, hostility = 0;
+        String name = "", symbolStr = "?", colorStr = null;
+        int coordX = 0, coordY = 0;
+
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "type": type = in.nextString(); break;
+                case "maxHealth": maxHealth = in.nextInt(); break;
+                case "health": health = in.nextInt(); break;
+                case "agility": agility = in.nextInt(); break;
+                case "strength": strength = in.nextInt(); break;
+                case "hostility": hostility = in.nextInt(); break;
+                case "name": name = in.nextString(); break;
+                case "symbol": symbolStr = in.nextString(); break;
+                case "color": colorStr = in.nextString(); break;
+                case "coordX": coordX = in.nextInt(); break;
+                case "coordY": coordY = in.nextInt(); break;
+                default: in.skipValue(); break;
+            }
+        }
+        in.endObject();
+
+        char symbol = symbolStr.isEmpty() ? '?' : symbolStr.charAt(0);
+        TextColor color = getTextColor(colorStr);
+
+        try {
+            switch (type) {
+                case "Zombi":
+                    Zombi zombi = new Zombi(coordX, coordY);
+                    zombi.setHealth(health);
+                    zombi.setAgility(agility);
+                    zombi.setStrength(strength);
+                    return zombi;
+                case "Vampire":
+                    Vampire vampire = new Vampire(coordX, coordY);
+                    vampire.setHealth(health);
+                    vampire.setAgility(agility);
+                    vampire.setStrength(strength);
+                    return vampire;
+                case "Grost":
+                    Grost grost = new Grost(coordX, coordY);
+                    grost.setHealth(health);
+                    grost.setAgility(agility);
+                    grost.setStrength(strength);
+                    return grost;
+                case "Orge":
+                    Orge orge = new Orge(coordX, coordY);
+                    orge.setHealth(health);
+                    orge.setAgility(agility);
+                    orge.setStrength(strength);
+                    return orge;
+                case "SnakeMage":
+                    SnakeMage snakeMage = new SnakeMage(coordX, coordY);
+                    snakeMage.setHealth(health);
+                    snakeMage.setAgility(agility);
+                    snakeMage.setStrength(strength);
+                    return snakeMage;
+                default:
+                    System.err.println("Unknown enemy type: " + type);
+                    return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error creating enemy: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private TextColor getTextColor(String colorStr) {
+        if (colorStr == null || colorStr.isEmpty()) {
+            return TextColor.ANSI.WHITE;
+        }
+        try {
+            return TextColor.ANSI.valueOf(colorStr.toUpperCase());
+        } catch (Exception e) {
+            return TextColor.ANSI.WHITE;
+        }
+    }
+}
+
+// Адаптер для GameEnemy
+class GameEnemyTypeAdapter extends TypeAdapter<GameEnemy> {
+    @Override
+    public void write(JsonWriter out, GameEnemy gameEnemy) throws IOException {
+        out.beginObject();
+        out.name("enemy");
+        writeEnemyList(out, gameEnemy.getEnemy());
+        out.endObject();
+    }
+
+    private void writeEnemyList(JsonWriter out, List<Attributes> enemyList) throws IOException {
+        out.beginArray();
+        if (enemyList != null) {
+            AttributesTypeAdapter adapter = new AttributesTypeAdapter();
+            for (Attributes enemy : enemyList) {
+                adapter.write(out, enemy);
+            }
+        }
+        out.endArray();
+    }
+
+    @Override
+    public GameEnemy read(JsonReader in) throws IOException {
+        GameEnemy gameEnemy = new GameEnemy();
+
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            if ("enemy".equals(fieldName)) {
+                readEnemyList(in, gameEnemy);
+            } else {
+                in.skipValue();
+            }
+        }
+        in.endObject();
+
+        return gameEnemy;
+    }
+
+    private void readEnemyList(JsonReader in, GameEnemy gameEnemy) throws IOException {
+        AttributesTypeAdapter adapter = new AttributesTypeAdapter();
+
+        in.beginArray();
+        while (in.hasNext()) {
+            Attributes enemy = adapter.read(in);
+            if (enemy != null) {
+                gameEnemy.getEnemy().add(enemy);
+            }
+        }
+        in.endArray();
     }
 }
