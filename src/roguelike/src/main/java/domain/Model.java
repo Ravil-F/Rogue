@@ -432,21 +432,16 @@ public class Model implements Check {
 
     public void loadGame() {
         Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
-//        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
+        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
 
-        if (loadedPlayer != null) {
+        if ((loadedPlayer != null) && (loadedBackpack != null)) {
             this.player = loadedPlayer;
-//            this.backpack = loadedBackpack;
+            this.backpack = loadedBackpack;
             restoreGameAfterLoad();
         } else {
+            System.out.println("Not JSON file");
             player = new Player(5, 5);
         }
-    }
-
-    public void saveBackpack(){
-        System.out.println("Save Backpack function in Model");
-        new File(FOLDER).mkdirs();
-        SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
     }
 
     private void restoreGameAfterLoad() {

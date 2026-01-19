@@ -32,7 +32,7 @@ public class GameItems implements Check, GenerateRandom {
             switch (countRandom){
                 case 0:
                     ElixirE randomElixir = ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
-                    items.add(new Elixir(randomElixir, 60, randomXY(tmpXY), randomXY(tmpXY)));
+                    items.add(new Elixir(randomElixir,60, randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 1:
                     FoodE randomFood = FoodE.values()[random.nextInt(0, FoodE.values().length)];

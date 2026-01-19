@@ -3,7 +3,7 @@ package domain.abstact;
 import com.googlecode.lanterna.TextColor;
 
 public abstract class Items extends Entity{
-    private  final int increase;
+    private  int increase;
 
     public Items(char symbol, String name, int increase, TextColor color, int x, int y) {
         super(name, symbol, color, x, y);
@@ -12,5 +12,9 @@ public abstract class Items extends Entity{
 
     public int getIncrease() {
         return increase;
+    }
+
+    public void setIncrease(int increase) {
+        this.increase = increase;
     }
 }
