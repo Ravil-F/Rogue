@@ -9,9 +9,11 @@ import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.backpack.Backpack;
-import domain.enemy.GameEnemy;
 import domain.items.GameItems;
 import domain.items.Weapon;
+import domain.location.Passage;
+import domain.location.Rooms;
+import domain.location.Map;
 import domain.player.Player;
 import domain.items.*;
 import domain.enemy.*;
@@ -29,13 +31,14 @@ public class SaveGame {
             .registerTypeAdapter(Attributes.class, new AttributesTypeAdapter())
             .registerTypeAdapter(GameEnemy.class, new GameEnemyTypeAdapter())
             .registerTypeAdapter(Weapon.class, new WeaponTypeAdapter())
+            .registerTypeAdapter(domain.location.Map.class, new MapTypeAdapter())
             .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
             .create();
 
 
     // SAVE
     public static void savePlayer(Player player, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(player, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -43,7 +46,7 @@ public class SaveGame {
     }
 
     public static void saveBackpack(Backpack backpack, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(backpack, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -51,7 +54,7 @@ public class SaveGame {
     }
 
     public static void saveGameItems(GameItems gameItems, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(gameItems, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -59,7 +62,7 @@ public class SaveGame {
     }
 
     public static void saveGameEnemy(GameEnemy gameEnemy, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName,false)){
             gson.toJson(gameEnemy, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -67,8 +70,16 @@ public class SaveGame {
     }
 
     public static void saveWeaponTaken(Weapon weapon, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(weapon, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveMap(domain.location.Map map, String fileName){
+        try (FileWriter writer = new FileWriter(fileName, false)){
+            gson.toJson(map, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -121,6 +132,16 @@ public class SaveGame {
             return weapon;
         } catch (IOException e){
             System.err.println("Error loading weapon from " + fileName + ": " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static Map loadMap(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            Map map = gson.fromJson(reader, Map.class);
+            return map;
+        } catch (IOException e){
+            System.err.println("Error loading map from " + fileName + ": " + e.getMessage());
             return null;
         }
     }
@@ -732,5 +753,266 @@ class WeaponTypeAdapter extends TypeAdapter<Weapon> {
         }
 
         return new domain.items.Weapon(weaponE, coordX, coordY);
+    }
+}
+
+// Адаптер для Map
+class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
+    @Override
+    public void write(JsonWriter out, Map map) throws IOException {
+        out.beginObject();
+   
+        out.name("mapData");
+        out.beginArray();
+        for (int y = 0; y < Map.MAP_HEIGHT; y++) {
+            out.beginArray();
+            for (int x = 0; x < Map.MAP_WIDTH; x++) {
+                out.value(map.getMap(x, y));
+            }
+            out.endArray();
+        }
+        out.endArray();
+   
+        out.name("floorData");
+        out.beginArray();
+        for (int y = 0; y < Map.MAP_HEIGHT; y++) {
+            out.beginArray();
+            for (int x = 0; x < Map.MAP_WIDTH; x++) {
+                out.value(map.getFloorChar(x, y));
+            }
+            out.endArray();
+        }
+        out.endArray();
+        
+        out.name("rooms");
+        out.beginArray();
+        for (Rooms room : map.getRooms()) {
+            writeRoom(out, room);
+        }
+        out.endArray();
+
+        out.name("passages");
+        out.beginArray();
+        for (Passage passage : map.getPassages()) {
+            writePassage(out, passage);
+        }
+        out.endArray();
+        out.endObject();
+    }
+    
+    private void writeRoom(JsonWriter out, Rooms room) throws IOException {
+        out.beginObject();
+        out.name("leftX").value(room.getLeftX());
+        out.name("rightX").value(room.getRightX());
+        out.name("topY").value(room.getTopY());
+        out.name("bottomY").value(room.getBottomY());
+        out.endObject();
+    }
+    
+    private void writePassage(JsonWriter out, Passage passage) throws IOException {
+        out.beginArray();
+        for (Passage.PassageSegment segment : passage.getSegments()) {
+            out.beginObject();
+            out.name("startX").value(segment.getStartX());
+            out.name("startY").value(segment.getStartY());
+            out.name("endX").value(segment.getEndX());
+            out.name("endY").value(segment.getEndY());
+            out.endObject();
+        }
+        out.endArray();
+    }
+    
+    @Override
+    public Map read(JsonReader in) throws IOException {
+        int[][] mapData = new int[Map.MAP_WIDTH][Map.MAP_HEIGHT];
+        int[][] floorData = new int[Map.MAP_WIDTH][Map.MAP_HEIGHT];
+        List<Rooms> rooms = new ArrayList<>();
+        List<Passage> passages = new ArrayList<>();
+        
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "mapData":
+                    readMapData(in, mapData);
+                    break;
+                case "floorData":
+                    readFloorData(in, floorData);
+                    break;
+                case "rooms":
+                    readRooms(in, rooms);
+                    break;
+                case "passages":
+                    readPassages(in, passages);
+                    break;
+                default:
+                    in.skipValue();
+                    break;
+            }
+        }
+        in.endObject();
+    
+        Map map = new Map();
+        restoreMapData(map, mapData, floorData);
+        restoreRoomsAndPassages(map, rooms, passages);
+        
+        return map;
+    }
+    
+    private void readMapData(JsonReader in, int[][] mapData) throws IOException {
+        in.beginArray();
+        int y = 0;
+        while (in.hasNext()) {
+            in.beginArray();
+            int x = 0;
+            while (in.hasNext()) {
+                if (x < Map.MAP_WIDTH && y < Map.MAP_HEIGHT) {
+                    mapData[x][y] = in.nextInt();
+                } else {
+                    in.skipValue();
+                }
+                x++;
+            }
+            in.endArray();
+            y++;
+        }
+        in.endArray();
+    }
+    
+    private void readFloorData(JsonReader in, int[][] floorData) throws IOException {
+        in.beginArray();
+        int y = 0;
+        while (in.hasNext()) {
+            in.beginArray();
+            int x = 0;
+            while (in.hasNext()) {
+                if (x < Map.MAP_WIDTH && y < Map.MAP_HEIGHT) {
+                    floorData[x][y] = in.nextInt();
+                } else {
+                    in.skipValue();
+                }
+                x++;
+            }
+            in.endArray();
+            y++;
+        }
+        in.endArray();
+    }
+    
+    private void readRooms(JsonReader in, List<Rooms> rooms) throws IOException {
+        in.beginArray();
+        while (in.hasNext()) {
+            rooms.add(readRoom(in));
+        }
+        in.endArray();
+    }
+    
+    private Rooms readRoom(JsonReader in) throws IOException {
+        int leftX = 0, rightX = 0, topY = 0, bottomY = 0;
+        
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "leftX": leftX = in.nextInt(); break;
+                case "rightX": rightX = in.nextInt(); break;
+                case "topY": topY = in.nextInt(); break;
+                case "bottomY": bottomY = in.nextInt(); break;
+                default: in.skipValue(); break;
+            }
+        }
+        in.endObject();
+ 
+        Rooms room = new Rooms();
+        try {
+            java.lang.reflect.Field leftXField = Rooms.class.getDeclaredField("leftX");
+            java.lang.reflect.Field rightXField = Rooms.class.getDeclaredField("rightX");
+            java.lang.reflect.Field topYField = Rooms.class.getDeclaredField("topY");
+            java.lang.reflect.Field bottomYField = Rooms.class.getDeclaredField("bottomY");
+            
+            leftXField.setAccessible(true);
+            rightXField.setAccessible(true);
+            topYField.setAccessible(true);
+            bottomYField.setAccessible(true);
+            
+            leftXField.set(room, leftX);
+            rightXField.set(room, rightX);
+            topYField.set(room, topY);
+            bottomYField.set(room, bottomY);
+        } catch (Exception e) {
+            System.err.println("Error restoring room: " + e.getMessage());
+        }
+        
+        return room;
+    }
+    
+    private void readPassages(JsonReader in, List<Passage> passages) throws IOException {
+        in.beginArray();
+        while (in.hasNext()) {
+            passages.add(readPassage(in));
+        }
+        in.endArray();
+    }
+    
+    private Passage readPassage(JsonReader in) throws IOException {
+        Passage passage = new Passage();
+        
+        in.beginArray();
+        while (in.hasNext()) {
+            readPassageSegment(in, passage);
+        }
+        in.endArray();
+        
+        return passage;
+    }
+    
+    private void readPassageSegment(JsonReader in, Passage passage) throws IOException {
+        int startX = 0, startY = 0, endX = 0, endY = 0;
+        
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "startX": startX = in.nextInt(); break;
+                case "startY": startY = in.nextInt(); break;
+                case "endX": endX = in.nextInt(); break;
+                case "endY": endY = in.nextInt(); break;
+                default: in.skipValue(); break;
+            }
+        }
+        in.endObject();
+        
+        passage.addSegment(startX, startY, endX, endY);
+    }
+    
+    private void restoreMapData(Map map, int[][] mapData, int[][] floorData) {
+        try {
+            java.lang.reflect.Field mapField = Map.class.getDeclaredField("map");
+            java.lang.reflect.Field floorField = Map.class.getDeclaredField("floor");
+            
+            mapField.setAccessible(true);
+            floorField.setAccessible(true);
+            
+            mapField.set(map, mapData);
+            floorField.set(map, floorData);
+        } catch (Exception e) {
+            System.err.println("Error restoring map data: " + e.getMessage());
+        }
+    }
+    
+    private void restoreRoomsAndPassages(Map map, List<Rooms> rooms, 
+                                          List<Passage> passages) {
+        try {
+            java.lang.reflect.Field roomsField = Map.class.getDeclaredField("rooms");
+            java.lang.reflect.Field passagesField = Map.class.getDeclaredField("passages");
+            
+            roomsField.setAccessible(true);
+            passagesField.setAccessible(true);
+            
+            roomsField.set(map, rooms);
+            passagesField.set(map, passages);
+        } catch (Exception e) {
+            System.err.println("Error restoring rooms and passages: " + e.getMessage());
+        }
     }
 }
