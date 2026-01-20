@@ -27,6 +27,8 @@ public class Model implements Check {
     private int level;
     private Weapon weaponTaken;
 
+    private static final int MAX_LEVEL = 21;
+
     private static final String FOLDER = System.getProperty("user.dir") + File.separator + "save_json" + File.separator;
     private static final String FILE_NAME_PLAYER = FOLDER + "player.json";
     private static final String FILE_NAME_BACKPACK = FOLDER + "backpack.json";
@@ -37,7 +39,7 @@ public class Model implements Check {
     public Model(){
         backpack = new Backpack();
         map = new Map();
-        int[] startPos = map.getRandomPosition();
+        int[] startPos = map.getStartRoomCoords();
         player = new Player(startPos[0], startPos[1]);
         items = new GameItems();
         enemys = new GameEnemy();
@@ -48,8 +50,12 @@ public class Model implements Check {
     public void gameInitialization(){
         player.setStatus(StatusPlayer.ACTION);
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+        generateItems();
+        generateExit();
+        generateEnemies();
+    }
 
-//        // Генерация предметов
+    private void generateItems() {
         items.generateRandom(level);
         for(int i = 0; i < items.getItems().size(); ++i) {
             Items item = items.getItems().get(i);
@@ -57,12 +63,20 @@ public class Model implements Check {
             item.setCoord(roomPos[0], roomPos[1]);
             map.setMap(item.getCoord().getX(), item.getCoord().getY(), item.getSymbol());
         }
-//
-        // Генерация врагов (активная логика)
+    }
+
+    private void generateExit() {
+        if (level < MAX_LEVEL) {
+            int[] exitPos = map.getFinalRoomCoords();
+            map.setMap(exitPos[0], exitPos[1], '■');
+        }
+    }
+
+    private void generateEnemies() {
         enemys.generateRandom(level);
         for(int i = 0; i < enemys.getEnemy().size(); ++i){
             Attributes enemy = enemys.getEnemy().get(i);
-            int[] roomPos = map.getFreePosition();
+            int[] roomPos = map.excludeStartRoom();
             enemy.setCoord(roomPos[0], roomPos[1]);
             map.setMap(enemy.getCoord().getX(), enemy.getCoord().getY(), enemy.getSymbol());
         }
@@ -83,7 +97,6 @@ public class Model implements Check {
             player.updateSleep();
             return;
         }
-
         if (getPlayer().getStatus() == StatusPlayer.ACTION) {
             int tmpX = player.getCoord().getX();
             int tmpY = player.getCoord().getY();
@@ -106,7 +119,6 @@ public class Model implements Check {
                 default:
                     throw new IllegalArgumentException("Invalid status");
             }
-
             playerAction(tmpX, tmpY, oldX, oldY);
         }
     }
@@ -117,6 +129,14 @@ public class Model implements Check {
         }
         char cellChar = map.getMapChar(tmpX, tmpY);
         if (cellChar == '#' || cellChar == ' ' || cellChar == 0) {
+            return;
+        }
+        if (cellChar == '■') {
+            if (level < MAX_LEVEL) {
+                goToNextLevel();
+            } else {
+                player.setStatus(StatusPlayer.VICTORY);
+            }
             return;
         }
         if (checkEnemy(tmpX, tmpY)) {
@@ -142,6 +162,16 @@ public class Model implements Check {
             player.setCoord(tmpX, tmpY);
             map.setMap(tmpX, tmpY, player.getSymbol());
         }
+    }
+
+    private void goToNextLevel() {
+        level++;
+        enemys.getEnemy().clear();
+        items.getItems().clear();
+        map = new Map();
+        int[] startPos = map.getStartRoomCoords();
+        player.setCoord(startPos[0], startPos[1]);
+        gameInitialization();
     }
 
     // все что связано с предметами
@@ -461,7 +491,8 @@ public class Model implements Check {
     @Override
     public boolean checkingSymbols(char symbol){
         return symbol == 's' || symbol == 'w' ||
-                symbol == 'f' || symbol == 'e';
+                symbol == 'f' || symbol == 'e' ||
+                symbol == '■';
     }
 
 
