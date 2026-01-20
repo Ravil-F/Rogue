@@ -13,6 +13,8 @@ import domain.items.GameItems;
 import domain.items.Weapon;
 import domain.location.Map;
 import domain.player.Player;
+import utils.SaveGame;
+import java.io.File;
 
 import java.util.*;
 
@@ -24,6 +26,13 @@ public class Model implements Check {
     private GameEnemy enemys;
     private int level;
     private Weapon weaponTaken;
+
+    private static final String FOLDER = System.getProperty("user.dir") + File.separator + "save_json" + File.separator;
+    private static final String FILE_NAME_PLAYER = FOLDER + "player.json";
+    private static final String FILE_NAME_BACKPACK = FOLDER + "backpack.json";
+    private static final String FILE_NAME_GAMEITEMS = FOLDER + "game_items.json";
+    private static final String FILE_NAME_GAMEENEMY = FOLDER + "game_enemy.json";
+    private static final String FILE_NAME_WEAPONTAKEN = FOLDER + "weapon_taken.json";
 
     public Model(){
         backpack = new Backpack();
@@ -205,6 +214,14 @@ public class Model implements Check {
 
     public GameEnemy getEnemys() {
         return enemys;
+    }
+
+    public Weapon getWeaponTaken() {
+        return weaponTaken;
+    }
+
+    public void setWeaponTaken(Weapon weaponTaken) {
+        this.weaponTaken = weaponTaken;
     }
 
     public int getLevel() {
@@ -446,4 +463,75 @@ public class Model implements Check {
         return symbol == 's' || symbol == 'w' ||
                 symbol == 'f' || symbol == 'e';
     }
+
+
+    //для работы с json
+    public void saveGame(){
+        File folder = new File(FOLDER);
+    if (!folder.exists()) {
+        boolean created = folder.mkdirs();
+        if (!created) {
+            System.err.println("Not create folder: " + FOLDER);
+            return;
+        }
+    }
+        SaveGame.savePlayer(player, FILE_NAME_PLAYER);
+        SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
+        SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
+        SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
+        SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
+    }
+
+    public void loadGame() {
+        Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
+        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
+        GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
+        GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
+        Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
+
+        if ((loadedPlayer != null) && (loadedBackpack != null) &&
+            (loadedItems != null) && loadedEnemies != null && loadedWeaponTaken != null) {
+            this.player = loadedPlayer;
+            this.backpack = loadedBackpack;
+            this.items = loadedItems;
+            this.enemys = loadedEnemies;
+            this.weaponTaken = loadedWeaponTaken;
+            restoreEnemiesOnMap();
+            restoreGameAfterLoad();
+            restoreItemsOnMap();
+        } else {
+            System.out.println("Not JSON file");
+            player = new Player(5, 5);
+        }
+    }
+
+    private void restoreGameAfterLoad() {
+        map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+
+        if (player.getHealth() <= 0) {
+            player.setStatus(StatusPlayer.GAMEOVER);
+        } else {
+            player.setStatus(StatusPlayer.ACTION);
+        }
+    }
+
+    private void restoreItemsOnMap(){
+        for(Items item : items.getItems()){
+            if(item != null && item.getCoord() != null){
+                int x = item.getCoord().getX();
+                int y = item.getCoord().getY();
+                map.setMap(x, y, item.getSymbol());
+            }
+        }
+    }
+
+   private void restoreEnemiesOnMap(){
+        for(Attributes enemy : enemys.getEnemy()){
+            if(enemy != null && enemy.getCoord() != null){
+                int x = enemy.getCoord().getX();
+                int y = enemy.getCoord().getY();
+                map.setMap(x, y, enemy.getSymbol());
+            }
+        }
+   }
 }

@@ -60,4 +60,7 @@ public abstract class Attributes extends Entity{
         return hostility;
     }
 
+    public void setHostility(int hostility) {
+        this.hostility = hostility;
+    }
 }

@@ -50,8 +50,6 @@ public class Controller {
                         default:
                             break;
                     }
-                } else if (key.getKeyType() == KeyType.Escape) {
-                    getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
                 }
             }
             if(key.getCharacter() == 'w' || key.getCharacter() == 's' || key.getCharacter() == 'a' ||

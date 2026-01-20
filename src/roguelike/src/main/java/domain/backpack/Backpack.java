@@ -58,6 +58,10 @@ public class Backpack {
         return screenOuptup;
    }
 
+    public void setScreenOutput(List<Items> screenOuptup) {
+        this.screenOuptup = screenOuptup;
+    }
+
 }
 
 

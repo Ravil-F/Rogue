@@ -221,8 +221,9 @@ public class View {
         controller.passName(namePlayer);
     }
 
-    public void gameLoop() throws IOException {
-        controller.getModel().gameInitialization();
+    public void gameLoop(boolean flag) throws IOException {
+        if (flag)
+            controller.getModel().gameInitialization();
         try{
             while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER){
                 screen.clear();

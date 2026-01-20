@@ -1,6 +1,8 @@
 package domain.player;
 
+import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
+import domain.common.Coord;
 import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
 import utils.PlayerProperties;
@@ -8,10 +10,11 @@ import utils.PlayerProperties;
 import javax.swing.*;
 
 public class Player extends Attributes implements Action {
-    private final PlayerProperties properties;
+    private transient PlayerProperties properties;
     private StatusPlayer status;
     private int treasure;
     private int sleep;
+
 
     public Player(int x, int y) {
         this(createProperties(), x, y);
@@ -27,6 +30,14 @@ public class Player extends Attributes implements Action {
                 properties.getStrength(), 0, x, y);
         this.properties = properties;
     }
+
+    public Player(){
+        super("Player", '@',
+                TextColor.ANSI.RED, 100,
+                100, 90,
+                40, 0, 0, 0);
+    }
+
 
     private static PlayerProperties createProperties(){
         return new PlayerProperties("player");
