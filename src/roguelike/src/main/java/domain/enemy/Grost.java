@@ -83,4 +83,6 @@ public class Grost extends Attributes implements Action, Check {
             entity.setAgility(entity.getAgility() - 5);
         }
     }
+
+
 }

@@ -16,7 +16,4 @@ public class Elixir extends Items {
         return elixir;
     }
 
-    public int getDuration() {
-        return 60;
-    }
 }

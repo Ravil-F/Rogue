@@ -10,4 +10,8 @@ public class Treasure extends Items {
         super(treasure.getSymbol(), treasure.getName(), treasure.getIncrease(), treasure.getColor(), x, y);
         this.treasure = treasure;
     }
+
+    public TreasureE getTreasure() {
+        return treasure;
+    }
 }

@@ -1,0 +1,69 @@
+{
+  "enemy": [
+    {
+      "type": "Orge",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 100,
+      "strength": 50,
+      "hostility": 4,
+      "name": "Orge",
+      "symbol": "O",
+      "color": "YELLOW",
+      "coordX": 12,
+      "coordY": 25
+    },
+    {
+      "type": "Vampire",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 90,
+      "strength": 30,
+      "hostility": 6,
+      "name": "Zampire",
+      "symbol": "V",
+      "color": "RED",
+      "coordX": 69,
+      "coordY": 25
+    },
+    {
+      "type": "SnakeMage",
+      "maxHealth": 50,
+      "health": 50,
+      "agility": 100,
+      "strength": 50,
+      "hostility": 6,
+      "name": "Snake_mage",
+      "symbol": "S",
+      "color": "WHITE",
+      "coordX": 17,
+      "coordY": 26
+    },
+    {
+      "type": "SnakeMage",
+      "maxHealth": 50,
+      "health": 50,
+      "agility": 100,
+      "strength": 50,
+      "hostility": 6,
+      "name": "Snake_mage",
+      "symbol": "S",
+      "color": "WHITE",
+      "coordX": 61,
+      "coordY": 17
+    },
+    {
+      "type": "Orge",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 100,
+      "strength": 50,
+      "hostility": 4,
+      "name": "Orge",
+      "symbol": "O",
+      "color": "YELLOW",
+      "coordX": 2,
+      "coordY": 27
+    }
+  ]
+}

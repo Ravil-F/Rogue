@@ -7,6 +7,8 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.TerminalSize;
+import domain.abstact.Attributes;
+import com.googlecode.lanterna.TextColor;
 import domain.abstact.Items;
 import domain.enums.StatusPlayer;
 import domain.location.Rooms;
@@ -37,8 +39,6 @@ public class View {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
-
     }
 
     // VIEW WINDOWS
@@ -51,7 +51,6 @@ public class View {
         }catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     public String inputScan() throws IOException, InterruptedException {
@@ -94,11 +93,37 @@ public class View {
             for (int y = 0; y < mapHeight; ++y){
                 char cellChar = controller.getModel().getMap().getMapChar(x, y);
                 if (cellChar != 0 && cellChar != ' ' && cellChar != '#' && cellChar != '.') {
+                    TextColor color = getCellColor(x, y, cellChar);
+                    textGraphics.setForegroundColor(color);
                     textGraphics.putString(x + offsetX, y + offsetY, String.valueOf(cellChar));
+                    textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
                 }
             }
         }
     }
+
+    private TextColor getCellColor(int x, int y, char symbol) {
+        if (controller.getModel().getPlayer().getCoord().getX() == x &&
+                controller.getModel().getPlayer().getCoord().getY() == y) {
+            return controller.getModel().getPlayer().getColor();
+        }
+
+        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
+            if (enemy.getCoord().getX() == x && enemy.getCoord().getY() == y) {
+                return enemy.getColor();
+            }
+        }
+
+        for (Items item : controller.getModel().getItems().getItems()) {
+            if (item.getCoord().getX() == x && item.getCoord().getY() == y) {
+                return item.getColor();
+            }
+        }
+
+        // Цвет по умолчанию для символа
+        return TextColor.ANSI.WHITE;
+    }
+
 
     private void drawRoomContent(TextGraphics tg, Rooms room, int offsetX, int offsetY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
@@ -150,20 +175,20 @@ public class View {
         int offsetY = 1;
         int infoY = mapHeight + offsetY + 2;
         String info = String.format(
-                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d",
-                controller.getModel().getLevel(),
-                controller.getModel().getPlayer().getHealth(),
-                controller.getModel().getPlayer().getMaxHealth(),
-                controller.getModel().getPlayer().getAgility(),
-                controller.getModel().getPlayer().getStrength()
+            "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
+            controller.getModel().getLevel(),
+            controller.getModel().getPlayer().getHealth(),
+            controller.getModel().getPlayer().getMaxHealth(),
+            controller.getModel().getPlayer().getAgility(),
+            controller.getModel().getPlayer().getStrength(),
+            controller.getModel().getPlayer().getTreasure()
         );
         int infoRectWidth = mapWidth + offsetX;
         drawRectangle(textGraphics, infoY - 1, infoY + 1,
-                offsetX - 1, infoRectWidth);
+             offsetX - 1, infoRectWidth);
         int infoTextWidth = info.length();
         int rectWidth = infoRectWidth - offsetX + 1;
-        int centerX = offsetX + (rectWidth - infoTextWidth) / 2;
-
+        int centerX = (rectWidth - infoTextWidth) / 2 + 1;
         textGraphics.putString(centerX, infoY, info);
     }
 
@@ -221,8 +246,9 @@ public class View {
         controller.passName(namePlayer);
     }
 
-    public void gameLoop() throws IOException {
-        controller.getModel().gameInitialization();
+    public void gameLoop(boolean flag) throws IOException {
+        if (flag)
+            controller.getModel().gameInitialization();
         try{
             while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER){
                 screen.clear();
