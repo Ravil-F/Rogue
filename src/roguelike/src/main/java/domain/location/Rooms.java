@@ -36,4 +36,11 @@ public class Rooms {
     public int getBottomY() { return bottomY; }
     public int getWidth() { return width; }
     public int getHeight() { return height; }
+
+    public void setLeftX(int x){ this.leftX = x;}
+    public void setRightX(int x){ this.rightX = x;}
+    public void setTopY(int y){ this.topY = y;}
+    public void setBottomY(int y){ this.bottomY = y;}
+    public void setWidth(int width) { this.width = width; }
+    public void setHeight(int health) { this.height = height;} 
 }

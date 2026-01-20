@@ -33,6 +33,7 @@ public class Model implements Check {
     private static final String FILE_NAME_GAMEITEMS = FOLDER + "game_items.json";
     private static final String FILE_NAME_GAMEENEMY = FOLDER + "game_enemy.json";
     private static final String FILE_NAME_WEAPONTAKEN = FOLDER + "weapon_taken.json";
+    private static final String FILE_NAME_MAP = FOLDER + "map.json";
 
     public Model(){
         backpack = new Backpack();
@@ -468,18 +469,18 @@ public class Model implements Check {
     //для работы с json
     public void saveGame(){
         File folder = new File(FOLDER);
-    if (!folder.exists()) {
-        boolean created = folder.mkdirs();
-        if (!created) {
-            System.err.println("Not create folder: " + FOLDER);
-            return;
+        if (!folder.exists()) {
+            boolean created = folder.mkdirs();
+            if (!created) {
+                System.err.println("Not create folder: " + FOLDER);
+                return;
+            }
         }
-    }
-        SaveGame.savePlayer(player, FILE_NAME_PLAYER);
-        SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
-        SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
-        SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
-        SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
+            SaveGame.savePlayer(player, FILE_NAME_PLAYER);
+            SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
+            SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
+            SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
+            SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
     }
 
     public void loadGame() {
@@ -488,14 +489,17 @@ public class Model implements Check {
         GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
         GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
         Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
+        Map loadedMap = SaveGame.loadMap(FILE_NAME_MAP);
 
         if ((loadedPlayer != null) && (loadedBackpack != null) &&
-            (loadedItems != null) && loadedEnemies != null && loadedWeaponTaken != null) {
+            (loadedItems != null) && loadedEnemies != null && 
+            loadedWeaponTaken != null && loadedMap != null) {
             this.player = loadedPlayer;
             this.backpack = loadedBackpack;
             this.items = loadedItems;
             this.enemys = loadedEnemies;
             this.weaponTaken = loadedWeaponTaken;
+            this.map = loadedMap;
             restoreEnemiesOnMap();
             restoreGameAfterLoad();
             restoreItemsOnMap();
