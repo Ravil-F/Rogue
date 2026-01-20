@@ -481,6 +481,7 @@ public class Model implements Check {
             SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
             SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
             SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
+            SaveGame.saveMap(map, FILE_NAME_MAP);
     }
 
     public void loadGame() {
