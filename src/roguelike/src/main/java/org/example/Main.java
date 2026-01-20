@@ -3,7 +3,7 @@ import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
 import domain.enums.StatusPlayer;
 import presentation.Controller;
-import p    resentation.View;
+import presentation.View;
 
 import java.io.IOException;
 
