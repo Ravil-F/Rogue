@@ -39,8 +39,6 @@ public class View {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
-
     }
 
     // VIEW WINDOWS
@@ -53,7 +51,6 @@ public class View {
         }catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     public String inputScan() throws IOException, InterruptedException {
@@ -174,32 +171,24 @@ public class View {
     private void viewInfo(){
         int mapWidth = controller.getModel().getMap().getWidth();
         int mapHeight = controller.getModel().getMap().getHeight();
-        // int offsetX = 1;
-        // int offsetY = 1;
-        // int infoY = mapHeight + offsetY + 2;
-        int infoY = mapHeight;
+        int offsetX = 1;
+        int offsetY = 1;
+        int infoY = mapHeight + offsetY + 2;
         String info = String.format(
-                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
-                controller.getModel().getLevel(),
-                controller.getModel().getPlayer().getHealth(),
-                controller.getModel().getPlayer().getMaxHealth(),
-                controller.getModel().getPlayer().getAgility(),
-                controller.getModel().getPlayer().getStrength(),
-                controller.getModel().getPlayer().getTreasure()
+            "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
+            controller.getModel().getLevel(),
+            controller.getModel().getPlayer().getHealth(),
+            controller.getModel().getPlayer().getMaxHealth(),
+            controller.getModel().getPlayer().getAgility(),
+            controller.getModel().getPlayer().getStrength(),
+            controller.getModel().getPlayer().getTreasure()
         );
-        // int infoRectWidth = mapWidth + offsetX;
-        // drawRectangle(textGraphics, infoY - 1, infoY + 1,
-        //         offsetX - 1, infoRectWidth);
-        // int infoTextWidth = info.length();
-        // int rectWidth = infoRectWidth - offsetX + 1;
-        // int centerX = offsetX + (rectWidth - infoTextWidth) / 2;
-        int infoRectWidth = mapWidth;
+        int infoRectWidth = mapWidth + offsetX;
         drawRectangle(textGraphics, infoY - 1, infoY + 1,
-                1, infoRectWidth);
+             offsetX - 1, infoRectWidth);
         int infoTextWidth = info.length();
-        int rectWidth = infoRectWidth + 1;
-        int centerX = (rectWidth - infoTextWidth) / 2;
-
+        int rectWidth = infoRectWidth - offsetX + 1;
+        int centerX = (rectWidth - infoTextWidth) / 2 + 1;
         textGraphics.putString(centerX, infoY, info);
     }
 
