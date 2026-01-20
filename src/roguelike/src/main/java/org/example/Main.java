@@ -32,6 +32,7 @@ public class Main {
                             String namePlayer = view.inputScan();
                             if (namePlayer.equals(" "))
                                 view.passName(namePlayer);
+                            else controller.passName(namePlayer);
                             view.gameLoop(true);
                             break;
                         case '2':

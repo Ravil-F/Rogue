@@ -762,27 +762,27 @@ class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
     public void write(JsonWriter out, Map map) throws IOException {
         out.beginObject();
    
-        out.name("mapData");
+    out.name("mapData");
+    out.beginArray();
+    for (int y = 0; y < domain.location.Map.MAP_HEIGHT; y++) {
         out.beginArray();
-        for (int y = 0; y < Map.MAP_HEIGHT; y++) {
-            out.beginArray();
-            for (int x = 0; x < Map.MAP_WIDTH; x++) {
-                out.value(map.getMap(x, y));
-            }
-            out.endArray();
+        for (int x = 0; x < domain.location.Map.MAP_WIDTH; x++) {
+            out.value(map.getMap(x, y));
         }
         out.endArray();
+    }
+    out.endArray();
    
-        out.name("floorData");
+    out.name("floorData");
+    out.beginArray();
+    for (int y = 0; y < domain.location.Map.MAP_HEIGHT; y++) {
         out.beginArray();
-        for (int y = 0; y < Map.MAP_HEIGHT; y++) {
-            out.beginArray();
-            for (int x = 0; x < Map.MAP_WIDTH; x++) {
-                out.value(map.getFloorChar(x, y));
-            }
-            out.endArray();
+        for (int x = 0; x < domain.location.Map.MAP_WIDTH; x++) {
+            out.value(map.getFloorChar(x, y));
         }
         out.endArray();
+    }
+    out.endArray();
         
         out.name("rooms");
         out.beginArray();
