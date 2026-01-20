@@ -203,6 +203,18 @@ public class View {
         }
     }
 
+    private void viewVictory(){
+        try {
+            screen.clear();
+            textGraphics.putString(4, 2, "Victory! You completed the game, " +
+                    controller.getModel().getPlayer().getName());
+            screen.refresh();
+            Thread.sleep(3000);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void viewSingleItemtype(final char symbol) throws IOException {
         int tmpX = controller.getModel().getMap().getHeight();
         textGraphics.putString(tmpX + 2, 1, "Enter number items (0-8), Escape - exit");
@@ -241,7 +253,6 @@ public class View {
     }
     //END GET-SET METOD
 
-
     public void passName(String namePlayer){
         controller.passName(namePlayer);
     }
@@ -262,7 +273,6 @@ public class View {
                         controller.userInput(this.key, true);
                         viewController();
                     }
-
                     viewMap();
                     viewInfo();
                     screen.refresh();
@@ -270,9 +280,10 @@ public class View {
                     setKey();
                 }
             }
-
             if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER))
                 viewGameOver();
+            else if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY))
+                viewVictory();
 
         }catch (Exception e){
             System.out.println(e.getMessage());

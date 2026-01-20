@@ -6,5 +6,6 @@ public enum StatusPlayer {
     GAMEOVER,
     PAUSE,
     ATTAC,
-    SLEEP;
+    SLEEP,
+    VICTORY;
 }

@@ -30,6 +30,9 @@ public class Map implements Check {
     private List<Rooms> rooms = new ArrayList<>();
     private List<Passage> passages = new ArrayList<>();
 
+    private int startRoomNum;
+    private int finalRoomNum;
+
     public Map() {
         common = new CommonProperties();
         this.map = new int[MAP_WIDTH][MAP_HEIGHT];
@@ -64,6 +67,10 @@ public class Map implements Check {
                     REGION_WIDTH, REGION_HEIGHT);
             rooms.add(room);
         }
+        startRoomNum = rnd.nextInt(NUM_ROOMS);
+        do {
+            finalRoomNum = rnd.nextInt(NUM_ROOMS);
+        } while (finalRoomNum == startRoomNum);
         generatePassages();
     }
 
@@ -222,6 +229,45 @@ public class Map implements Check {
         return getRandomPosition();
     }
 
+    public int[] getStartRoomCoords() {
+        Rooms startRoom = rooms.get(startRoomNum);
+        int x = getRandomInRange(startRoom.getLeftX() + 1, startRoom.getRightX() - 1);
+        int y = getRandomInRange(startRoom.getTopY() + 1, startRoom.getBottomY() - 1);
+        return new int[]{x, y};
+    }
+
+    public int[] excludeStartRoom() {
+        int maxAttempts = 100;
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            int roomNum = rnd.nextInt(rooms.size());
+            if (roomNum == startRoomNum) {
+                continue;
+            }
+            Rooms room = rooms.get(roomNum);
+            int x = getRandomInRange(room.getLeftX() + 1, room.getRightX() - 1);
+            int y = getRandomInRange(room.getTopY() + 1, room.getBottomY() - 1);
+            char cell = getMapChar(x, y);
+            if (cell == '.') {
+                return new int[]{x, y};
+            }
+        }
+        return getRandomPosition();
+    }
+
+    public int[] getFinalRoomCoords() {
+        Rooms finalRoom = rooms.get(finalRoomNum);
+        int x = getRandomInRange(finalRoom.getLeftX() + 1, finalRoom.getRightX() - 1);
+        int y = getRandomInRange(finalRoom.getTopY() + 1, finalRoom.getBottomY() - 1);
+        return new int[]{x, y};
+    }
+
+    public int getStartRoom() {
+        return startRoomNum;
+    }
+
+    public int getFinalRoom() {
+        return finalRoomNum;
+    }
 
     public char getFloorChar(int x, int y) {
         if (isWithInBounds(x, y)) {
