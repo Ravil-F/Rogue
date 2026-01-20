@@ -27,7 +27,7 @@ public class Model implements Check {
     private int level;
     private Weapon weaponTaken;
 
-    private static final String FOLDER = "save_json/";
+    private static final String FOLDER = System.getProperty("user.dir") + File.separator + "save_json" + File.separator;
     private static final String FILE_NAME_PLAYER = FOLDER + "player.json";
     private static final String FILE_NAME_BACKPACK = FOLDER + "backpack.json";
     private static final String FILE_NAME_GAMEITEMS = FOLDER + "game_items.json";
@@ -425,7 +425,14 @@ public class Model implements Check {
 
     //для работы с json
     public void saveGame(){
-        new File(FOLDER).mkdirs();
+        File folder = new File(FOLDER);
+    if (!folder.exists()) {
+        boolean created = folder.mkdirs();
+        if (!created) {
+            System.err.println("Not create folder: " + FOLDER);
+            return;
+        }
+    }
         SaveGame.savePlayer(player, FILE_NAME_PLAYER);
         SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
         SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
