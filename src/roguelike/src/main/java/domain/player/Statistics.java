@@ -1,0 +1,72 @@
+package domain.player;
+
+import utils.GameStatistics;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+public class Statistics {
+    private static Statistics statistics;
+    private List<GameStatistics> allStatistics;
+    private static final String STATISTICS_FILE = "game_statistics.txt";
+
+    private Statistics(){
+        allStatistics = new ArrayList<>();
+        loadStatisrics();
+    }
+
+    public static synchronized Statistics getStatistics(){
+        if(statistics == null)
+            statistics = new Statistics();
+        return statistics;
+    }
+
+    public void addStatistics(GameStatistics gameStatistics){
+        if(gameStatistics == null) return;
+        allStatistics.add(gameStatistics);
+        saveStatisrics();
+    }
+
+    public List<GameStatistics> getAllStatistics() {
+        return allStatistics;
+    }
+
+    public void setAllStatistics(List<GameStatistics> allStatistics) {
+        this.allStatistics = allStatistics;
+    }
+
+    private void saveStatisrics(){
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(STATISTICS_FILE))){
+            oos.writeObject(allStatistics);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadStatisrics(){
+        File file = new File(STATISTICS_FILE);
+        if (!file.exists()) {
+            allStatistics = new ArrayList<>();
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(STATISTICS_FILE))) {
+            allStatistics = (List<GameStatistics>) ois.readObject();
+            sortStatistics();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Ошибка загрузки статистики: " + e.getMessage());
+            allStatistics = new ArrayList<>();
+        }
+    }
+
+    private  void sortStatistics(){
+        Collections.sort(allStatistics);
+    }
+
+
+}
