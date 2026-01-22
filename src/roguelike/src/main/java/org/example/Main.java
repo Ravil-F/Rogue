@@ -22,7 +22,7 @@ public class Main {
     }
 
     private static void startGameLoop(View view, Controller controller) throws IOException, InterruptedException {
-        while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER) {
+        while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER && controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY) {
             view.setKey();
             if (view.getKey() != null) {
                 if (view.getKey().getKeyType() == KeyType.Character) {

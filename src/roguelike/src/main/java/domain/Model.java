@@ -66,10 +66,8 @@ public class Model implements Check {
     }
 
     private void generateExit() {
-        if (level < MAX_LEVEL) {
-            int[] exitPos = map.getFinalRoomCoords();
-            map.setMap(exitPos[0], exitPos[1], '■');
-        }
+        int[] exitPos = map.getFinalRoomCoords();
+        map.setMap(exitPos[0], exitPos[1], '■');
     }
 
     private void generateEnemies() {

@@ -192,25 +192,13 @@ public class View {
         textGraphics.putString(centerX, infoY, info);
     }
 
-    private void viewGameOver(){
+    private void viewGameStatus(String message){
         try {
             screen.clear();
-            textGraphics.putString(4, 2, "Game Over, " + controller.getModel().getPlayer().getName());
+            textGraphics.putString(4, 2, message + controller.getModel().getPlayer().getName());
             screen.refresh();
             Thread.sleep(2000);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void viewVictory(){
-        try {
-            screen.clear();
-            textGraphics.putString(4, 2, "Victory! You completed the game, " +
-                    controller.getModel().getPlayer().getName());
-            screen.refresh();
-            Thread.sleep(3000);
-        }catch (Exception e){
+        } catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
@@ -261,11 +249,11 @@ public class View {
         if (flag)
             controller.getModel().gameInitialization();
         try{
-            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER){
+            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER && controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY){
                 screen.clear();
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
-                        viewGameOver();
+                        viewGameStatus("Game Over, ");
                         break;
                     }
 
@@ -281,10 +269,9 @@ public class View {
                 }
             }
             if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER))
-                viewGameOver();
+                viewGameStatus("Game Over, ");
             else if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY))
-                viewVictory();
-
+                viewGameStatus("Victory! You completed the game, ");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }

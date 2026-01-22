@@ -1,34 +1,32 @@
 {
   "items": [
     {
-      "type": "Scroll",
-      "scrollEnum": "STRENGTH_S",
-      "name": "strength scroll",
-      "symbol": "s",
-      "increase": 20,
-      "color": "YELLOW",
-      "coordX": 47,
-      "coordY": 24
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 19,
+      "coordY": 3
     },
     {
-      "type": "Food",
-      "foodEnum": "MEAT_F",
-      "name": "meat",
-      "symbol": "f",
-      "increase": 20,
-      "color": "GREEN",
-      "coordX": 42,
-      "coordY": 24
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 34,
+      "coordY": 3
     },
     {
-      "type": "Scroll",
-      "scrollEnum": "STRENGTH_S",
-      "name": "strength scroll",
-      "symbol": "s",
-      "increase": 20,
-      "color": "YELLOW",
-      "coordX": 73,
-      "coordY": 17
+      "type": "Treasure",
+      "treasureEnum": "TREASURES_T",
+      "name": "treasures",
+      "symbol": "t",
+      "increase": 10,
+      "color": "MAGENTA",
+      "coordX": 5,
+      "coordY": 12
     },
     {
       "type": "Scroll",
@@ -37,18 +35,18 @@
       "symbol": "s",
       "increase": 20,
       "color": "YELLOW",
-      "coordX": 44,
-      "coordY": 24
+      "coordX": 34,
+      "coordY": 2
     },
     {
-      "type": "Scroll",
-      "scrollEnum": "STRENGTH_S",
-      "name": "strength scroll",
-      "symbol": "s",
-      "increase": 20,
-      "color": "YELLOW",
-      "coordX": 71,
-      "coordY": 16
+      "type": "Elixir",
+      "elixirEnum": "AGILITY_E",
+      "name": "agility elixir",
+      "symbol": "e",
+      "increase": 30,
+      "color": "BLUE",
+      "coordX": 32,
+      "coordY": 3
     }
   ]
 }
