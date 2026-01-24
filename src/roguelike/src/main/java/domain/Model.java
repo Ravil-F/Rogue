@@ -13,6 +13,8 @@ import domain.items.GameItems;
 import domain.items.Weapon;
 import domain.location.Map;
 import domain.player.Player;
+import domain.player.Statistics;
+import utils.GameStatistics;
 import utils.SaveGame;
 import java.io.File;
 
@@ -26,7 +28,8 @@ public class Model implements Check {
     private GameEnemy enemys;
     private int level;
     private Weapon weaponTaken;
-
+    private Statistics statistics;
+    private GameStatistics gameStatistics;
     private static final int MAX_LEVEL = 21;
 
     private static final String FOLDER = System.getProperty("user.dir") + File.separator + "save_json" + File.separator;
@@ -46,6 +49,8 @@ public class Model implements Check {
         enemys = new GameEnemy();
         level = 1;
         this.weaponTaken = new Weapon(null, 0, 0);
+        this.statistics = Statistics.getStatistics();
+        this.gameStatistics = null;
     }
 
     public void gameInitialization(){
@@ -54,6 +59,8 @@ public class Model implements Check {
         generateItems();
         generateExit();
         generateEnemies();
+        gameStatistics = new GameStatistics(player.getName());
+        gameStatistics.setMaxLevel(level);
     }
 
     private void generateItems() {
@@ -570,4 +577,66 @@ public class Model implements Check {
             }
         }
    }
+
+    // для работы по статистике в игре
+    private void incrementEnemyKilled(){
+        if(gameStatistics != null)
+                gameStatistics.addEnemyKilled();
+    }
+
+    public void incrementFoodEaten() {
+        if (gameStatistics != null) {
+            gameStatistics.addFoodEaten();
+        }
+    }
+
+    public void incrementTreasure(int amount) {
+        if (gameStatistics != null) {
+            gameStatistics.addTreasure(amount);
+        }
+    }
+
+    public void incrementElixirDrink() {
+        if (gameStatistics != null) {
+            gameStatistics.addElixirDrink();
+        }
+    }
+
+    public void incrementScrollUse() {
+        if (gameStatistics != null) {
+            gameStatistics.addScrollUse();
+        }
+    }
+
+    public void incrementAttacksMade() {
+        if (gameStatistics != null) {
+            gameStatistics.addAttacksMade();
+        }
+    }
+
+    public void incrementAttacksReceived() {
+        if (gameStatistics != null) {
+            gameStatistics.addAttacksReceived();
+        }
+    }
+
+    public void incrementCellMoved() {
+        if (gameStatistics != null) {
+            gameStatistics.addCellMoved();
+        }
+    }
+
+    public void updateMaxLevel() {
+        if (gameStatistics != null && level > gameStatistics.getMaxLevel()) {
+            gameStatistics.setMaxLevel(level);
+        }
+    }
+
+    public void endGame(boolean isVictory) {
+        if (gameStatistics != null) {
+            gameStatistics.setVictory(isVictory);
+            statistics.addStatistics(gameStatistics);
+            gameStatistics = null;
+        }
+    }
 }

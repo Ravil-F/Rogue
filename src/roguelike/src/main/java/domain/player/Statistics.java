@@ -13,9 +13,9 @@ public class Statistics {
     private List<GameStatistics> allStatistics;
     private static final String STATISTICS_FILE = "game_statistics.txt";
 
-    private Statistics(){
+    public Statistics(){
         allStatistics = new ArrayList<>();
-        loadStatisrics();
+        loadStatistics();
     }
 
     public static synchronized Statistics getStatistics(){
@@ -27,7 +27,7 @@ public class Statistics {
     public void addStatistics(GameStatistics gameStatistics){
         if(gameStatistics == null) return;
         allStatistics.add(gameStatistics);
-        saveStatisrics();
+        saveStatistics();
     }
 
     public List<GameStatistics> getAllStatistics() {
@@ -38,7 +38,7 @@ public class Statistics {
         this.allStatistics = allStatistics;
     }
 
-    private void saveStatisrics(){
+    private void saveStatistics(){
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(STATISTICS_FILE))){
             oos.writeObject(allStatistics);
         } catch (IOException e) {
@@ -46,8 +46,7 @@ public class Statistics {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void loadStatisrics(){
+    private void loadStatistics(){
         File file = new File(STATISTICS_FILE);
         if (!file.exists()) {
             allStatistics = new ArrayList<>();
@@ -59,7 +58,7 @@ public class Statistics {
             allStatistics = (List<GameStatistics>) ois.readObject();
             sortStatistics();
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Ошибка загрузки статистики: " + e.getMessage());
+            System.err.println("Not load statistics: " + e.getMessage());
             allStatistics = new ArrayList<>();
         }
     }
@@ -67,6 +66,4 @@ public class Statistics {
     private  void sortStatistics(){
         Collections.sort(allStatistics);
     }
-
-
 }
