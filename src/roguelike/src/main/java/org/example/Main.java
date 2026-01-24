@@ -39,6 +39,10 @@ public class Main {
                             controller.getModel().loadGame();
                             view.gameLoop(false);
                             break;
+                        case '3':
+                            controller.getModel().getGameStatistics();
+                            view.gameStatisticsView();
+                            break;
                         default:
                             break;
                     }

@@ -150,8 +150,10 @@ public class Model implements Check {
         if (checkEnemy(tmpX, tmpY)) {
             int index = enemys.getIndex(tmpX, tmpY);
             if (index >= 0 && index < enemys.getEnemy().size()) {
+                incrementAttacksMade();
                 player.attack(enemys.getEnemy().get(index));
                 if(enemys.getEnemy().get(index).getHealth() <= 0) {
+                    incrementEnemyKilled();
                     int enemyX = enemys.getEnemy().get(index).getCoord().getX();
                     int enemyY = enemys.getEnemy().get(index).getCoord().getY();
                     map.putZero(enemyX, enemyY);
@@ -166,6 +168,7 @@ public class Model implements Check {
             return;
         }
         if (!checkItems(tmpX, tmpY)) {
+            incrementCellMoved();
             map.putZero(oldX, oldY);
             player.setCoord(tmpX, tmpY);
             map.setMap(tmpX, tmpY, player.getSymbol());
@@ -173,6 +176,7 @@ public class Model implements Check {
     }
 
     private void goToNextLevel() {
+        updateMaxLevel();
         level++;
         enemys.getEnemy().clear();
         items.getItems().clear();
@@ -198,6 +202,7 @@ public class Model implements Check {
             }
 
             if (cellChar == 't') {
+                incrementTreasure(item.getIncrease());
                 player.increaseTreasure(item.getIncrease());
                 flag = true;
             }
@@ -266,6 +271,14 @@ public class Model implements Check {
         return level;
     }
 
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public GameStatistics getGameStatistics() {
+        return gameStatistics;
+    }
+
     // действия предметов из рюкзака
     public void actionOfItems(final char symbol, final int index){
         List<Items> item = getBackpack().getPackItems(symbol);
@@ -286,13 +299,16 @@ public class Model implements Check {
                 weaponTaken = (domain.items.Weapon) item.get(index);
                 break;
             case 'f':
+                incrementFoodEaten();
                 if (getPlayer().getHealth() <= 100)
                     getPlayer().increaseHealth(value);
                 break;
             case 'e':
+                incrementElixirDrink();
                 actionWithElixirScroll(item.get(index).getName(), value);
                 break;
             case 's':
+                incrementScrollUse();
                 actionWithElixirScroll(item.get(index).getName(), value);
                 break;
         }
@@ -361,9 +377,12 @@ public class Model implements Check {
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
                 if (isPlayerAdjacent(currentX, currentY)) {
+                    incrementAttacksReceived();
                     ((Action) enemy).attack(player);
-                    if(player.getHealth() <= 0)
+                    if(player.getHealth() <= 0) {
                         player.setStatus(StatusPlayer.GAMEOVER);
+                        endGame(false);
+                    }
                     continue;
                 }
 

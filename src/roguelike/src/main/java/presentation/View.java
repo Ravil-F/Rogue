@@ -46,7 +46,8 @@ public class View {
         try {
             textGraphics.putString(4, 2, "1      - New game");
             textGraphics.putString(4, 3, "2      - Load save game");
-            textGraphics.putString(4, 4, "Escape - Exit game");
+            textGraphics.putString(4, 4, "3      - Load game statistics");
+            textGraphics.putString(4, 5, "Escape - Exit game");
             screen.refresh();
         }catch (IOException e) {
             System.out.println(e.getMessage());
@@ -328,6 +329,10 @@ public class View {
 
     public void stopWidows() throws IOException {
         screen.stopScreen();
+    }
+
+    public void gameStatisticsView(){
+
     }
 
 }

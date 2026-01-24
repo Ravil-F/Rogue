@@ -11,7 +11,7 @@ import java.util.List;
 public class Statistics {
     private static Statistics statistics;
     private List<GameStatistics> allStatistics;
-    private static final String STATISTICS_FILE = "game_statistics.txt";
+    private static final String STATISTICS_FILE = "game_statistics.dat";
 
     public Statistics(){
         allStatistics = new ArrayList<>();
