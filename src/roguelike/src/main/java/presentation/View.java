@@ -331,8 +331,137 @@ public class View {
         screen.stopScreen();
     }
 
-    public void gameStatisticsView(){
+    public void gameStatisticsView() {
+        try {
+            screen.clear();
 
+            domain.player.Statistics statsManager = controller.getModel().getStatistics();
+            List<utils.GameStatistics> allStatistics = statsManager.getAllStatistics();
+
+            textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
+            textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
+
+            textGraphics.putString(10, 2, "=== GAME STATISTICS ===");
+
+            if (allStatistics.isEmpty()) {
+                textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+                textGraphics.putString(10, 4, "The statistics are empty for now. Play some games!");
+            } else {
+                textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
+                textGraphics.putString(10, 4, "Top 10 players:");
+
+                int startY = 6;
+                int columnX = 1;
+
+                textGraphics.setForegroundColor(TextColor.ANSI.MAGENTA);
+                textGraphics.putString(columnX, startY, "№");
+                textGraphics.putString(columnX + 3, startY, "Name");
+                textGraphics.putString(columnX + 15, startY, "Treasure");
+                textGraphics.putString(columnX + 24, startY, "Level");
+                textGraphics.putString(columnX + 30, startY, "Enemies");
+                textGraphics.putString(columnX + 38, startY, "Foods");
+                textGraphics.putString(columnX + 44, startY, "Elixirs");
+                textGraphics.putString(columnX + 52, startY, "Scrolls");
+                textGraphics.putString(columnX + 60, startY, "Attack made");
+                textGraphics.putString(columnX + 72, startY, "Attack received");
+                textGraphics.putString(columnX + 86, startY, "Cell moved");
+                textGraphics.putString(columnX + 91, startY, "Victory");
+
+                for (int x = columnX; x <= columnX + 91; x++) {
+                    textGraphics.putString(x, startY + 1, "-");
+                }
+
+                int displayCount = Math.min(10, allStatistics.size());
+                int currentY = startY + 3;
+
+                for (int i = 0; i < displayCount; i++) {
+                    utils.GameStatistics statistics = allStatistics.get(i);
+
+                    if (i < 3) {
+                        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+                    } else {
+                        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+                    }
+
+                    String place = (i + 1) + ".";
+                    textGraphics.putString(columnX, currentY, place);
+
+                    String name = statistics.getName();
+                    if (name.length() > 10) {
+                        name = name.substring(0, 7) + "...";
+                    }
+                    textGraphics.putString(columnX + 3, currentY, name);
+
+                    textGraphics.putString(columnX + 15, currentY,
+                            String.format("%8d", statistics.getTreasure()));
+
+                    textGraphics.putString(columnX + 24, currentY,
+                            String.format("%3d", statistics.getMaxLevel()));
+
+                    textGraphics.putString(columnX + 30, currentY,
+                            String.format("%5d", statistics.getEnemyKilled()));
+
+                    textGraphics.putString(columnX + 38, currentY,
+                            String.format("%5d", statistics.getFoodEaten()));
+
+                    textGraphics.putString(columnX + 44, currentY,
+                            String.format("%5d", statistics.getElixirDrink()));
+
+                    textGraphics.putString(columnX + 52, currentY,
+                            String.format("%5d", statistics.getScrollUse()));
+
+                    textGraphics.putString(columnX + 60, currentY,
+                            String.format("%5d", statistics.getAttacksMade()));
+
+                    textGraphics.putString(columnX + 72, currentY,
+                            String.format("%5d", statistics.getAttacksReceived()));
+
+                    textGraphics.putString(columnX + 86, currentY,
+                            String.format("%5d", statistics.getCellMoved()));
+
+                    String victory = statistics.isVictory() ? "✓" : "✗";
+                    if (statistics.isVictory()) {
+                        textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
+                    } else {
+                        textGraphics.setForegroundColor(TextColor.ANSI.RED);
+                    }
+                    textGraphics.putString(columnX + 91, currentY, victory);
+
+                    if (i < 3) {
+                        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+                    } else {
+                        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+                    }
+
+                    currentY++;
+                }
+            }
+
+            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+            textGraphics.setBackgroundColor(TextColor.ANSI.BLUE);
+
+            String instruction = "Escape - Exit game";
+
+            textGraphics.putString(0, screen.getTerminalSize().getRows() - 2, instruction);
+
+            textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
+
+            screen.refresh();
+
+            // Ожидание ввода пользователя
+            boolean viewingStats = true;
+            while (viewingStats) {
+                KeyStroke key = screen.readInput();
+
+                if (key.getKeyType() == KeyType.Escape) {
+                    viewingStats = false;
+
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
-
 }
