@@ -175,6 +175,7 @@ public class View {
         int offsetX = 1;
         int offsetY = 1;
         int infoY = mapHeight + offsetY + 2;
+
         String info = String.format(
             "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
             controller.getModel().getLevel(),
@@ -196,6 +197,7 @@ public class View {
     private void viewGameOver(){
         try {
             screen.clear();
+            textGraphics.setForegroundColor(TextColor.ANSI.RED);
             textGraphics.putString(4, 2, "Game Over, " + controller.getModel().getPlayer().getName());
             screen.refresh();
             Thread.sleep(2000);
@@ -362,12 +364,12 @@ public class View {
                 textGraphics.putString(columnX + 38, startY, "Foods");
                 textGraphics.putString(columnX + 44, startY, "Elixirs");
                 textGraphics.putString(columnX + 52, startY, "Scrolls");
-                textGraphics.putString(columnX + 60, startY, "Attack made");
-                textGraphics.putString(columnX + 72, startY, "Attack received");
-                textGraphics.putString(columnX + 86, startY, "Cell moved");
-                textGraphics.putString(columnX + 91, startY, "Victory");
+                textGraphics.putString(columnX + 60, startY, "At_Made");
+                textGraphics.putString(columnX + 68, startY, "At_Received");
+                textGraphics.putString(columnX + 80, startY, "CellMoved");
+                textGraphics.putString(columnX + 90, startY, "Victory");
 
-                for (int x = columnX; x <= columnX + 91; x++) {
+                for (int x = columnX; x <= columnX + 96; x++) {
                     textGraphics.putString(x, startY + 1, "-");
                 }
 
@@ -396,28 +398,28 @@ public class View {
                             String.format("%8d", statistics.getTreasure()));
 
                     textGraphics.putString(columnX + 24, currentY,
-                            String.format("%3d", statistics.getMaxLevel()));
+                            String.format("%5d", statistics.getMaxLevel()));
 
                     textGraphics.putString(columnX + 30, currentY,
-                            String.format("%5d", statistics.getEnemyKilled()));
+                            String.format("%7d", statistics.getEnemyKilled()));
 
                     textGraphics.putString(columnX + 38, currentY,
                             String.format("%5d", statistics.getFoodEaten()));
 
                     textGraphics.putString(columnX + 44, currentY,
-                            String.format("%5d", statistics.getElixirDrink()));
+                            String.format("%7d", statistics.getElixirDrink()));
 
                     textGraphics.putString(columnX + 52, currentY,
-                            String.format("%5d", statistics.getScrollUse()));
+                            String.format("%7d", statistics.getScrollUse()));
 
                     textGraphics.putString(columnX + 60, currentY,
-                            String.format("%5d", statistics.getAttacksMade()));
+                            String.format("%7d", statistics.getAttacksMade()));
 
-                    textGraphics.putString(columnX + 72, currentY,
-                            String.format("%5d", statistics.getAttacksReceived()));
+                    textGraphics.putString(columnX + 68, currentY,
+                            String.format("%11d", statistics.getAttacksReceived()));
 
-                    textGraphics.putString(columnX + 86, currentY,
-                            String.format("%5d", statistics.getCellMoved()));
+                    textGraphics.putString(columnX + 80, currentY,
+                            String.format("%9d", statistics.getCellMoved()));
 
                     String victory = statistics.isVictory() ? "✓" : "✗";
                     if (statistics.isVictory()) {
@@ -425,7 +427,7 @@ public class View {
                     } else {
                         textGraphics.setForegroundColor(TextColor.ANSI.RED);
                     }
-                    textGraphics.putString(columnX + 91, currentY, victory);
+                    textGraphics.putString(columnX + 96, currentY, victory);
 
                     if (i < 3) {
                         textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
@@ -452,10 +454,8 @@ public class View {
             boolean viewingStats = true;
             while (viewingStats) {
                 KeyStroke key = screen.readInput();
-
                 if (key.getKeyType() == KeyType.Escape) {
                     viewingStats = false;
-
                 }
             }
 

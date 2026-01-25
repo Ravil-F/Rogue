@@ -428,9 +428,9 @@ public class Model implements Check {
 
     private boolean isPlayerAdjacent(int enemyX, int enemyY) {
         int[][] directions = {
-                {-1, -1}, {-1, 0}, {-1, 1},
+                         {-1, 0},
                 {0, -1},           {0, 1},
-                {1, -1},  {1, 0},  {1, 1}
+                          {1, 0}
         };
 
         for (int[] dir : directions) {
