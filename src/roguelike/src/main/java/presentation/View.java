@@ -44,6 +44,7 @@ public class View {
     // VIEW WINDOWS
     public void startWindow(){
         try {
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             textGraphics.putString(4, 2, "1      - New game");
             textGraphics.putString(4, 3, "2      - Load save game");
             textGraphics.putString(4, 4, "3      - Load game statistics");

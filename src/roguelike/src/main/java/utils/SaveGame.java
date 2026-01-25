@@ -40,6 +40,7 @@ public class SaveGame {
     public static void savePlayer(Player player, String fileName){
         try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(player, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,6 +49,7 @@ public class SaveGame {
     public static void saveBackpack(Backpack backpack, String fileName){
         try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(backpack, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,6 +58,7 @@ public class SaveGame {
     public static void saveGameItems(GameItems gameItems, String fileName){
         try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(gameItems, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,6 +67,7 @@ public class SaveGame {
     public static void saveGameEnemy(GameEnemy gameEnemy, String fileName){
         try (FileWriter writer = new FileWriter(fileName,false)){
             gson.toJson(gameEnemy, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,6 +76,7 @@ public class SaveGame {
     public static void saveWeaponTaken(Weapon weapon, String fileName){
         try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(weapon, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -80,6 +85,7 @@ public class SaveGame {
     public static void saveMap(domain.location.Map map, String fileName){
         try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(map, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -181,7 +187,6 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
     public void write(JsonWriter out, Items item) throws IOException {
         out.beginObject();
 
-        // Сохраняем тип предмета
         if (item instanceof domain.items.Food) {
             out.name("type").value("Food");
             domain.items.Food food = (domain.items.Food) item;
@@ -241,47 +246,68 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
         in.beginObject();
         while (in.hasNext()) {
             String fieldName = in.nextName();
-            switch (fieldName) {
-                case "type": type = in.nextString(); break;
-                case "name": name = in.nextString(); break;
-                case "symbol": symbolStr = in.nextString(); break;
-                case "increase": increase = in.nextInt(); break;
-                case "color": colorStr = in.nextString(); break;
-                case "coordX": coordX = in.nextInt(); break;
-                case "coordY": coordY = in.nextInt(); break;
-                case "foodEnum": foodEnum = in.nextString(); break;
-                case "weaponEnum": weaponEnum = in.nextString(); break;
-                case "elixirEnum": elixirEnum = in.nextString(); break;
-                case "scrollEnum": scrollEnum = in.nextString(); break;
-                case "treasureEnum": treasureEnum = in.nextString(); break;
-
-                case "food": foodEnum = in.nextString(); type = "Food"; break;
-                case "weapon": weaponEnum = in.nextString(); type = "Weapon"; break;
-                case "elixir": elixirEnum = in.nextString(); type = "Elixir"; break;
-                case "scroll": scrollEnum = in.nextString(); type = "Scroll"; break;
-                case "treasure": treasureEnum = in.nextString(); type = "Treasure"; break;
-
-                case "coord":
-                    in.beginObject();
-                    while (in.hasNext()) {
-                        String coordField = in.nextName();
-                        if ("x".equals(coordField)) {
-                            coordX = in.nextInt();
-                        } else if ("y".equals(coordField)) {
-                            coordY = in.nextInt();
-                        } else {
-                            in.skipValue();
-                        }
-                    }
-                    in.endObject();
-                    break;
-
-                default: in.skipValue(); break;
+            try {
+                switch (fieldName) {
+                    case "type":
+                        type = in.nextString();
+                        break;
+                    case "name":
+                        name = in.nextString();
+                        break;
+                    case "symbol":
+                        symbolStr = in.nextString();
+                        break;
+                    case "increase":
+                        increase = in.nextInt();
+                        break;
+                    case "color":
+                        colorStr = in.nextString();
+                        break;
+                    case "coordX":
+                        coordX = in.nextInt();
+                        break;
+                    case "coordY":
+                        coordY = in.nextInt();
+                        break;
+                    case "foodEnum":
+                        foodEnum = in.nextString();
+                        break;
+                    case "weaponEnum":
+                        weaponEnum = in.nextString();
+                        break;
+                    case "elixirEnum":
+                        elixirEnum = in.nextString();
+                        break;
+                    case "scrollEnum":
+                        scrollEnum = in.nextString();
+                        break;
+                    case "treasureEnum":
+                        treasureEnum = in.nextString();
+                        break;
+                    default:
+                        in.skipValue();
+                        break;
+                }
+            } catch (IllegalStateException e) {
+                if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                    in.nextNull();
+                } else {
+                    throw e;
+                }
             }
         }
         in.endObject();
 
-        char symbol = symbolStr.isEmpty() ? '?' : symbolStr.charAt(0);
+        if (symbolStr == null || symbolStr.isEmpty()) {
+            symbolStr = "?";
+        }
+
+        if (type == null) {
+            System.err.println("Item type is null, cannot create item");
+            return null;
+        }
+
+        char symbol = symbolStr.charAt(0);
         TextColor color = getTextColor(colorStr);
 
         try {
@@ -305,7 +331,7 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("Error creating item: " + e.getMessage());
+            System.err.println("Error creating item of type " + type + ": " + e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -543,27 +543,60 @@ public class Model implements Check {
 
     public void loadGame() {
         Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
-        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
-        GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
-        GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
-        Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
-        Map loadedMap = SaveGame.loadMap(FILE_NAME_MAP);
+        System.out.println("Player loaded: " + (loadedPlayer != null));
 
-        if ((loadedPlayer != null) && (loadedBackpack != null) &&
-            (loadedItems != null) && loadedEnemies != null && 
-            loadedWeaponTaken != null && loadedMap != null) {
+        Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
+        System.out.println("Backpack loaded: " + (loadedBackpack != null));
+
+        GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
+        System.out.println("Items loaded: " + (loadedItems != null));
+
+        GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
+        System.out.println("Enemies loaded: " + (loadedEnemies != null));
+
+
+        Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
+        System.out.println("WeaponTaken loaded: " + (loadedWeaponTaken != null));
+
+        Map loadedMap = SaveGame.loadMap(FILE_NAME_MAP);
+        System.out.println("Map loaded: " + (loadedMap != null));
+
+
+        if (loadedPlayer != null) {
             this.player = loadedPlayer;
-            this.backpack = loadedBackpack;
-            this.items = loadedItems;
-            this.enemys = loadedEnemies;
-            this.weaponTaken = loadedWeaponTaken;
-            this.map = loadedMap;
+
+            if (loadedBackpack != null)
+                this.backpack = loadedBackpack;
+            else
+                this.backpack = new Backpack();
+
+            if (loadedItems != null)
+                this.items = loadedItems;
+            else this.items = new GameItems();
+
+            if(loadedEnemies != null)
+                this.enemys = loadedEnemies;
+            else
+                this.enemys = new GameEnemy();
+
+            if(loadedWeaponTaken != null)
+                this.weaponTaken = loadedWeaponTaken;
+            else
+                this.weaponTaken = new Weapon(null, 0, 0);
+
+            if(loadedMap != null)
+                this.map = loadedMap;
+            else
+                this.map = new Map();
+
             restoreEnemiesOnMap();
             restoreGameAfterLoad();
             restoreItemsOnMap();
         } else {
             System.out.println("Not JSON file");
-            player = new Player(5, 5);
+            int[] startPos = map.getStartRoomCoords();
+            player.setCoord(startPos[0], startPos[1]);
+            gameInitialization();
         }
     }
 

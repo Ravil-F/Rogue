@@ -41,7 +41,6 @@ public class Main {
                                 view.passName(namePlayer);
                             else controller.passName(namePlayer);
                             view.gameLoop(true);
-                            view.startWindow();
                             break;
                         case '2':
                             Model new2Model = new Model();
@@ -52,13 +51,12 @@ public class Main {
                         case '3':
                             controller.getModel().getGameStatistics();
                             view.gameStatisticsView();
-                            view.startWindow();
                             break;
                         default:
                             break;
                     }
                 }
-
+                view.startWindow();
             }
         }
     }
