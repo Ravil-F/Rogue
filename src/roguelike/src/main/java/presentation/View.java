@@ -271,6 +271,7 @@ public class View {
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
                         controller.getModel().saveGame();
+                        controller.getModel().saveStatistics();
                         controller.getModel().getPlayer().setStatus(StatusPlayer.ACTION);
                         return;
                     }
@@ -286,6 +287,7 @@ public class View {
                     setKey();
                 }
             }
+            controller.getModel().saveStatistics();
             if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER))
                 viewGameOver();
             else if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY))

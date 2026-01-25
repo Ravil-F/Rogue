@@ -381,7 +381,7 @@ public class Model implements Check {
                     ((Action) enemy).attack(player);
                     if(player.getHealth() <= 0) {
                         player.setStatus(StatusPlayer.GAMEOVER);
-                        endGame(false);
+                        saveStatistics();
                     }
                     continue;
                 }
@@ -494,8 +494,6 @@ public class Model implements Check {
     }
 
     private boolean isCellBlocked(int x, int y) {
-//        char cell = (char) map.getMap(x, y);
-//        return cell != 0 && cell != ' ' && cell != '.' && cell != '@' && !checkingSymbols(cell);
         if (isWithInBounds(x, y)) {
             char cell = (char) map.getMap(x, y);
             if (cell == '.') {
@@ -543,24 +541,11 @@ public class Model implements Check {
 
     public void loadGame() {
         Player loadedPlayer = SaveGame.loadPlayer(FILE_NAME_PLAYER);
-        System.out.println("Player loaded: " + (loadedPlayer != null));
-
         Backpack loadedBackpack = SaveGame.loadBackpack(FILE_NAME_BACKPACK);
-        System.out.println("Backpack loaded: " + (loadedBackpack != null));
-
         GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
-        System.out.println("Items loaded: " + (loadedItems != null));
-
         GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
-        System.out.println("Enemies loaded: " + (loadedEnemies != null));
-
-
         Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
-        System.out.println("WeaponTaken loaded: " + (loadedWeaponTaken != null));
-
         Map loadedMap = SaveGame.loadMap(FILE_NAME_MAP);
-        System.out.println("Map loaded: " + (loadedMap != null));
-
 
         if (loadedPlayer != null) {
             this.player = loadedPlayer;
@@ -684,10 +669,14 @@ public class Model implements Check {
         }
     }
 
-    public void endGame(boolean isVictory) {
+    public void saveStatistics() {
         if (gameStatistics != null) {
+            boolean isVictory = player.getStatus() == StatusPlayer.VICTORY;
             gameStatistics.setVictory(isVictory);
             statistics.addStatistics(gameStatistics);
+            if (level > gameStatistics.getMaxLevel()) {
+                gameStatistics.setMaxLevel(level);
+            }
             gameStatistics = null;
         }
     }

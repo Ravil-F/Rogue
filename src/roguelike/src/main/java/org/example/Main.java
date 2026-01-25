@@ -28,11 +28,16 @@ public class Main {
             if (view.getKey() != null) {
                 if (view.getKey().getKeyType() == KeyType.Escape) {
                     controller.getModel().saveGame();
+                    if(controller.getModel().getGameStatistics() != null)
+                        controller.getModel().saveStatistics();
                     flag = false;
                 }
                 if (view.getKey().getKeyType() == KeyType.Character && flag) {
                     switch (view.getKey().getCharacter()) {
                         case '1':
+                            if (controller.getModel().getGameStatistics() != null) {
+                                controller.getModel().saveStatistics();
+                            }
                             Model newModel = new Model();
                             controller.setModel(newModel);
                             view.getScreen().refresh();
@@ -43,6 +48,9 @@ public class Main {
                             view.gameLoop(true);
                             break;
                         case '2':
+                            if (controller.getModel().getGameStatistics() != null) {
+                                controller.getModel().saveStatistics();
+                            }
                             Model new2Model = new Model();
                             controller.setModel(new2Model);
                             controller.getModel().loadGame();
