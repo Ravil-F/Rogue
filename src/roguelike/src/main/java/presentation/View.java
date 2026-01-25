@@ -264,12 +264,14 @@ public class View {
         if (flag)
             controller.getModel().gameInitialization();
         try{
-            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER){
+            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER ||
+                    controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY){
                 screen.clear();
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
-                        viewGameOver();
-                        break;
+                        controller.getModel().saveGame();
+                        controller.getModel().getPlayer().setStatus(StatusPlayer.ACTION);
+                        return;
                     }
 
                     if (this.key.getKeyType() == KeyType.Character) {
@@ -456,6 +458,7 @@ public class View {
                 KeyStroke key = screen.readInput();
                 if (key.getKeyType() == KeyType.Escape) {
                     viewingStats = false;
+                    screen.clear();
                 }
             }
 

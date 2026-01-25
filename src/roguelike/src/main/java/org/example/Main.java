@@ -22,35 +22,43 @@ public class Main {
     }
 
     private static void startGameLoop(View view, Controller controller) throws IOException, InterruptedException {
-        while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER) {
+        boolean flag = true;
+        while (flag) {
             view.setKey();
             if (view.getKey() != null) {
-                if (view.getKey().getKeyType() == KeyType.Character) {
+                if (view.getKey().getKeyType() == KeyType.Escape) {
+                    controller.getModel().saveGame();
+                    flag = false;
+                }
+                if (view.getKey().getKeyType() == KeyType.Character && flag) {
                     switch (view.getKey().getCharacter()) {
                         case '1':
+                            Model newModel = new Model();
+                            controller.setModel(newModel);
                             view.getScreen().refresh();
                             String namePlayer = view.inputScan();
                             if (namePlayer.equals(" "))
                                 view.passName(namePlayer);
                             else controller.passName(namePlayer);
                             view.gameLoop(true);
+                            view.startWindow();
                             break;
                         case '2':
+                            Model new2Model = new Model();
+                            controller.setModel(new2Model);
                             controller.getModel().loadGame();
                             view.gameLoop(false);
                             break;
                         case '3':
                             controller.getModel().getGameStatistics();
                             view.gameStatisticsView();
+                            view.startWindow();
                             break;
                         default:
                             break;
                     }
                 }
-                if (view.getKey().getKeyType() == KeyType.Escape) {
-                    controller.getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
-                    controller.getModel().saveGame();
-                }
+
             }
         }
     }

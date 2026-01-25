@@ -83,9 +83,12 @@ public class Controller {
         model.passName(namePlayer);
     }
 
-
     //GET-SET METOD
     public Model getModel() {
         return model;
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
     }
 }
