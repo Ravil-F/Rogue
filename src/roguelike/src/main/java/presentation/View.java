@@ -265,7 +265,7 @@ public class View {
         if (flag)
             controller.getModel().gameInitialization();
         try{
-            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER ||
+            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER &&
                     controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY){
                 screen.clear();
                 if (this.key != null) {
@@ -288,10 +288,14 @@ public class View {
                 }
             }
             controller.getModel().saveStatistics();
-            if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER))
+            if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER)) {
                 viewGameOver();
-            else if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY))
+                controller.getModel().saveStatistics();
+            }
+            else if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY)) {
                 viewVictory();
+                controller.getModel().saveStatistics();
+            }
 
         }catch (Exception e){
             System.out.println(e.getMessage());

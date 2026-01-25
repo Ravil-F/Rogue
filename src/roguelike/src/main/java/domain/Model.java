@@ -165,6 +165,7 @@ public class Model implements Check {
                     }
                 }
             }
+            checkPlayerStatus();
             return;
         }
         if (!checkItems(tmpX, tmpY)) {
@@ -216,6 +217,13 @@ public class Model implements Check {
         }
 
         return flag;
+    }
+
+    private void checkPlayerStatus(){
+        if(player.getHealth() <= 0 && player.getStatus() != StatusPlayer.GAMEOVER){
+            player.setStatus(StatusPlayer.GAMEOVER);
+            saveStatistics();
+        }
     }
 
     private int equalsMapItems(int x, int y, GameItems items){
@@ -331,6 +339,7 @@ public class Model implements Check {
                 getPlayer().increaseStrenght(value);
                 break;
         }
+        checkPlayerStatus();
     }
 
     private int[] isThereAnEmptyCellNearby(int x, int y){
@@ -379,10 +388,9 @@ public class Model implements Check {
                 if (isPlayerAdjacent(currentX, currentY)) {
                     incrementAttacksReceived();
                     ((Action) enemy).attack(player);
-                    if(player.getHealth() <= 0) {
-                        player.setStatus(StatusPlayer.GAMEOVER);
-                        saveStatistics();
-                    }
+                    checkPlayerStatus();
+                    if(player.getStatus() == StatusPlayer.GAMEOVER)
+                        continue;
                     continue;
                 }
 
@@ -555,12 +563,20 @@ public class Model implements Check {
             else
                 this.backpack = new Backpack();
 
-            if (loadedItems != null)
+            if (loadedItems != null) {
                 this.items = loadedItems;
+                if (this.items.getItems() != null) {
+                    this.items.getItems().removeIf(Objects::isNull);
+                }
+            }
             else this.items = new GameItems();
 
-            if(loadedEnemies != null)
+            if(loadedEnemies != null) {
                 this.enemys = loadedEnemies;
+                if (this.enemys.getEnemy() != null) {
+                    this.enemys.getEnemy().removeIf(Objects::isNull);
+                }
+            }
             else
                 this.enemys = new GameEnemy();
 
@@ -569,14 +585,18 @@ public class Model implements Check {
             else
                 this.weaponTaken = new Weapon(null, 0, 0);
 
-            if(loadedMap != null)
+            if(loadedMap != null) {
                 this.map = loadedMap;
+                restoreAllGameObjects();
+            }
             else
                 this.map = new Map();
 
-            restoreEnemiesOnMap();
-            restoreGameAfterLoad();
-            restoreItemsOnMap();
+            restoreAllGameObjects();
+            if (gameStatistics == null) {
+                gameStatistics = new GameStatistics(player.getName());
+                gameStatistics.setMaxLevel(level);
+            }
         } else {
             System.out.println("Not JSON file");
             int[] startPos = map.getStartRoomCoords();
@@ -585,35 +605,63 @@ public class Model implements Check {
         }
     }
 
-    private void restoreGameAfterLoad() {
+    private void restoreItemsOnMap() {
+        if (items != null && items.getItems() != null) {
+            for (int y = 0; y < map.getHeight(); y++) {
+                for (int x = 0; x < map.getWidth(); x++) {
+                    char c = map.getMapChar(x, y);
+                    if (c == 'w' || c == 'f' || c == 'e' || c == 's' || c == 't') {
+                        map.putZero(x, y);
+                    }
+                }
+            }
+
+            for (Items item : items.getItems()) {
+                if (item != null && item.getCoord() != null) {
+                    int x = item.getCoord().getX();
+                    int y = item.getCoord().getY();
+                    if (isWithInBounds(x, y)) {
+                        map.setMap(x, y, item.getSymbol());
+                    }
+                }
+            }
+        }
+    }
+
+    private void restoreEnemiesOnMap() {
+        if (enemys != null && enemys.getEnemy() != null) {
+            for (int y = 0; y < map.getHeight(); y++) {
+                for (int x = 0; x < map.getWidth(); x++) {
+                    char c = map.getMapChar(x, y);
+                    if (c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S') {
+                        map.putZero(x, y);
+                    }
+                }
+            }
+
+            for (Attributes enemy : enemys.getEnemy()) {
+                if (enemy != null && enemy.getCoord() != null) {
+                    int x = enemy.getCoord().getX();
+                    int y = enemy.getCoord().getY();
+                    if (isWithInBounds(x, y)) {
+                        map.setMap(x, y, enemy.getSymbol());
+                    }
+                }
+            }
+        }
+    }
+
+    private void restoreAllGameObjects() {
+        map.clearGameObjects();
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
-
-        if (player.getHealth() <= 0) {
-            player.setStatus(StatusPlayer.GAMEOVER);
-        } else {
-            player.setStatus(StatusPlayer.ACTION);
+        restoreEnemiesOnMap();
+        restoreItemsOnMap();
+        if (level < MAX_LEVEL) {
+            int[] exitPos = map.getFinalRoomCoords();
+            map.setMap(exitPos[0], exitPos[1], '■');
         }
     }
 
-    private void restoreItemsOnMap(){
-        for(Items item : items.getItems()){
-            if(item != null && item.getCoord() != null){
-                int x = item.getCoord().getX();
-                int y = item.getCoord().getY();
-                map.setMap(x, y, item.getSymbol());
-            }
-        }
-    }
-
-   private void restoreEnemiesOnMap(){
-        for(Attributes enemy : enemys.getEnemy()){
-            if(enemy != null && enemy.getCoord() != null){
-                int x = enemy.getCoord().getX();
-                int y = enemy.getCoord().getY();
-                map.setMap(x, y, enemy.getSymbol());
-            }
-        }
-   }
 
     // для работы по статистике в игре
     private void incrementEnemyKilled(){

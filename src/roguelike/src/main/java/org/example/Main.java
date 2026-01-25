@@ -54,6 +54,7 @@ public class Main {
                             Model new2Model = new Model();
                             controller.setModel(new2Model);
                             controller.getModel().loadGame();
+                            view.getScreen().refresh();
                             view.gameLoop(false);
                             break;
                         case '3':

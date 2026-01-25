@@ -229,6 +229,16 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
 
     @Override
     public Items read(JsonReader in) throws IOException {
+        if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+            in.nextNull();
+            return null;
+        }
+
+        if (in.peek() != com.google.gson.stream.JsonToken.BEGIN_OBJECT) {
+            in.skipValue();
+            return null;
+        }
+
         String type = null;
         String name = null;
         String symbolStr = "?";
@@ -521,6 +531,11 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
 
         in.beginArray();
         while (in.hasNext()) {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                continue;
+            }
+
             Items item = itemsAdapter.read(in);
             if (item != null) {
                 backpack.add(item, symbol);
@@ -535,6 +550,11 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
 
         in.beginArray();
         while (in.hasNext()) {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                continue;
+            }
+
             Items item = itemsAdapter.read(in);
             if (item != null) {
                 screenOutput.add(item);
