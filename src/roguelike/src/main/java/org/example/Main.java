@@ -52,7 +52,6 @@ public class Main {
                 else controller.passName(namePlayer);
                 view.gameLoop(true);
                 if (controller.getModel().getGameStatistics() != null) {
-                    System.out.println("main loop");
                     controller.getModel().saveStatistics();
                 }
                 break;

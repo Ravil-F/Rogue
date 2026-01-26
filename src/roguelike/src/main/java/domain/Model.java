@@ -715,7 +715,6 @@ public class Model implements Check {
 
     public void saveStatistics() {
         if (gameStatistics != null) {
-            System.out.println("savestatistics");
             boolean isVictory = player.getStatus() == StatusPlayer.VICTORY;
             gameStatistics.setVictory(isVictory);
             if (level > gameStatistics.getMaxLevel()) {
