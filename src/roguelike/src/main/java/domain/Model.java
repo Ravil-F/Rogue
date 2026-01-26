@@ -720,7 +720,6 @@ public class Model implements Check {
         if (gameStatistics != null) {
             boolean isVictory = player.getStatus() == StatusPlayer.VICTORY;
             gameStatistics.setVictory(isVictory);
-//            statistics.addStatistics(gameStatistics);
             if (level > gameStatistics.getMaxLevel()) {
                 gameStatistics.setMaxLevel(level);
             }
