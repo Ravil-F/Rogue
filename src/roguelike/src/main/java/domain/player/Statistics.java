@@ -27,6 +27,7 @@ public class Statistics {
     public void addStatistics(GameStatistics gameStatistics){
         if(gameStatistics == null) return;
         allStatistics.add(gameStatistics);
+        sortStatistics();
         saveStatistics();
     }
 
@@ -65,5 +66,25 @@ public class Statistics {
 
     private  void sortStatistics(){
         Collections.sort(allStatistics);
+    }
+
+    public GameStatistics findStatisticsByName(String namePlayer){
+        for(GameStatistics name : allStatistics){
+            if(name.getName().equals(namePlayer))
+                return name;
+        }
+        return null;
+    }
+
+    public void updateStatistics(GameStatistics newStat){
+        for(int i =0; i < allStatistics.size(); ++i){
+            if(allStatistics.get(i).getName().equals(newStat.getName())){
+                allStatistics.set(i, newStat);
+                sortStatistics();
+                saveStatistics();
+                return;
+            }
+        }
+        addStatistics(newStat);
     }
 }

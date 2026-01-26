@@ -601,8 +601,14 @@ public class Model implements Check {
 
             restoreAllGameObjects();
             if (gameStatistics == null) {
-                gameStatistics = new GameStatistics(player.getName());
-                gameStatistics.setMaxLevel(level);
+                GameStatistics stat = statistics.findStatisticsByName(player.getName());
+                if(stat != null){
+                    this.gameStatistics = stat;
+                    gameStatistics.setMaxLevel(level);
+                } else{
+                    gameStatistics = new GameStatistics(player.getName());
+                    gameStatistics.setMaxLevel(level);
+                }
             }
         } else {
             System.out.println("Not JSON file");
@@ -714,10 +720,11 @@ public class Model implements Check {
         if (gameStatistics != null) {
             boolean isVictory = player.getStatus() == StatusPlayer.VICTORY;
             gameStatistics.setVictory(isVictory);
-            statistics.addStatistics(gameStatistics);
+//            statistics.addStatistics(gameStatistics);
             if (level > gameStatistics.getMaxLevel()) {
                 gameStatistics.setMaxLevel(level);
             }
+            statistics.updateStatistics(gameStatistics);
             gameStatistics = null;
         }
     }
