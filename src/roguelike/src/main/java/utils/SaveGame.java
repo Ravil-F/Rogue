@@ -9,9 +9,11 @@ import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
 import domain.abstact.Items;
 import domain.backpack.Backpack;
-import domain.enemy.GameEnemy;
 import domain.items.GameItems;
 import domain.items.Weapon;
+import domain.location.Passage;
+import domain.location.Rooms;
+import domain.location.Map;
 import domain.player.Player;
 import domain.items.*;
 import domain.enemy.*;
@@ -29,52 +31,85 @@ public class SaveGame {
             .registerTypeAdapter(Attributes.class, new AttributesTypeAdapter())
             .registerTypeAdapter(GameEnemy.class, new GameEnemyTypeAdapter())
             .registerTypeAdapter(Weapon.class, new WeaponTypeAdapter())
+            .registerTypeAdapter(domain.location.Map.class, new MapTypeAdapter())
             .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
             .create();
 
-
     // SAVE
+    public static void saveLevel(int level, String fileName){
+        try (FileWriter writer = new FileWriter(fileName, false)){
+            gson.toJson(level, writer);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void savePlayer(Player player, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(player, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void saveBackpack(Backpack backpack, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(backpack, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void saveGameItems(GameItems gameItems, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(gameItems, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void saveGameEnemy(GameEnemy gameEnemy, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName,false)){
             gson.toJson(gameEnemy, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void saveWeaponTaken(Weapon weapon, String fileName){
-        try (FileWriter writer = new FileWriter(fileName)){
+        try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(weapon, writer);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveMap(domain.location.Map map, String fileName){
+        try (FileWriter writer = new FileWriter(fileName, false)){
+            gson.toJson(map, writer);
+            writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     // LOAD
+    public static Integer loadLevel(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            Integer level = gson.fromJson(reader, Integer.class);
+            return level;
+        } catch (IOException e){
+            System.err.println("Error loading level from " + fileName + ": " + e.getMessage());
+            return null;
+        }
+    }
+
     public static Player loadPlayer(String fileName){
         try(FileReader reader = new FileReader(fileName)){
             Player player = gson.fromJson(reader, Player.class);
@@ -124,6 +159,16 @@ public class SaveGame {
             return null;
         }
     }
+
+    public static Map loadMap(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            Map map = gson.fromJson(reader, Map.class);
+            return map;
+        } catch (IOException e){
+            System.err.println("Error loading map from " + fileName + ": " + e.getMessage());
+            return null;
+        }
+    }
 }
 
 // Адаптер для TextColor
@@ -160,7 +205,6 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
     public void write(JsonWriter out, Items item) throws IOException {
         out.beginObject();
 
-        // Сохраняем тип предмета
         if (item instanceof domain.items.Food) {
             out.name("type").value("Food");
             domain.items.Food food = (domain.items.Food) item;
@@ -203,6 +247,16 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
 
     @Override
     public Items read(JsonReader in) throws IOException {
+        if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+            in.nextNull();
+            return null;
+        }
+
+        if (in.peek() != com.google.gson.stream.JsonToken.BEGIN_OBJECT) {
+            in.skipValue();
+            return null;
+        }
+
         String type = null;
         String name = null;
         String symbolStr = "?";
@@ -220,48 +274,66 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
         in.beginObject();
         while (in.hasNext()) {
             String fieldName = in.nextName();
-            switch (fieldName) {
-                case "type": type = in.nextString(); break;
-                case "name": name = in.nextString(); break;
-                case "symbol": symbolStr = in.nextString(); break;
-                case "increase": increase = in.nextInt(); break;
-                case "color": colorStr = in.nextString(); break;
-                case "coordX": coordX = in.nextInt(); break;
-                case "coordY": coordY = in.nextInt(); break;
-                case "foodEnum": foodEnum = in.nextString(); break;
-                case "weaponEnum": weaponEnum = in.nextString(); break;
-                case "elixirEnum": elixirEnum = in.nextString(); break;
-                case "scrollEnum": scrollEnum = in.nextString(); break;
-                case "treasureEnum": treasureEnum = in.nextString(); break;
-
-                case "food": foodEnum = in.nextString(); type = "Food"; break;
-                case "weapon": weaponEnum = in.nextString(); type = "Weapon"; break;
-                case "elixir": elixirEnum = in.nextString(); type = "Elixir"; break;
-                case "scroll": scrollEnum = in.nextString(); type = "Scroll"; break;
-                case "treasure": treasureEnum = in.nextString(); type = "Treasure"; break;
-
-                case "coord":
-                    in.beginObject();
-                    while (in.hasNext()) {
-                        String coordField = in.nextName();
-                        if ("x".equals(coordField)) {
-                            coordX = in.nextInt();
-                        } else if ("y".equals(coordField)) {
-                            coordY = in.nextInt();
-                        } else {
-                            in.skipValue();
-                        }
-                    }
-                    in.endObject();
-                    break;
-
-                default: in.skipValue(); break;
+            try {
+                switch (fieldName) {
+                    case "type":
+                        type = in.nextString();
+                        break;
+                    case "name":
+                        name = in.nextString();
+                        break;
+                    case "symbol":
+                        symbolStr = in.nextString();
+                        break;
+                    case "increase":
+                        increase = in.nextInt();
+                        break;
+                    case "color":
+                        colorStr = in.nextString();
+                        break;
+                    case "coordX":
+                        coordX = in.nextInt();
+                        break;
+                    case "coordY":
+                        coordY = in.nextInt();
+                        break;
+                    case "foodEnum":
+                        foodEnum = in.nextString();
+                        break;
+                    case "weaponEnum":
+                        weaponEnum = in.nextString();
+                        break;
+                    case "elixirEnum":
+                        elixirEnum = in.nextString();
+                        break;
+                    case "scrollEnum":
+                        scrollEnum = in.nextString();
+                        break;
+                    case "treasureEnum":
+                        treasureEnum = in.nextString();
+                        break;
+                    default:
+                        in.skipValue();
+                        break;
+                }
+            } catch (IllegalStateException e) {
+                if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                    in.nextNull();
+                } else {
+                    throw e;
+                }
             }
         }
         in.endObject();
 
-        char symbol = symbolStr.isEmpty() ? '?' : symbolStr.charAt(0);
-        TextColor color = getTextColor(colorStr);
+        if (symbolStr == null || symbolStr.isEmpty()) {
+            symbolStr = "?";
+        }
+
+        if (type == null) {
+            System.err.println("Item type is null, cannot create item");
+            return null;
+        }
 
         try {
             if ("Food".equals(type)) {
@@ -284,7 +356,7 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("Error creating item: " + e.getMessage());
+            System.err.println("Error creating item of type " + type + ": " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -474,6 +546,11 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
 
         in.beginArray();
         while (in.hasNext()) {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                continue;
+            }
+
             Items item = itemsAdapter.read(in);
             if (item != null) {
                 backpack.add(item, symbol);
@@ -488,17 +565,20 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
 
         in.beginArray();
         while (in.hasNext()) {
+            if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+                in.nextNull();
+                continue;
+            }
+
             Items item = itemsAdapter.read(in);
             if (item != null) {
                 screenOutput.add(item);
             }
         }
         in.endArray();
-
         backpack.setScreenOutput(screenOutput);
     }
 }
-
 
 // Адаптер для Attributes (врагов)
 class AttributesTypeAdapter extends TypeAdapter<Attributes> {
@@ -553,9 +633,6 @@ class AttributesTypeAdapter extends TypeAdapter<Attributes> {
         }
         in.endObject();
 
-        char symbol = symbolStr.isEmpty() ? '?' : symbolStr.charAt(0);
-        TextColor color = getTextColor(colorStr);
-
         try {
             switch (type) {
                 case "Zombi":
@@ -595,17 +672,6 @@ class AttributesTypeAdapter extends TypeAdapter<Attributes> {
         } catch (Exception e) {
             System.err.println("Error creating enemy: " + e.getMessage());
             return null;
-        }
-    }
-
-    private TextColor getTextColor(String colorStr) {
-        if (colorStr == null || colorStr.isEmpty()) {
-            return TextColor.ANSI.WHITE;
-        }
-        try {
-            return TextColor.ANSI.valueOf(colorStr.toUpperCase());
-        } catch (Exception e) {
-            return TextColor.ANSI.WHITE;
         }
     }
 }
@@ -663,8 +729,7 @@ class GameEnemyTypeAdapter extends TypeAdapter<GameEnemy> {
     }
 }
 
-
-// Специальный адаптер для Weapon
+// адаптер для Weapon
 class WeaponTypeAdapter extends TypeAdapter<Weapon> {
     @Override
     public void write(JsonWriter out, Weapon weapon) throws IOException {
@@ -732,5 +797,292 @@ class WeaponTypeAdapter extends TypeAdapter<Weapon> {
         }
 
         return new domain.items.Weapon(weaponE, coordX, coordY);
+    }
+}
+
+// Адаптер для Map
+class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
+    @Override
+    public void write(JsonWriter out, Map map) throws IOException {
+        out.beginObject();
+   
+    out.name("mapData");
+    out.beginArray();
+    for (int y = 0; y < domain.location.Map.MAP_HEIGHT; y++) {
+        out.beginArray();
+        for (int x = 0; x < domain.location.Map.MAP_WIDTH; x++) {
+            out.value(map.getMap(x, y));
+        }
+        out.endArray();
+    }
+    out.endArray();
+   
+    out.name("floorData");
+    out.beginArray();
+    for (int y = 0; y < domain.location.Map.MAP_HEIGHT; y++) {
+        out.beginArray();
+        for (int x = 0; x < domain.location.Map.MAP_WIDTH; x++) {
+            out.value(map.getFloorChar(x, y));
+        }
+        out.endArray();
+    }
+    out.endArray();
+
+        int exitX = -1;
+        int exitY = -1;
+        for (int y = 0; y < domain.location.Map.MAP_HEIGHT; y++) {
+            for (int x = 0; x < domain.location.Map.MAP_WIDTH; x++) {
+                if (map.getMapChar(x, y) == '■') {
+                    exitX = x;
+                    exitY = y;
+                    break;
+                }
+            }
+            if (exitX != -1) break;
+        }
+        out.name("exitX").value(exitX);
+        out.name("exitY").value(exitY);
+        
+        out.name("rooms");
+        out.beginArray();
+        for (Rooms room : map.getRooms()) {
+            writeRoom(out, room);
+        }
+        out.endArray();
+
+        out.name("passages");
+        out.beginArray();
+        for (Passage passage : map.getPassages()) {
+            writePassage(out, passage);
+        }
+        out.endArray();
+        out.endObject();
+    }
+    
+    private void writeRoom(JsonWriter out, Rooms room) throws IOException {
+        out.beginObject();
+        out.name("leftX").value(room.getLeftX());
+        out.name("rightX").value(room.getRightX());
+        out.name("topY").value(room.getTopY());
+        out.name("bottomY").value(room.getBottomY());
+        out.endObject();
+    }
+    
+    private void writePassage(JsonWriter out, Passage passage) throws IOException {
+        out.beginArray();
+        for (Passage.PassageSegment segment : passage.getSegments()) {
+            out.beginObject();
+            out.name("startX").value(segment.getStartX());
+            out.name("startY").value(segment.getStartY());
+            out.name("endX").value(segment.getEndX());
+            out.name("endY").value(segment.getEndY());
+            out.endObject();
+        }
+        out.endArray();
+    }
+    
+    @Override
+    public Map read(JsonReader in) throws IOException {
+        int[][] mapData = new int[Map.MAP_WIDTH][Map.MAP_HEIGHT];
+        int[][] floorData = new int[Map.MAP_WIDTH][Map.MAP_HEIGHT];
+        List<Rooms> rooms = new ArrayList<>();
+        List<Passage> passages = new ArrayList<>();
+
+        int exitX = -1;
+        int exitY = -1;
+        
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "mapData":
+                    readMapData(in, mapData);
+                    break;
+                case "floorData":
+                    readFloorData(in, floorData);
+                    break;
+                case "exitX":
+                    exitX = in.nextInt();
+                    break;
+                case "exitY":
+                    exitY = in.nextInt();
+                    break;
+                case "rooms":
+                    readRooms(in, rooms);
+                    break;
+                case "passages":
+                    readPassages(in, passages);
+                    break;
+                default:
+                    in.skipValue();
+                    break;
+            }
+        }
+        in.endObject();
+    
+        Map map = new Map();
+        restoreMapData(map, mapData, floorData);
+        restoreRoomsAndPassages(map, rooms, passages);
+        if (exitX != -1 && exitY != -1) {
+            map.setMap(exitX, exitY, '■');
+        }
+        return map;
+    }
+    
+    private void readMapData(JsonReader in, int[][] mapData) throws IOException {
+        in.beginArray();
+        int y = 0;
+        while (in.hasNext()) {
+            in.beginArray();
+            int x = 0;
+            while (in.hasNext()) {
+                if (x < Map.MAP_WIDTH && y < Map.MAP_HEIGHT) {
+                    mapData[x][y] = in.nextInt();
+                } else {
+                    in.skipValue();
+                }
+                x++;
+            }
+            in.endArray();
+            y++;
+        }
+        in.endArray();
+    }
+    
+    private void readFloorData(JsonReader in, int[][] floorData) throws IOException {
+        in.beginArray();
+        int y = 0;
+        while (in.hasNext()) {
+            in.beginArray();
+            int x = 0;
+            while (in.hasNext()) {
+                if (x < Map.MAP_WIDTH && y < Map.MAP_HEIGHT) {
+                    floorData[x][y] = in.nextInt();
+                } else {
+                    in.skipValue();
+                }
+                x++;
+            }
+            in.endArray();
+            y++;
+        }
+        in.endArray();
+    }
+    
+    private void readRooms(JsonReader in, List<Rooms> rooms) throws IOException {
+        in.beginArray();
+        while (in.hasNext()) {
+            rooms.add(readRoom(in));
+        }
+        in.endArray();
+    }
+    
+    private Rooms readRoom(JsonReader in) throws IOException {
+        int leftX = 0, rightX = 0, topY = 0, bottomY = 0;
+        
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "leftX": leftX = in.nextInt(); break;
+                case "rightX": rightX = in.nextInt(); break;
+                case "topY": topY = in.nextInt(); break;
+                case "bottomY": bottomY = in.nextInt(); break;
+                default: in.skipValue(); break;
+            }
+        }
+        in.endObject();
+ 
+        Rooms room = new Rooms();
+        try {
+            java.lang.reflect.Field leftXField = Rooms.class.getDeclaredField("leftX");
+            java.lang.reflect.Field rightXField = Rooms.class.getDeclaredField("rightX");
+            java.lang.reflect.Field topYField = Rooms.class.getDeclaredField("topY");
+            java.lang.reflect.Field bottomYField = Rooms.class.getDeclaredField("bottomY");
+            
+            leftXField.setAccessible(true);
+            rightXField.setAccessible(true);
+            topYField.setAccessible(true);
+            bottomYField.setAccessible(true);
+            
+            leftXField.set(room, leftX);
+            rightXField.set(room, rightX);
+            topYField.set(room, topY);
+            bottomYField.set(room, bottomY);
+        } catch (Exception e) {
+            System.err.println("Error restoring room: " + e.getMessage());
+        }
+        
+        return room;
+    }
+    
+    private void readPassages(JsonReader in, List<Passage> passages) throws IOException {
+        in.beginArray();
+        while (in.hasNext()) {
+            passages.add(readPassage(in));
+        }
+        in.endArray();
+    }
+    
+    private Passage readPassage(JsonReader in) throws IOException {
+        Passage passage = new Passage();
+        
+        in.beginArray();
+        while (in.hasNext()) {
+            readPassageSegment(in, passage);
+        }
+        in.endArray();
+        
+        return passage;
+    }
+    
+    private void readPassageSegment(JsonReader in, Passage passage) throws IOException {
+        int startX = 0, startY = 0, endX = 0, endY = 0;
+        
+        in.beginObject();
+        while (in.hasNext()) {
+            String fieldName = in.nextName();
+            switch (fieldName) {
+                case "startX": startX = in.nextInt(); break;
+                case "startY": startY = in.nextInt(); break;
+                case "endX": endX = in.nextInt(); break;
+                case "endY": endY = in.nextInt(); break;
+                default: in.skipValue(); break;
+            }
+        }
+        in.endObject();
+        
+        passage.addSegment(startX, startY, endX, endY);
+    }
+    
+    private void restoreMapData(Map map, int[][] mapData, int[][] floorData) {
+        try {
+            java.lang.reflect.Field mapField = Map.class.getDeclaredField("map");
+            java.lang.reflect.Field floorField = Map.class.getDeclaredField("floor");
+            
+            mapField.setAccessible(true);
+            floorField.setAccessible(true);
+            
+            mapField.set(map, mapData);
+            floorField.set(map, floorData);
+        } catch (Exception e) {
+            System.err.println("Error restoring map data: " + e.getMessage());
+        }
+    }
+    
+    private void restoreRoomsAndPassages(Map map, List<Rooms> rooms, 
+                                          List<Passage> passages) {
+        try {
+            java.lang.reflect.Field roomsField = Map.class.getDeclaredField("rooms");
+            java.lang.reflect.Field passagesField = Map.class.getDeclaredField("passages");
+            
+            roomsField.setAccessible(true);
+            passagesField.setAccessible(true);
+            
+            roomsField.set(map, rooms);
+            passagesField.set(map, passages);
+        } catch (Exception e) {
+            System.err.println("Error restoring rooms and passages: " + e.getMessage());
+        }
     }
 }

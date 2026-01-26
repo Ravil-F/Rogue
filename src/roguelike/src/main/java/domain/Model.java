@@ -13,6 +13,8 @@ import domain.items.GameItems;
 import domain.items.Weapon;
 import domain.location.Map;
 import domain.player.Player;
+import domain.player.Statistics;
+import utils.GameStatistics;
 import utils.SaveGame;
 import java.io.File;
 
@@ -26,7 +28,8 @@ public class Model implements Check {
     private GameEnemy enemys;
     private int level;
     private Weapon weaponTaken;
-
+    private Statistics statistics;
+    private GameStatistics gameStatistics;
     private static final int MAX_LEVEL = 21;
 
     private static final String FOLDER = System.getProperty("user.dir") + File.separator + "save_json" + File.separator;
@@ -35,6 +38,8 @@ public class Model implements Check {
     private static final String FILE_NAME_GAMEITEMS = FOLDER + "game_items.json";
     private static final String FILE_NAME_GAMEENEMY = FOLDER + "game_enemy.json";
     private static final String FILE_NAME_WEAPONTAKEN = FOLDER + "weapon_taken.json";
+    private static final String FILE_NAME_MAP = FOLDER + "map.json";
+    private static final String FILE_NAME_LEVEL = FOLDER + "level.json";
 
     public Model(){
         backpack = new Backpack();
@@ -45,6 +50,8 @@ public class Model implements Check {
         enemys = new GameEnemy();
         level = 1;
         this.weaponTaken = new Weapon(null, 0, 0);
+        this.statistics = Statistics.getStatistics();
+        this.gameStatistics = null;
     }
 
     public void gameInitialization(){
@@ -53,6 +60,8 @@ public class Model implements Check {
         generateItems();
         generateExit();
         generateEnemies();
+        gameStatistics = new GameStatistics(player.getName());
+        gameStatistics.setMaxLevel(level);
     }
 
     private void generateItems() {
@@ -140,8 +149,10 @@ public class Model implements Check {
         if (checkEnemy(tmpX, tmpY)) {
             int index = enemys.getIndex(tmpX, tmpY);
             if (index >= 0 && index < enemys.getEnemy().size()) {
+                incrementAttacksMade();
                 player.attack(enemys.getEnemy().get(index));
                 if(enemys.getEnemy().get(index).getHealth() <= 0) {
+                    incrementEnemyKilled();
                     int enemyX = enemys.getEnemy().get(index).getCoord().getX();
                     int enemyY = enemys.getEnemy().get(index).getCoord().getY();
                     map.putZero(enemyX, enemyY);
@@ -153,9 +164,11 @@ public class Model implements Check {
                     }
                 }
             }
+            checkPlayerStatus();
             return;
         }
         if (!checkItems(tmpX, tmpY)) {
+            incrementCellMoved();
             map.putZero(oldX, oldY);
             player.setCoord(tmpX, tmpY);
             map.setMap(tmpX, tmpY, player.getSymbol());
@@ -163,6 +176,7 @@ public class Model implements Check {
     }
 
     private void goToNextLevel() {
+        updateMaxLevel();
         level++;
         enemys.getEnemy().clear();
         items.getItems().clear();
@@ -188,6 +202,7 @@ public class Model implements Check {
             }
 
             if (cellChar == 't') {
+                incrementTreasure(item.getIncrease());
                 player.increaseTreasure(item.getIncrease());
                 flag = true;
             }
@@ -201,6 +216,13 @@ public class Model implements Check {
         }
 
         return flag;
+    }
+
+    private void checkPlayerStatus(){
+        if(player.getHealth() <= 0 && player.getStatus() != StatusPlayer.GAMEOVER){
+            player.setStatus(StatusPlayer.GAMEOVER);
+            saveStatistics();
+        }
     }
 
     private int equalsMapItems(int x, int y, GameItems items){
@@ -256,6 +278,14 @@ public class Model implements Check {
         return level;
     }
 
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
+    public GameStatistics getGameStatistics() {
+        return gameStatistics;
+    }
+
     // действия предметов из рюкзака
     public void actionOfItems(final char symbol, final int index){
         List<Items> item = getBackpack().getPackItems(symbol);
@@ -276,13 +306,16 @@ public class Model implements Check {
                 weaponTaken = (domain.items.Weapon) item.get(index);
                 break;
             case 'f':
+                incrementFoodEaten();
                 if (getPlayer().getHealth() <= 100)
                     getPlayer().increaseHealth(value);
                 break;
             case 'e':
+                incrementElixirDrink();
                 actionWithElixirScroll(item.get(index).getName(), value);
                 break;
             case 's':
+                incrementScrollUse();
                 actionWithElixirScroll(item.get(index).getName(), value);
                 break;
         }
@@ -305,6 +338,7 @@ public class Model implements Check {
                 getPlayer().increaseStrenght(value);
                 break;
         }
+        checkPlayerStatus();
     }
 
     private int[] isThereAnEmptyCellNearby(int x, int y){
@@ -351,9 +385,11 @@ public class Model implements Check {
                 int currentX = enemy.getCoord().getX();
                 int currentY = enemy.getCoord().getY();
                 if (isPlayerAdjacent(currentX, currentY)) {
+                    incrementAttacksReceived();
                     ((Action) enemy).attack(player);
-                    if(player.getHealth() <= 0)
-                        player.setStatus(StatusPlayer.GAMEOVER);
+                    checkPlayerStatus();
+                    if(player.getStatus() == StatusPlayer.GAMEOVER)
+                        continue;
                     continue;
                 }
 
@@ -399,9 +435,9 @@ public class Model implements Check {
 
     private boolean isPlayerAdjacent(int enemyX, int enemyY) {
         int[][] directions = {
-                {-1, -1}, {-1, 0}, {-1, 1},
+                         {-1, 0},
                 {0, -1},           {0, 1},
-                {1, -1},  {1, 0},  {1, 1}
+                          {1, 0}
         };
 
         for (int[] dir : directions) {
@@ -465,8 +501,6 @@ public class Model implements Check {
     }
 
     private boolean isCellBlocked(int x, int y) {
-//        char cell = (char) map.getMap(x, y);
-//        return cell != 0 && cell != ' ' && cell != '.' && cell != '@' && !checkingSymbols(cell);
         if (isWithInBounds(x, y)) {
             char cell = (char) map.getMap(x, y);
             if (cell == '.') {
@@ -493,22 +527,23 @@ public class Model implements Check {
                 symbol == '■';
     }
 
-
     //для работы с json
     public void saveGame(){
         File folder = new File(FOLDER);
-    if (!folder.exists()) {
-        boolean created = folder.mkdirs();
-        if (!created) {
-            System.err.println("Not create folder: " + FOLDER);
-            return;
+        if (!folder.exists()) {
+            boolean created = folder.mkdirs();
+            if (!created) {
+                System.err.println("Not create folder: " + FOLDER);
+                return;
+            }
         }
-    }
-        SaveGame.savePlayer(player, FILE_NAME_PLAYER);
-        SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
-        SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
-        SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
-        SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
+            SaveGame.savePlayer(player, FILE_NAME_PLAYER);
+            SaveGame.saveBackpack(backpack, FILE_NAME_BACKPACK);
+            SaveGame.saveGameItems(items, FILE_NAME_GAMEITEMS);
+            SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
+            SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
+            SaveGame.saveMap(map, FILE_NAME_MAP);
+            SaveGame.saveLevel(level, FILE_NAME_LEVEL);
     }
 
     public void loadGame() {
@@ -517,50 +552,177 @@ public class Model implements Check {
         GameItems loadedItems = SaveGame.loadGameItems(FILE_NAME_GAMEITEMS);
         GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
         Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
+        Map loadedMap = SaveGame.loadMap(FILE_NAME_MAP);
+        Integer loadedLevel = SaveGame.loadLevel(FILE_NAME_LEVEL);
 
-        if ((loadedPlayer != null) && (loadedBackpack != null) &&
-            (loadedItems != null) && loadedEnemies != null && loadedWeaponTaken != null) {
+        if (loadedPlayer != null) {
             this.player = loadedPlayer;
-            this.backpack = loadedBackpack;
-            this.items = loadedItems;
-            this.enemys = loadedEnemies;
-            this.weaponTaken = loadedWeaponTaken;
-            restoreEnemiesOnMap();
-            restoreGameAfterLoad();
-            restoreItemsOnMap();
+
+            if(loadedLevel != null)
+                this.level = loadedLevel;
+            else
+                this.level = 1;
+
+            if (loadedBackpack != null)
+                this.backpack = loadedBackpack;
+            else
+                this.backpack = new Backpack();
+
+            if (loadedItems != null) {
+                this.items = loadedItems;
+                if (this.items.getItems() != null) {
+                    this.items.getItems().removeIf(Objects::isNull);
+                }
+            }
+            else this.items = new GameItems();
+
+            if(loadedEnemies != null) {
+                this.enemys = loadedEnemies;
+                if (this.enemys.getEnemy() != null) {
+                    this.enemys.getEnemy().removeIf(Objects::isNull);
+                }
+            }
+            else
+                this.enemys = new GameEnemy();
+
+            if(loadedWeaponTaken != null)
+                this.weaponTaken = loadedWeaponTaken;
+            else
+                this.weaponTaken = new Weapon(null, 0, 0);
+
+            if(loadedMap != null) {
+                this.map = loadedMap;
+                restoreAllGameObjects();
+            }
+            else
+                this.map = new Map();
+
+            restoreAllGameObjects();
+            if (gameStatistics == null) {
+                GameStatistics stat = statistics.findStatisticsByName(player.getName());
+                if(stat != null){
+                    this.gameStatistics = stat;
+                    gameStatistics.setMaxLevel(level);
+                } else{
+                    gameStatistics = new GameStatistics(player.getName());
+                    gameStatistics.setMaxLevel(level);
+                }
+            }
         } else {
             System.out.println("Not JSON file");
-            player = new Player(5, 5);
+            int[] startPos = map.getStartRoomCoords();
+            player.setCoord(startPos[0], startPos[1]);
+            gameInitialization();
         }
     }
 
-    private void restoreGameAfterLoad() {
-        map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
-
-        if (player.getHealth() <= 0) {
-            player.setStatus(StatusPlayer.GAMEOVER);
-        } else {
-            player.setStatus(StatusPlayer.ACTION);
-        }
-    }
-
-    private void restoreItemsOnMap(){
-        for(Items item : items.getItems()){
-            if(item != null && item.getCoord() != null){
+    private void restoreItemsOnMap() {
+        for (Items item : items.getItems()) {
+            if (item != null && item.getCoord() != null) {
                 int x = item.getCoord().getX();
                 int y = item.getCoord().getY();
-                map.setMap(x, y, item.getSymbol());
+                if (isWithInBounds(x, y)) {
+                    map.setMap(x, y, item.getSymbol());
+                }
             }
         }
     }
 
-   private void restoreEnemiesOnMap(){
-        for(Attributes enemy : enemys.getEnemy()){
-            if(enemy != null && enemy.getCoord() != null){
+
+    private void restoreEnemiesOnMap() {
+        for (Attributes enemy : enemys.getEnemy()) {
+            if (enemy != null && enemy.getCoord() != null) {
                 int x = enemy.getCoord().getX();
                 int y = enemy.getCoord().getY();
-                map.setMap(x, y, enemy.getSymbol());
+                if (isWithInBounds(x, y)) {
+                    map.setMap(x, y, enemy.getSymbol());
+                }
             }
         }
-   }
+    }
+
+    private void clearGameObjectsFromMap() {
+        for (int y = 0; y < map.getHeight(); y++) {
+            for (int x = 0; x < map.getWidth(); x++) {
+                char c = map.getMapChar(x, y);
+                // Очищаем все символы игровых объектов кроме стен и пола
+                if (c != '#' && c != '.' && c != 0 && c != ' ' && c != '■') {
+                    map.putZero(x, y);
+                }
+            }
+        }
+    }
+
+    private void restoreAllGameObjects() {
+        clearGameObjectsFromMap();
+        map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+        restoreEnemiesOnMap();
+        restoreItemsOnMap();
+    }
+
+    // для работы по статистике в игре
+    private void incrementEnemyKilled(){
+        if(gameStatistics != null)
+                gameStatistics.addEnemyKilled();
+    }
+
+    public void incrementFoodEaten() {
+        if (gameStatistics != null) {
+            gameStatistics.addFoodEaten();
+        }
+    }
+
+    public void incrementTreasure(int amount) {
+        if (gameStatistics != null) {
+            gameStatistics.addTreasure(amount);
+        }
+    }
+
+    public void incrementElixirDrink() {
+        if (gameStatistics != null) {
+            gameStatistics.addElixirDrink();
+        }
+    }
+
+    public void incrementScrollUse() {
+        if (gameStatistics != null) {
+            gameStatistics.addScrollUse();
+        }
+    }
+
+    public void incrementAttacksMade() {
+        if (gameStatistics != null) {
+            gameStatistics.addAttacksMade();
+        }
+    }
+
+    public void incrementAttacksReceived() {
+        if (gameStatistics != null) {
+            gameStatistics.addAttacksReceived();
+        }
+    }
+
+    public void incrementCellMoved() {
+        if (gameStatistics != null) {
+            gameStatistics.addCellMoved();
+        }
+    }
+
+    public void updateMaxLevel() {
+        if (gameStatistics != null && level > gameStatistics.getMaxLevel()) {
+            gameStatistics.setMaxLevel(level);
+        }
+    }
+
+    public void saveStatistics() {
+        if (gameStatistics != null) {
+            boolean isVictory = player.getStatus() == StatusPlayer.VICTORY;
+            gameStatistics.setVictory(isVictory);
+            if (level > gameStatistics.getMaxLevel()) {
+                gameStatistics.setMaxLevel(level);
+            }
+            statistics.updateStatistics(gameStatistics);
+            gameStatistics = null;
+        }
+    }
 }

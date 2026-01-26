@@ -29,6 +29,11 @@ public class Passage {
         public int getEndX() { return endX; }
         public int getEndY() { return endY; }
 
+        // public void setStartX(int x) { this.startX = x; }
+        // public void setStartY(int y) { this.startY = y; }
+        // public void setEndX(int x) { this.endX = x; }
+        // public void setEndY(int y) { this.endY = y; }
+
         public boolean isHorizontal() {
             return startY == endY;
         }

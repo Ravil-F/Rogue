@@ -1,7 +1,7 @@
 package org.example;
+
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
-import domain.enums.StatusPlayer;
 import presentation.Controller;
 import presentation.View;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
-                startGame();
+        startGame();
     }
 
     private static void startGame() throws IOException, InterruptedException {
@@ -22,30 +22,50 @@ public class Main {
     }
 
     private static void startGameLoop(View view, Controller controller) throws IOException, InterruptedException {
-        while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER && controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY) {
+        boolean flag = true;
+        while (flag) {
             view.setKey();
             if (view.getKey() != null) {
-                if (view.getKey().getKeyType() == KeyType.Character) {
+                if (view.getKey().getKeyType() == KeyType.Escape) {
+                    controller.getModel().saveGame();
+                    if (controller.getModel().getGameStatistics() != null)
+                        controller.getModel().saveStatistics();
+                    flag = false;
+                }
+                if (view.getKey().getKeyType() == KeyType.Character && flag) {
                     switch (view.getKey().getCharacter()) {
                         case '1':
-                            view.getScreen().refresh();
+                            Model newModel = new Model();
+                            controller.setModel(newModel);
                             String namePlayer = view.inputScan();
                             if (namePlayer.equals(" "))
                                 view.passName(namePlayer);
+                            else
+                                controller.passName(namePlayer);
                             view.gameLoop(true);
+                            if (controller.getModel().getGameStatistics() != null) {
+                                controller.getModel().saveStatistics();
+                            }
                             break;
                         case '2':
+                            Model new2Model = new Model();
+                            controller.setModel(new2Model);
                             controller.getModel().loadGame();
                             view.gameLoop(false);
+                            if (controller.getModel().getGameStatistics() != null) {
+                                controller.getModel().saveStatistics();
+                            }
+                            break;
+                        case '3':
+                            controller.getModel().getGameStatistics();
+                            view.gameStatisticsView();
                             break;
                         default:
                             break;
                     }
                 }
-                if (view.getKey().getKeyType() == KeyType.Escape) {
-                    controller.getModel().getPlayer().setStatus(StatusPlayer.GAMEOVER);
-                    controller.getModel().saveGame();
-                }
+                view.getScreen().refresh();
+                view.startWindow();
             }
         }
     }

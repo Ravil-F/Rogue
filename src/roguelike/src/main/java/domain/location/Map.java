@@ -311,4 +311,5 @@ public class Map implements Check {
     public boolean checkingSymbols(char symbol) {
         return false;
     }
+
 }
