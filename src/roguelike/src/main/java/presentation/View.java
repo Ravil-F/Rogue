@@ -122,7 +122,6 @@ public class View {
             }
         }
 
-        // Цвет по умолчанию для символа
         return TextColor.ANSI.WHITE;
     }
 
@@ -202,6 +201,7 @@ public class View {
             textGraphics.putString(4, 2, "Game Over, " + controller.getModel().getPlayer().getName());
             screen.refresh();
             Thread.sleep(2000);
+            screen.clear();
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
@@ -459,7 +459,6 @@ public class View {
 
             screen.refresh();
 
-            // Ожидание ввода пользователя
             boolean viewingStats = true;
             while (viewingStats) {
                 KeyStroke key = screen.readInput();

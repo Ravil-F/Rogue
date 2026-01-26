@@ -1,7 +1,6 @@
 package org.example;
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
-import domain.enums.StatusPlayer;
 import presentation.Controller;
 import presentation.View;
 
@@ -35,27 +34,25 @@ public class Main {
                 if (view.getKey().getKeyType() == KeyType.Character && flag) {
                     switch (view.getKey().getCharacter()) {
                         case '1':
-                            if (controller.getModel().getGameStatistics() != null) {
-                                controller.getModel().saveStatistics();
-                            }
                             Model newModel = new Model();
                             controller.setModel(newModel);
-                            view.getScreen().refresh();
                             String namePlayer = view.inputScan();
                             if (namePlayer.equals(" "))
                                 view.passName(namePlayer);
                             else controller.passName(namePlayer);
                             view.gameLoop(true);
-                            break;
-                        case '2':
                             if (controller.getModel().getGameStatistics() != null) {
                                 controller.getModel().saveStatistics();
                             }
+                            break;
+                        case '2':
                             Model new2Model = new Model();
                             controller.setModel(new2Model);
                             controller.getModel().loadGame();
-                            view.getScreen().refresh();
                             view.gameLoop(false);
+                            if (controller.getModel().getGameStatistics() != null) {
+                                controller.getModel().saveStatistics();
+                            }
                             break;
                         case '3':
                             controller.getModel().getGameStatistics();
@@ -65,6 +62,7 @@ public class Main {
                             break;
                     }
                 }
+                view.getScreen().refresh();
                 view.startWindow();
             }
         }

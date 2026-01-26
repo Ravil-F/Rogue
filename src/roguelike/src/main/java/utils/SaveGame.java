@@ -35,8 +35,16 @@ public class SaveGame {
             .excludeFieldsWithModifiers(java.lang.reflect.Modifier.TRANSIENT)
             .create();
 
-
     // SAVE
+    public static void saveLevel(int level, String fileName){
+        try (FileWriter writer = new FileWriter(fileName, false)){
+            gson.toJson(level, writer);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void savePlayer(Player player, String fileName){
         try (FileWriter writer = new FileWriter(fileName, false)){
             gson.toJson(player, writer);
@@ -92,6 +100,16 @@ public class SaveGame {
     }
 
     // LOAD
+    public static Integer loadLevel(String fileName){
+        try(FileReader reader = new FileReader(fileName)){
+            Integer level = gson.fromJson(reader, Integer.class);
+            return level;
+        } catch (IOException e){
+            System.err.println("Error loading level from " + fileName + ": " + e.getMessage());
+            return null;
+        }
+    }
+
     public static Player loadPlayer(String fileName){
         try(FileReader reader = new FileReader(fileName)){
             Player player = gson.fromJson(reader, Player.class);
@@ -316,9 +334,6 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
             System.err.println("Item type is null, cannot create item");
             return null;
         }
-
-        char symbol = symbolStr.charAt(0);
-        TextColor color = getTextColor(colorStr);
 
         try {
             if ("Food".equals(type)) {
@@ -561,11 +576,9 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
             }
         }
         in.endArray();
-
         backpack.setScreenOutput(screenOutput);
     }
 }
-
 
 // Адаптер для Attributes (врагов)
 class AttributesTypeAdapter extends TypeAdapter<Attributes> {
@@ -620,9 +633,6 @@ class AttributesTypeAdapter extends TypeAdapter<Attributes> {
         }
         in.endObject();
 
-        char symbol = symbolStr.isEmpty() ? '?' : symbolStr.charAt(0);
-        TextColor color = getTextColor(colorStr);
-
         try {
             switch (type) {
                 case "Zombi":
@@ -662,17 +672,6 @@ class AttributesTypeAdapter extends TypeAdapter<Attributes> {
         } catch (Exception e) {
             System.err.println("Error creating enemy: " + e.getMessage());
             return null;
-        }
-    }
-
-    private TextColor getTextColor(String colorStr) {
-        if (colorStr == null || colorStr.isEmpty()) {
-            return TextColor.ANSI.WHITE;
-        }
-        try {
-            return TextColor.ANSI.valueOf(colorStr.toUpperCase());
-        } catch (Exception e) {
-            return TextColor.ANSI.WHITE;
         }
     }
 }
@@ -730,8 +729,7 @@ class GameEnemyTypeAdapter extends TypeAdapter<GameEnemy> {
     }
 }
 
-
-// Специальный адаптер для Weapon
+// адаптер для Weapon
 class WeaponTypeAdapter extends TypeAdapter<Weapon> {
     @Override
     public void write(JsonWriter out, Weapon weapon) throws IOException {
@@ -829,6 +827,21 @@ class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
         out.endArray();
     }
     out.endArray();
+
+        int exitX = -1;
+        int exitY = -1;
+        for (int y = 0; y < domain.location.Map.MAP_HEIGHT; y++) {
+            for (int x = 0; x < domain.location.Map.MAP_WIDTH; x++) {
+                if (map.getMapChar(x, y) == '■') {
+                    exitX = x;
+                    exitY = y;
+                    break;
+                }
+            }
+            if (exitX != -1) break;
+        }
+        out.name("exitX").value(exitX);
+        out.name("exitY").value(exitY);
         
         out.name("rooms");
         out.beginArray();
@@ -874,6 +887,9 @@ class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
         int[][] floorData = new int[Map.MAP_WIDTH][Map.MAP_HEIGHT];
         List<Rooms> rooms = new ArrayList<>();
         List<Passage> passages = new ArrayList<>();
+
+        int exitX = -1;
+        int exitY = -1;
         
         in.beginObject();
         while (in.hasNext()) {
@@ -884,6 +900,12 @@ class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
                     break;
                 case "floorData":
                     readFloorData(in, floorData);
+                    break;
+                case "exitX":
+                    exitX = in.nextInt();
+                    break;
+                case "exitY":
+                    exitY = in.nextInt();
                     break;
                 case "rooms":
                     readRooms(in, rooms);
@@ -901,7 +923,9 @@ class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
         Map map = new Map();
         restoreMapData(map, mapData, floorData);
         restoreRoomsAndPassages(map, rooms, passages);
-        
+        if (exitX != -1 && exitY != -1) {
+            map.setMap(exitX, exitY, '■');
+        }
         return map;
     }
     

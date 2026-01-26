@@ -312,15 +312,4 @@ public class Map implements Check {
         return false;
     }
 
-    public void clearGameObjects() {
-     for (int y = 0; y < MAP_HEIGHT; y++) {
-         for (int x = 0; x < MAP_WIDTH; x++) {
-             char c = (char) map[x][y];
-             if (c != '#' && c != '.') {
-                 map[x][y] = 0;
-                 floor[x][y] = '.';
-             }
-         }
-     }
- }
 }

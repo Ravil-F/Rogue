@@ -39,6 +39,7 @@ public class Model implements Check {
     private static final String FILE_NAME_GAMEENEMY = FOLDER + "game_enemy.json";
     private static final String FILE_NAME_WEAPONTAKEN = FOLDER + "weapon_taken.json";
     private static final String FILE_NAME_MAP = FOLDER + "map.json";
+    private static final String FILE_NAME_LEVEL = FOLDER + "level.json";
 
     public Model(){
         backpack = new Backpack();
@@ -528,7 +529,6 @@ public class Model implements Check {
                 symbol == '■';
     }
 
-
     //для работы с json
     public void saveGame(){
         File folder = new File(FOLDER);
@@ -545,6 +545,7 @@ public class Model implements Check {
             SaveGame.saveGameEnemy(enemys, FILE_NAME_GAMEENEMY);
             SaveGame.saveWeaponTaken(weaponTaken, FILE_NAME_WEAPONTAKEN);
             SaveGame.saveMap(map, FILE_NAME_MAP);
+            SaveGame.saveLevel(level, FILE_NAME_LEVEL);
     }
 
     public void loadGame() {
@@ -554,9 +555,15 @@ public class Model implements Check {
         GameEnemy loadedEnemies = SaveGame.loadGameEnemy(FILE_NAME_GAMEENEMY);
         Weapon loadedWeaponTaken = SaveGame.loadWeaponTaken(FILE_NAME_WEAPONTAKEN);
         Map loadedMap = SaveGame.loadMap(FILE_NAME_MAP);
+        Integer loadedLevel = SaveGame.loadLevel(FILE_NAME_LEVEL);
 
         if (loadedPlayer != null) {
             this.player = loadedPlayer;
+
+            if(loadedLevel != null)
+                this.level = loadedLevel;
+            else
+                this.level = 1;
 
             if (loadedBackpack != null)
                 this.backpack = loadedBackpack;
@@ -606,62 +613,48 @@ public class Model implements Check {
     }
 
     private void restoreItemsOnMap() {
-        if (items != null && items.getItems() != null) {
-            for (int y = 0; y < map.getHeight(); y++) {
-                for (int x = 0; x < map.getWidth(); x++) {
-                    char c = map.getMapChar(x, y);
-                    if (c == 'w' || c == 'f' || c == 'e' || c == 's' || c == 't') {
-                        map.putZero(x, y);
-                    }
-                }
-            }
-
-            for (Items item : items.getItems()) {
-                if (item != null && item.getCoord() != null) {
-                    int x = item.getCoord().getX();
-                    int y = item.getCoord().getY();
-                    if (isWithInBounds(x, y)) {
-                        map.setMap(x, y, item.getSymbol());
-                    }
+        for (Items item : items.getItems()) {
+            if (item != null && item.getCoord() != null) {
+                int x = item.getCoord().getX();
+                int y = item.getCoord().getY();
+                if (isWithInBounds(x, y)) {
+                    map.setMap(x, y, item.getSymbol());
                 }
             }
         }
     }
 
+
     private void restoreEnemiesOnMap() {
-        if (enemys != null && enemys.getEnemy() != null) {
-            for (int y = 0; y < map.getHeight(); y++) {
-                for (int x = 0; x < map.getWidth(); x++) {
-                    char c = map.getMapChar(x, y);
-                    if (c == 'Z' || c == 'V' || c == 'G' || c == 'O' || c == 'S') {
-                        map.putZero(x, y);
-                    }
+        for (Attributes enemy : enemys.getEnemy()) {
+            if (enemy != null && enemy.getCoord() != null) {
+                int x = enemy.getCoord().getX();
+                int y = enemy.getCoord().getY();
+                if (isWithInBounds(x, y)) {
+                    map.setMap(x, y, enemy.getSymbol());
                 }
             }
+        }
+    }
 
-            for (Attributes enemy : enemys.getEnemy()) {
-                if (enemy != null && enemy.getCoord() != null) {
-                    int x = enemy.getCoord().getX();
-                    int y = enemy.getCoord().getY();
-                    if (isWithInBounds(x, y)) {
-                        map.setMap(x, y, enemy.getSymbol());
-                    }
+    private void clearGameObjectsFromMap() {
+        for (int y = 0; y < map.getHeight(); y++) {
+            for (int x = 0; x < map.getWidth(); x++) {
+                char c = map.getMapChar(x, y);
+                // Очищаем все символы игровых объектов кроме стен и пола
+                if (c != '#' && c != '.' && c != 0 && c != ' ' && c != '■') {
+                    map.putZero(x, y);
                 }
             }
         }
     }
 
     private void restoreAllGameObjects() {
-        map.clearGameObjects();
+        clearGameObjectsFromMap();
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
         restoreEnemiesOnMap();
         restoreItemsOnMap();
-        if (level < MAX_LEVEL) {
-            int[] exitPos = map.getFinalRoomCoords();
-            map.setMap(exitPos[0], exitPos[1], '■');
-        }
     }
-
 
     // для работы по статистике в игре
     private void incrementEnemyKilled(){

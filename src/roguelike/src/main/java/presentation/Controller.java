@@ -5,7 +5,6 @@ import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
 import domain.abstact.Items;
 import domain.enums.StatusE;
-import domain.enums.StatusPlayer;
 
 import java.util.List;
 
