@@ -1,10 +1,8 @@
 package domain.player;
 
 import utils.GameStatistics;
-
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,10 +31,6 @@ public class Statistics {
 
     public List<GameStatistics> getAllStatistics() {
         return allStatistics;
-    }
-
-    public void setAllStatistics(List<GameStatistics> allStatistics) {
-        this.allStatistics = allStatistics;
     }
 
     private void saveStatistics(){

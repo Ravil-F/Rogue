@@ -572,17 +572,15 @@ public class Model implements Check {
 
             if (loadedItems != null) {
                 this.items = loadedItems;
-                if (this.items.getItems() != null) {
+                if (this.items.getItems() != null)
                     this.items.getItems().removeIf(Objects::isNull);
-                }
             }
             else this.items = new GameItems();
 
             if(loadedEnemies != null) {
                 this.enemys = loadedEnemies;
-                if (this.enemys.getEnemy() != null) {
+                if (this.enemys.getEnemy() != null)
                     this.enemys.getEnemy().removeIf(Objects::isNull);
-                }
             }
             else
                 this.enemys = new GameEnemy();

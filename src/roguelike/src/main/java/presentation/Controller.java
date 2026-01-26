@@ -20,7 +20,6 @@ public class Controller {
         if (flag) {
             if (key != null) {
                 if (key.getKeyType() == KeyType.Character) {
-
                     switch (Character.toLowerCase(key.getCharacter())) {
                         case 'w':
                             model.movePlayer(StatusE.UP);
