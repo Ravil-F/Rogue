@@ -1,4 +1,5 @@
 package org.example;
+
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
 import presentation.Controller;
@@ -8,7 +9,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
-                startGame();
+        startGame();
     }
 
     private static void startGame() throws IOException, InterruptedException {
@@ -27,7 +28,7 @@ public class Main {
             if (view.getKey() != null) {
                 if (view.getKey().getKeyType() == KeyType.Escape) {
                     controller.getModel().saveGame();
-                    if(controller.getModel().getGameStatistics() != null)
+                    if (controller.getModel().getGameStatistics() != null)
                         controller.getModel().saveStatistics();
                     flag = false;
                 }
@@ -39,7 +40,8 @@ public class Main {
                             String namePlayer = view.inputScan();
                             if (namePlayer.equals(" "))
                                 view.passName(namePlayer);
-                            else controller.passName(namePlayer);
+                            else
+                                controller.passName(namePlayer);
                             view.gameLoop(true);
                             if (controller.getModel().getGameStatistics() != null) {
                                 controller.getModel().saveStatistics();

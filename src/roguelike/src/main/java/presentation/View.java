@@ -19,6 +19,10 @@ import java.util.List;
 
 
 public class View {
+    private static final int MENU_WIDTH = 81;
+    private static final int MENU_HEIGHT = 30;
+    private static final String VERSION = "v1.0";
+
     private Terminal terminal;
     private TerminalScreen screen;
     private TextGraphics textGraphics;
@@ -42,15 +46,49 @@ public class View {
     }
 
     // VIEW WINDOWS
-    public void startWindow(){
+//    public void startWindow() {
+//        try {
+//            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+//            textGraphics.putString(4, 2, "1      - New game");
+//            textGraphics.putString(4, 3, "2      - Load save game");
+//            textGraphics.putString(4, 4, "3      - Load game statistics");
+//            textGraphics.putString(4, 5, "Escape - Exit game");
+//            screen.refresh();
+//        } catch (IOException e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
+
+    public void startWindow() {
         try {
+            screen.clear();
+            int offsetX = 1;
+            int offsetY = 1;
+            drawRectangle(textGraphics,
+                    offsetY,
+                    MENU_HEIGHT + offsetY,
+                    offsetX,
+                    MENU_WIDTH + offsetX);
+            String title = "ROGUELIKE";
+            int titleX = offsetX + (MENU_WIDTH - title.length()) / 2;
+            int titleY = offsetY + 3;
+            textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
+            textGraphics.putString(titleX, titleY, title);
+            int menuStartY = titleY + 3;
+            int menuX = offsetX + (MENU_WIDTH - 30) / 2;
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-            textGraphics.putString(4, 2, "1      - New game");
-            textGraphics.putString(4, 3, "2      - Load save game");
-            textGraphics.putString(4, 4, "3      - Load game statistics");
-            textGraphics.putString(4, 5, "Escape - Exit game");
+            textGraphics.putString(menuX, menuStartY, "1 - New game");
+            textGraphics.putString(menuX, menuStartY + 1, "2 - Load save game");
+            textGraphics.putString(menuX, menuStartY + 2, "3 - Load game statistics");
+            textGraphics.putString(menuX, menuStartY + 3, "Escape - Exit game");
+            int versionX = offsetX + MENU_WIDTH - VERSION.length() - 1;
+            int versionY = offsetY + MENU_HEIGHT - 1;
+            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+            textGraphics.putString(versionX, versionY, VERSION);
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             screen.refresh();
-        }catch (IOException e) {
+
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -62,42 +100,81 @@ public class View {
         int i = 23;
         textGraphics.putString(4, 2, "Enter name Player:");
         screen.refresh();
-        do{
-                 setKey    ();
-            if((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
+        do {
+            setKey();
+            if ((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
                 break;
             symbol = key.getCharacter();
             textGraphics.putString(i, 2, String.valueOf(symbol));
             res.append(symbol);
             screen.refresh();
             ++i;
-        }while (true);
+        } while (true);
         return res.toString().trim();
     }
 
-    private void viewMap(){
+    private void viewMap() {
+        MapInfo info = initInfo();
+        drawRectangle(textGraphics,
+                info.offsetY - 1,
+                info.mapHeight + info.offsetY,
+                info.offsetX - 1,
+                info.mapWidth + info.offsetX);
+        drawRooms(info);
+        drawPassages(info);
+        drawEntities(info);
+    }
+
+    private MapInfo initInfo() {
         int mapWidth = controller.getModel().getMap().getWidth();
         int mapHeight = controller.getModel().getMap().getHeight();
         int offsetX = 1;
         int offsetY = 1;
-        drawRectangle(textGraphics, offsetY - 1, mapHeight + offsetY,
-                offsetX - 1, mapWidth + offsetX);
-        for (Rooms room : controller.getModel().getMap().getRooms()) {
+        int playerX = controller.getModel().getPlayer().getCoord().getX();
+        int playerY = controller.getModel().getPlayer().getCoord().getY();
+        int playerRoomIndex = controller.getModel().getMap().determineRoom(playerX, playerY);
+        return new MapInfo(mapWidth, mapHeight, offsetX, offsetY,
+                playerX, playerY, playerRoomIndex);
+    }
+
+    private void drawRooms(MapInfo info) {
+        for (int i = 0; i < controller.getModel().getMap().getRooms().size(); i++) {
+            Rooms room = controller.getModel().getMap().getRooms().get(i);
+            if (!controller.getModel().getMap().isRoomVisited(i)) {
+                continue;
+            }
             drawRectangle(textGraphics,
-                    room.getTopY() + offsetY, room.getBottomY() + offsetY,
-                    room.getLeftX() + offsetX, room.getRightX() + offsetX);
-            drawRoomContent(textGraphics, room, offsetX, offsetY);
+                    room.getTopY() + info.offsetY,
+                    room.getBottomY() + info.offsetY,
+                    room.getLeftX() + info.offsetX,
+                    room.getRightX() + info.offsetX);
+            if (i == info.playerRoomIndex) {
+                drawRoomContent(textGraphics, room, info.offsetX, info.offsetY);
+            }
         }
-        for (Passage passage : controller.getModel().getMap().getPassages()) {
-            drawPassageSegments(textGraphics, passage, offsetX, offsetY);
+    }
+
+    private void drawPassages(MapInfo info) {
+        for (int i = 0; i < controller.getModel().getMap().getPassages().size(); i++) {
+            Passage passage = controller.getModel().getMap().getPassages().get(i);
+            if (controller.getModel().getMap().isPassageVisited(i)) {
+                drawPassageSegments(textGraphics, passage, info.offsetX, info.offsetY);
+            }
         }
-        for(int x = 0; x < mapWidth; ++x){
-            for (int y = 0; y < mapHeight; ++y){
+    }
+
+    private void drawEntities(MapInfo info) {
+        for (int x = 0; x < info.mapWidth; ++x) {
+            for (int y = 0; y < info.mapHeight; ++y) {
+                int roomIndex = controller.getModel().getMap().determineRoom(x, y);
+                if (roomIndex != info.playerRoomIndex) {
+                    continue;
+                }
                 char cellChar = controller.getModel().getMap().getMapChar(x, y);
                 if (cellChar != 0 && cellChar != ' ' && cellChar != '#' && cellChar != '.') {
                     TextColor color = getCellColor(x, y, cellChar);
                     textGraphics.setForegroundColor(color);
-                    textGraphics.putString(x + offsetX, y + offsetY, String.valueOf(cellChar));
+                    textGraphics.putString(x + info.offsetX, y + info.offsetY, String.valueOf(cellChar));
                     textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
                 }
             }
@@ -105,8 +182,8 @@ public class View {
     }
 
     private TextColor getCellColor(int x, int y, char symbol) {
-        if (controller.getModel().getPlayer().getCoord().getX() == x &&
-                controller.getModel().getPlayer().getCoord().getY() == y) {
+        if (controller.getModel().getPlayer().getCoord().getX() == x
+                && controller.getModel().getPlayer().getCoord().getY() == y) {
             return controller.getModel().getPlayer().getColor();
         }
 
@@ -138,14 +215,14 @@ public class View {
         for (Passage.PassageSegment segment : passage.getSegments()) {
             if (segment.isHorizontal()) {
                 int y = segment.getStartY() + offsetY;
-                for (int x = Math.min(segment.getStartX(), segment.getEndX());
-                     x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
+                for (int x = Math.min(segment.getStartX(), segment.getEndX()); x <= Math
+                        .max(segment.getStartX(), segment.getEndX()); x++) {
                     tg.putString(x + offsetX, y, "#");
                 }
             } else {
                 int x = segment.getStartX() + offsetX;
-                for (int y = Math.min(segment.getStartY(), segment.getEndY());
-                     y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
+                for (int y = Math.min(segment.getStartY(), segment.getEndY()); y <= Math
+                        .max(segment.getStartY(), segment.getEndY()); y++) {
                     tg.putString(x, y + offsetY, "#");
                 }
             }
@@ -169,7 +246,7 @@ public class View {
         }
     }
 
-    private void viewInfo(){
+    private void viewInfo() {
         int mapWidth = controller.getModel().getMap().getWidth();
         int mapHeight = controller.getModel().getMap().getHeight();
         int offsetX = 1;
@@ -177,44 +254,27 @@ public class View {
         int infoY = mapHeight + offsetY + 2;
 
         String info = String.format(
-            "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
-            controller.getModel().getLevel(),
-            controller.getModel().getPlayer().getHealth(),
-            controller.getModel().getPlayer().getMaxHealth(),
-            controller.getModel().getPlayer().getAgility(),
-            controller.getModel().getPlayer().getStrength(),
-            controller.getModel().getPlayer().getTreasure()
-        );
+                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
+                controller.getModel().getLevel(), controller.getModel().getPlayer().getHealth(),
+                controller.getModel().getPlayer().getMaxHealth(),
+                controller.getModel().getPlayer().getAgility(),
+                controller.getModel().getPlayer().getStrength(),
+                controller.getModel().getPlayer().getTreasure());
         int infoRectWidth = mapWidth + offsetX;
-        drawRectangle(textGraphics, infoY - 1, infoY + 1,
-             offsetX - 1, infoRectWidth);
+        drawRectangle(textGraphics, infoY - 1, infoY + 1, offsetX - 1, infoRectWidth);
         int infoTextWidth = info.length();
         int rectWidth = infoRectWidth - offsetX + 1;
         int centerX = (rectWidth - infoTextWidth) / 2 + 1;
         textGraphics.putString(centerX, infoY, info);
     }
 
-    private void viewGameOver(){
+    private void viewGameStatus(String message) {
         try {
             screen.clear();
-            textGraphics.setForegroundColor(TextColor.ANSI.RED);
-            textGraphics.putString(4, 2, "Game Over, " + controller.getModel().getPlayer().getName());
+            textGraphics.putString(4, 2, message + controller.getModel().getPlayer().getName());
             screen.refresh();
             Thread.sleep(2000);
-            screen.clear();
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void viewVictory(){
-        try {
-            screen.clear();
-            textGraphics.putString(4, 2, "Victory! You completed the game, " +
-                    controller.getModel().getPlayer().getName());
-            screen.refresh();
-            Thread.sleep(3000);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -227,9 +287,8 @@ public class View {
         else {
             List<Items> item = controller.getModel().getBackpack().getScreenOutput();
             for (int i = 0; i < item.size(); ++i) {
-                textGraphics.putString(tmpX + 4, 2 + i, +i + "." +
-                        " name-" + item.get(i).getName() +
-                        " increase-" + item.get(i).getIncrease());
+                textGraphics.putString(tmpX + 4, 2 + i, +i + "." + " name-" + item.get(i).getName()
+                        + " increase-" + item.get(i).getIncrease());
             }
         }
         screen.refresh();
@@ -243,7 +302,7 @@ public class View {
 
     public void setKey() throws IOException, InterruptedException {
         KeyStroke tmp = screen.readInput();
-        if(tmp != null) {
+        if (tmp != null) {
             this.key = tmp;
         }
     }
@@ -255,18 +314,18 @@ public class View {
     public void setScreen(TerminalScreen screen) {
         this.screen = screen;
     }
-    //END GET-SET METOD
+    // END GET-SET METOD
 
-    public void passName(String namePlayer){
+    public void passName(String namePlayer) {
         controller.passName(namePlayer);
     }
 
     public void gameLoop(boolean flag) throws IOException {
         if (flag)
             controller.getModel().gameInitialization();
-        try{
-            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER &&
-                    controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY){
+        try {
+            while (controller.getModel().getPlayer().getStatus() != StatusPlayer.GAMEOVER
+                    && controller.getModel().getPlayer().getStatus() != StatusPlayer.VICTORY) {
                 screen.clear();
                 if (this.key != null) {
                     if (this.key.getKeyType() == KeyType.Escape) {
@@ -288,16 +347,15 @@ public class View {
                 }
             }
             controller.getModel().saveStatistics();
-            if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER)) {
-                viewGameOver();
+            if (controller.getModel().getPlayer().getStatus().equals(StatusPlayer.GAMEOVER)) {
+                viewGameStatus("Game Over, ");
                 controller.getModel().saveStatistics();
-            }
-            else if(controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY)) {
-                viewVictory();
+            } else if (controller.getModel().getPlayer().getStatus().equals(StatusPlayer.VICTORY)) {
+                viewGameStatus("Victory! You completed the game, ");
                 controller.getModel().saveStatistics();
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -324,12 +382,12 @@ public class View {
     private void viewBackpack(final char symbol) throws IOException, InterruptedException {
         viewSingleItemtype(symbol);
         setKey();
-        while (this.key != null){
-            if(this.key.getKeyType() == KeyType.Escape){
+        while (this.key != null) {
+            if (this.key.getKeyType() == KeyType.Escape) {
                 screen.clear();
                 return;
             }
-            if(this.key != null && this.key.getKeyType() == KeyType.Character){
+            if (this.key != null && this.key.getKeyType() == KeyType.Character) {
                 controller.userInputBackpack(this.key, symbol);
                 screen.clear();
                 return;
@@ -471,6 +529,27 @@ public class View {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static class MapInfo {
+        final int mapWidth;
+        final int mapHeight;
+        final int offsetX;
+        final int offsetY;
+        final int playerX;
+        final int playerY;
+        final int playerRoomIndex;
+
+        MapInfo(int mapWidth, int mapHeight, int offsetX, int offsetY,
+                         int playerX, int playerY, int playerRoomIndex) {
+            this.mapWidth = mapWidth;
+            this.mapHeight = mapHeight;
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.playerX = playerX;
+            this.playerY = playerY;
+            this.playerRoomIndex = playerRoomIndex;
         }
     }
 }
