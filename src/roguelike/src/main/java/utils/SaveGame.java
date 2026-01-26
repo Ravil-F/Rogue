@@ -198,7 +198,6 @@ class TextColorTypeAdapter extends TypeAdapter<TextColor> {
     }
 }
 
-
 // Адаптер для Items
 class ItemsTypeAdapter extends TypeAdapter<Items> {
     @Override
@@ -359,17 +358,6 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
             System.err.println("Error creating item of type " + type + ": " + e.getMessage());
             e.printStackTrace();
             return null;
-        }
-    }
-
-    private TextColor getTextColor(String colorStr) {
-        if (colorStr == null || colorStr.isEmpty()) {
-            return TextColor.ANSI.WHITE;
-        }
-        try {
-            return TextColor.ANSI.valueOf(colorStr.toUpperCase());
-        } catch (Exception e) {
-            return TextColor.ANSI.WHITE;
         }
     }
 
