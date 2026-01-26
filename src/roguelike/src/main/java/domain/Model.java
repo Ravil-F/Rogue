@@ -601,7 +601,7 @@ public class Model implements Check {
                 GameStatistics stat = statistics.findStatisticsByName(player.getName());
                 if(stat != null){
                     this.gameStatistics = stat;
-                    gameStatistics.setMaxLevel(level);
+                    gameStatistics.setMaxLevel(Math.max(stat.getMaxLevel(), level));
                 } else{
                     gameStatistics = new GameStatistics(player.getName());
                     gameStatistics.setMaxLevel(level);
@@ -715,6 +715,7 @@ public class Model implements Check {
 
     public void saveStatistics() {
         if (gameStatistics != null) {
+            System.out.println("savestatistics");
             boolean isVictory = player.getStatus() == StatusPlayer.VICTORY;
             gameStatistics.setVictory(isVictory);
             if (level > gameStatistics.getMaxLevel()) {
