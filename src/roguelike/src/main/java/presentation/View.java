@@ -19,6 +19,10 @@ import java.util.List;
 
 
 public class View {
+    private static final int MENU_WIDTH = 81;
+    private static final int MENU_HEIGHT = 30;
+    private static final String VERSION = "v1.0";
+
     private Terminal terminal;
     private TerminalScreen screen;
     private TextGraphics textGraphics;
@@ -42,14 +46,48 @@ public class View {
     }
 
     // VIEW WINDOWS
+//    public void startWindow() {
+//        try {
+//            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+//            textGraphics.putString(4, 2, "1      - New game");
+//            textGraphics.putString(4, 3, "2      - Load save game");
+//            textGraphics.putString(4, 4, "3      - Load game statistics");
+//            textGraphics.putString(4, 5, "Escape - Exit game");
+//            screen.refresh();
+//        } catch (IOException e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
+
     public void startWindow() {
         try {
+            screen.clear();
+            int offsetX = 1;
+            int offsetY = 1;
+            drawRectangle(textGraphics,
+                    offsetY,
+                    MENU_HEIGHT + offsetY,
+                    offsetX,
+                    MENU_WIDTH + offsetX);
+            String title = "ROGUELIKE";
+            int titleX = offsetX + (MENU_WIDTH - title.length()) / 2;
+            int titleY = offsetY + 3;
+            textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
+            textGraphics.putString(titleX, titleY, title);
+            int menuStartY = titleY + 3;
+            int menuX = offsetX + (MENU_WIDTH - 30) / 2;
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-            textGraphics.putString(4, 2, "1      - New game");
-            textGraphics.putString(4, 3, "2      - Load save game");
-            textGraphics.putString(4, 4, "3      - Load game statistics");
-            textGraphics.putString(4, 5, "Escape - Exit game");
+            textGraphics.putString(menuX, menuStartY, "1 - New game");
+            textGraphics.putString(menuX, menuStartY + 1, "2 - Load save game");
+            textGraphics.putString(menuX, menuStartY + 2, "3 - Load game statistics");
+            textGraphics.putString(menuX, menuStartY + 3, "Escape - Exit game");
+            int versionX = offsetX + MENU_WIDTH - VERSION.length() - 1;
+            int versionY = offsetY + MENU_HEIGHT - 1;
+            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+            textGraphics.putString(versionX, versionY, VERSION);
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             screen.refresh();
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -76,27 +114,67 @@ public class View {
     }
 
     private void viewMap() {
+        MapInfo info = initInfo();
+        drawRectangle(textGraphics,
+                info.offsetY - 1,
+                info.mapHeight + info.offsetY,
+                info.offsetX - 1,
+                info.mapWidth + info.offsetX);
+        drawRooms(info);
+        drawPassages(info);
+        drawEntities(info);
+    }
+
+    private MapInfo initInfo() {
         int mapWidth = controller.getModel().getMap().getWidth();
         int mapHeight = controller.getModel().getMap().getHeight();
         int offsetX = 1;
         int offsetY = 1;
-        drawRectangle(textGraphics, offsetY - 1, mapHeight + offsetY, offsetX - 1,
-                mapWidth + offsetX);
-        for (Rooms room : controller.getModel().getMap().getRooms()) {
-            drawRectangle(textGraphics, room.getTopY() + offsetY, room.getBottomY() + offsetY,
-                    room.getLeftX() + offsetX, room.getRightX() + offsetX);
-            drawRoomContent(textGraphics, room, offsetX, offsetY);
+        int playerX = controller.getModel().getPlayer().getCoord().getX();
+        int playerY = controller.getModel().getPlayer().getCoord().getY();
+        int playerRoomIndex = controller.getModel().getMap().determineRoom(playerX, playerY);
+        return new MapInfo(mapWidth, mapHeight, offsetX, offsetY,
+                playerX, playerY, playerRoomIndex);
+    }
+
+    private void drawRooms(MapInfo info) {
+        for (int i = 0; i < controller.getModel().getMap().getRooms().size(); i++) {
+            Rooms room = controller.getModel().getMap().getRooms().get(i);
+            if (!controller.getModel().getMap().isRoomVisited(i)) {
+                continue;
+            }
+            drawRectangle(textGraphics,
+                    room.getTopY() + info.offsetY,
+                    room.getBottomY() + info.offsetY,
+                    room.getLeftX() + info.offsetX,
+                    room.getRightX() + info.offsetX);
+            if (i == info.playerRoomIndex) {
+                drawRoomContent(textGraphics, room, info.offsetX, info.offsetY);
+            }
         }
-        for (Passage passage : controller.getModel().getMap().getPassages()) {
-            drawPassageSegments(textGraphics, passage, offsetX, offsetY);
+    }
+
+    private void drawPassages(MapInfo info) {
+        for (int i = 0; i < controller.getModel().getMap().getPassages().size(); i++) {
+            Passage passage = controller.getModel().getMap().getPassages().get(i);
+            if (controller.getModel().getMap().isPassageVisited(i)) {
+                drawPassageSegments(textGraphics, passage, info.offsetX, info.offsetY);
+            }
         }
-        for (int x = 0; x < mapWidth; ++x) {
-            for (int y = 0; y < mapHeight; ++y) {
+    }
+
+    private void drawEntities(MapInfo info) {
+        for (int x = 0; x < info.mapWidth; ++x) {
+            for (int y = 0; y < info.mapHeight; ++y) {
+                int roomIndex = controller.getModel().getMap().determineRoom(x, y);
+                if (roomIndex != info.playerRoomIndex) {
+                    continue;
+                }
                 char cellChar = controller.getModel().getMap().getMapChar(x, y);
                 if (cellChar != 0 && cellChar != ' ' && cellChar != '#' && cellChar != '.') {
                     TextColor color = getCellColor(x, y, cellChar);
                     textGraphics.setForegroundColor(color);
-                    textGraphics.putString(x + offsetX, y + offsetY, String.valueOf(cellChar));
+                    textGraphics.putString(x + info.offsetX, y + info.offsetY, String.valueOf(cellChar));
                     textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
                 }
             }
@@ -451,6 +529,27 @@ public class View {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static class MapInfo {
+        final int mapWidth;
+        final int mapHeight;
+        final int offsetX;
+        final int offsetY;
+        final int playerX;
+        final int playerY;
+        final int playerRoomIndex;
+
+        MapInfo(int mapWidth, int mapHeight, int offsetX, int offsetY,
+                         int playerX, int playerY, int playerRoomIndex) {
+            this.mapWidth = mapWidth;
+            this.mapHeight = mapHeight;
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.playerX = playerX;
+            this.playerY = playerY;
+            this.playerRoomIndex = playerRoomIndex;
         }
     }
 }

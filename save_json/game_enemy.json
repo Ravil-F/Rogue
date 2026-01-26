@@ -1,6 +1,19 @@
 {
   "enemy": [
     {
+      "type": "Zombi",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 50,
+      "strength": 30,
+      "hostility": 2,
+      "name": "Zombi",
+      "symbol": "Z",
+      "color": "GREEN",
+      "coordX": 42,
+      "coordY": 24
+    },
+    {
       "type": "Vampire",
       "maxHealth": 100,
       "health": 100,
@@ -10,60 +23,47 @@
       "name": "Zampire",
       "symbol": "V",
       "color": "RED",
-      "coordX": 40,
-      "coordY": 25
+      "coordX": 45,
+      "coordY": 24
     },
     {
-      "type": "SnakeMage",
-      "maxHealth": 50,
-      "health": 50,
-      "agility": 100,
-      "strength": 50,
-      "hostility": 6,
-      "name": "Snake_mage",
-      "symbol": "S",
-      "color": "WHITE",
-      "coordX": 73,
-      "coordY": 5
-    },
-    {
-      "type": "SnakeMage",
-      "maxHealth": 50,
-      "health": 50,
-      "agility": 100,
-      "strength": 50,
-      "hostility": 6,
-      "name": "Snake_mage",
-      "symbol": "S",
-      "color": "WHITE",
-      "coordX": 31,
-      "coordY": 14
-    },
-    {
-      "type": "SnakeMage",
-      "maxHealth": 50,
-      "health": 50,
-      "agility": 100,
-      "strength": 50,
-      "hostility": 6,
-      "name": "Snake_mage",
-      "symbol": "S",
-      "color": "WHITE",
-      "coordX": 62,
+      "type": "Zombi",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 50,
+      "strength": 30,
+      "hostility": 2,
+      "name": "Zombi",
+      "symbol": "Z",
+      "color": "GREEN",
+      "coordX": 41,
       "coordY": 15
     },
     {
-      "type": "SnakeMage",
-      "maxHealth": 50,
-      "health": 50,
-      "agility": 100,
-      "strength": 50,
-      "hostility": 6,
-      "name": "Snake_mage",
-      "symbol": "S",
-      "color": "WHITE",
-      "coordX": 10,
-      "coordY": 3
+      "type": "Zombi",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 50,
+      "strength": 30,
+      "hostility": 2,
+      "name": "Zombi",
+      "symbol": "Z",
+      "color": "GREEN",
+      "coordX": 64,
+      "coordY": 17
+    },
+    {
+      "type": "Zombi",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 50,
+      "strength": 30,
+      "hostility": 2,
+      "name": "Zombi",
+      "symbol": "Z",
+      "color": "GREEN",
+      "coordX": 11,
+      "coordY": 4
     }
   ]
 }

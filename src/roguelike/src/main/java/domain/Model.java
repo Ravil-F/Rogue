@@ -91,6 +91,7 @@ public class Model implements Check {
 
     public void gameSession(){
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+        map.markAVisit(player.getCoord().getX(), player.getCoord().getY());
         if(!player.getStatus().equals(StatusPlayer.PAUSE))
             enemyMovement();
     }

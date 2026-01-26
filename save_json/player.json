@@ -1,5 +1,5 @@
 {
-  "status": "GAMEOVER",
+  "status": "ACTION",
   "treasure": 0,
   "sleep": 0,
   "maxHealth": 100,
@@ -7,11 +7,11 @@
   "agility": 90,
   "strength": 80,
   "hostility": 0,
-  "name": "player",
+  "name": "1",
   "symbol": "@",
   "color": "RED",
   "coord": {
     "x": 22,
-    "y": 26
+    "y": 24
   }
 }
