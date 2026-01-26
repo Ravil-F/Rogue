@@ -1,4 +1,5 @@
 package org.example;
+
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
 import presentation.Controller;
@@ -8,7 +9,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException, IOException {
-                startGame();
+        startGame();
     }
 
     private static void startGame() throws IOException, InterruptedException {

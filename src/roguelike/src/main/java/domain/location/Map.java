@@ -12,6 +12,9 @@ public class Map implements Check {
     private int[][] map;
     private int[][] floor;
 
+    private boolean[] visitedRooms;
+    private boolean[] visitedPassages;
+
     private static final int ROOMS_IN_WIDTH = 3;
     private static final int ROOMS_IN_HEIGHT = 3;
     private static final int REGION_WIDTH = 27;
@@ -37,6 +40,8 @@ public class Map implements Check {
         common = new CommonProperties();
         this.map = new int[MAP_WIDTH][MAP_HEIGHT];
         this.floor = new int[MAP_WIDTH][MAP_HEIGHT];
+        this.visitedRooms = new boolean[NUM_ROOMS];
+        this.visitedPassages = new boolean[NUM_ROOMS * 2];
         for (int x = 0; x < MAP_WIDTH; x++) {
             for (int y = 0; y < MAP_HEIGHT; y++) {
                 map[x][y] = ' ';
@@ -195,6 +200,60 @@ public class Map implements Check {
                 }
             }
         }
+    }
+
+    public void markAVisit(int playerX, int playerY) {
+        int roomIndex = determineRoom(playerX, playerY);
+        if (roomIndex != -1) {
+            visitedRooms[roomIndex] = true;
+        }
+        int passageIndex = determinePassage(playerX, playerY);
+        if (passageIndex != -1 && passageIndex < visitedPassages.length) {
+            visitedPassages[passageIndex] = true;
+        }
+    }
+
+    public int determineRoom(int x, int y) {
+        for (int i = 0; i < rooms.size(); i++) {
+            Rooms room = rooms.get(i);
+            if (x >= room.getLeftX() && x <= room.getRightX() &&
+                    y >= room.getTopY() && y <= room.getBottomY()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int determinePassage(int x, int y) {
+        for (int i = 0; i < passages.size(); i++) {
+            Passage passage = passages.get(i);
+            for (Passage.PassageSegment segment : passage.getSegments()) {
+                if (segment.isHorizontal()) {
+                    int segY = segment.getStartY();
+                    int minX = Math.min(segment.getStartX(), segment.getEndX());
+                    int maxX = Math.max(segment.getStartX(), segment.getEndX());
+                    if (y == segY && x >= minX && x <= maxX) {
+                        return i;
+                    }
+                } else {
+                    int segX = segment.getStartX();
+                    int minY = Math.min(segment.getStartY(), segment.getEndY());
+                    int maxY = Math.max(segment.getStartY(), segment.getEndY());
+                    if (x == segX && y >= minY && y <= maxY) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    public boolean isRoomVisited(int roomIndex) {
+        return roomIndex >= 0 && roomIndex < visitedRooms.length && visitedRooms[roomIndex];
+    }
+
+    public boolean isPassageVisited(int passageIndex) {
+        return passageIndex >= 0 && passageIndex < visitedPassages.length && visitedPassages[passageIndex];
     }
 
     private int getRandomInRange(int min, int max) {

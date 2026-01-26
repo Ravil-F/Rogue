@@ -75,10 +75,8 @@ public class Model implements Check {
     }
 
     private void generateExit() {
-        if (level < MAX_LEVEL) {
-            int[] exitPos = map.getFinalRoomCoords();
-            map.setMap(exitPos[0], exitPos[1], '■');
-        }
+        int[] exitPos = map.getFinalRoomCoords();
+        map.setMap(exitPos[0], exitPos[1], '■');
     }
 
     private void generateEnemies() {
@@ -93,6 +91,7 @@ public class Model implements Check {
 
     public void gameSession(){
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+        map.markAVisit(player.getCoord().getX(), player.getCoord().getY());
         if(!player.getStatus().equals(StatusPlayer.PAUSE))
             enemyMovement();
     }
