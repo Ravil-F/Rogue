@@ -722,7 +722,6 @@ public class Model implements Check {
                 gameStatistics.setMaxLevel(level);
             }
             statistics.updateStatistics(gameStatistics);
-            gameStatistics = null;
         }
     }
 }
