@@ -21,7 +21,7 @@ import java.util.List;
 public class View {
     private Terminal terminal;
     private TerminalScreen screen;
-    private TextGraphics textGraphics;
+    private static TextGraphics textGraphics;
 
     private Controller controller;
     private KeyStroke key;
@@ -88,9 +88,11 @@ public class View {
                     room.getLeftX() + offsetX, room.getRightX() + offsetX);
             drawRoomContent(textGraphics, room, offsetX, offsetY);
         }
+
         for (Passage passage : controller.getModel().getMap().getPassages()) {
             drawPassageSegments(textGraphics, passage, offsetX, offsetY);
         }
+
         for(int x = 0; x < mapWidth; ++x){
             for (int y = 0; y < mapHeight; ++y){
                 char cellChar = controller.getModel().getMap().getMapChar(x, y);
@@ -102,6 +104,7 @@ public class View {
                 }
             }
         }
+
     }
 
     private TextColor getCellColor(int x, int y, char symbol) {
@@ -384,79 +387,14 @@ public class View {
 
                 int displayCount = Math.min(10, allStatistics.size());
                 int currentY = startY + 3;
-
-                for (int i = 0; i < displayCount; i++) {
-                    utils.GameStatistics statistics = allStatistics.get(i);
-
-                    if (i < 3) {
-                        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
-                    } else {
-                        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-                    }
-
-                    String place = (i + 1) + ".";
-                    textGraphics.putString(columnX, currentY, place);
-
-                    String name = statistics.getName();
-                    if (name.length() > 10) {
-                        name = name.substring(0, 7) + "...";
-                    }
-                    textGraphics.putString(columnX + 3, currentY, name);
-
-                    textGraphics.putString(columnX + 15, currentY,
-                            String.format("%8d", statistics.getTreasure()));
-
-                    textGraphics.putString(columnX + 24, currentY,
-                            String.format("%5d", statistics.getMaxLevel()));
-
-                    textGraphics.putString(columnX + 30, currentY,
-                            String.format("%7d", statistics.getEnemyKilled()));
-
-                    textGraphics.putString(columnX + 38, currentY,
-                            String.format("%5d", statistics.getFoodEaten()));
-
-                    textGraphics.putString(columnX + 44, currentY,
-                            String.format("%7d", statistics.getElixirDrink()));
-
-                    textGraphics.putString(columnX + 52, currentY,
-                            String.format("%7d", statistics.getScrollUse()));
-
-                    textGraphics.putString(columnX + 60, currentY,
-                            String.format("%7d", statistics.getAttacksMade()));
-
-                    textGraphics.putString(columnX + 68, currentY,
-                            String.format("%11d", statistics.getAttacksReceived()));
-
-                    textGraphics.putString(columnX + 80, currentY,
-                            String.format("%9d", statistics.getCellMoved()));
-
-                    String victory = statistics.isVictory() ? "✓" : "✗";
-                    if (statistics.isVictory()) {
-                        textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
-                    } else {
-                        textGraphics.setForegroundColor(TextColor.ANSI.RED);
-                    }
-                    textGraphics.putString(columnX + 96, currentY, victory);
-
-                    if (i < 3) {
-                        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
-                    } else {
-                        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-                    }
-
-                    currentY++;
-                }
+                outputInformation(displayCount, currentY, columnX, allStatistics);
             }
 
             textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
             textGraphics.setBackgroundColor(TextColor.ANSI.BLUE);
-
             String instruction = "Escape - Exit game";
-
             textGraphics.putString(0, screen.getTerminalSize().getRows() - 2, instruction);
-
             textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
-
             screen.refresh();
 
             boolean viewingStats = true;
@@ -471,6 +409,70 @@ public class View {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private static void outputInformation(int displayCount, int currentY, int columnX, List<utils.GameStatistics> allStatistics ){
+        for (int i = 0; i < displayCount; i++) {
+            utils.GameStatistics statistics = allStatistics.get(i);
+
+            if (i < 3) {
+                textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+            } else {
+                textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+            }
+
+            String place = (i + 1) + ".";
+            textGraphics.putString(columnX, currentY, place);
+
+            String name = statistics.getName();
+            if (name.length() > 10) {
+                name = name.substring(0, 7) + "...";
+            }
+            textGraphics.putString(columnX + 3, currentY, name);
+
+            textGraphics.putString(columnX + 15, currentY,
+                    String.format("%8d", statistics.getTreasure()));
+
+            textGraphics.putString(columnX + 24, currentY,
+                    String.format("%5d", statistics.getMaxLevel()));
+
+            textGraphics.putString(columnX + 30, currentY,
+                    String.format("%7d", statistics.getEnemyKilled()));
+
+            textGraphics.putString(columnX + 38, currentY,
+                    String.format("%5d", statistics.getFoodEaten()));
+
+            textGraphics.putString(columnX + 44, currentY,
+                    String.format("%7d", statistics.getElixirDrink()));
+
+            textGraphics.putString(columnX + 52, currentY,
+                    String.format("%7d", statistics.getScrollUse()));
+
+            textGraphics.putString(columnX + 60, currentY,
+                    String.format("%7d", statistics.getAttacksMade()));
+
+            textGraphics.putString(columnX + 68, currentY,
+                    String.format("%11d", statistics.getAttacksReceived()));
+
+            textGraphics.putString(columnX + 80, currentY,
+                    String.format("%9d", statistics.getCellMoved()));
+
+            String victory = statistics.isVictory() ? "✓" : "✗";
+            if (statistics.isVictory()) {
+                textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
+            } else {
+                textGraphics.setForegroundColor(TextColor.ANSI.RED);
+            }
+            textGraphics.putString(columnX + 96, currentY, victory);
+
+            if (i < 3) {
+                textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+            } else {
+                textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+            }
+
+            currentY++;
         }
     }
 }

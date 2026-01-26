@@ -32,39 +32,43 @@ public class Main {
                     flag = false;
                 }
                 if (view.getKey().getKeyType() == KeyType.Character && flag) {
-                    switch (view.getKey().getCharacter()) {
-                        case '1':
-                            Model newModel = new Model();
-                            controller.setModel(newModel);
-                            String namePlayer = view.inputScan();
-                            if (namePlayer.equals(" "))
-                                view.passName(namePlayer);
-                            else controller.passName(namePlayer);
-                            view.gameLoop(true);
-                            if (controller.getModel().getGameStatistics() != null) {
-                                controller.getModel().saveStatistics();
-                            }
-                            break;
-                        case '2':
-                            Model new2Model = new Model();
-                            controller.setModel(new2Model);
-                            controller.getModel().loadGame();
-                            view.gameLoop(false);
-                            if (controller.getModel().getGameStatistics() != null) {
-                                controller.getModel().saveStatistics();
-                            }
-                            break;
-                        case '3':
-                            controller.getModel().getGameStatistics();
-                            view.gameStatisticsView();
-                            break;
-                        default:
-                            break;
-                    }
+                    startGameLoopSwitch(view, controller);
                 }
                 view.getScreen().refresh();
                 view.startWindow();
             }
+        }
+    }
+
+    private static void startGameLoopSwitch(View view, Controller controller) throws IOException, InterruptedException {
+        switch (view.getKey().getCharacter()) {
+            case '1':
+                Model newModel = new Model();
+                controller.setModel(newModel);
+                String namePlayer = view.inputScan();
+                if (namePlayer.equals(" "))
+                    view.passName(namePlayer);
+                else controller.passName(namePlayer);
+                view.gameLoop(true);
+                if (controller.getModel().getGameStatistics() != null) {
+                    controller.getModel().saveStatistics();
+                }
+                break;
+            case '2':
+                Model new2Model = new Model();
+                controller.setModel(new2Model);
+                controller.getModel().loadGame();
+                view.gameLoop(false);
+                if (controller.getModel().getGameStatistics() != null) {
+                    controller.getModel().saveStatistics();
+                }
+                break;
+            case '3':
+                controller.getModel().getGameStatistics();
+                view.gameStatisticsView();
+                break;
+            default:
+                break;
         }
     }
 }
