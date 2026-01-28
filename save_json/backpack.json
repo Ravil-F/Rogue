@@ -1,0 +1,18 @@
+{
+  "packWeapon": [],
+  "packFood": [
+    {
+      "type": "Food",
+      "foodEnum": "MEAT_F",
+      "name": "meat",
+      "symbol": "f",
+      "increase": 20,
+      "color": "GREEN",
+      "coordX": 49,
+      "coordY": 16
+    }
+  ],
+  "packElixir": [],
+  "packScroll": [],
+  "screenOuptup": []
+}

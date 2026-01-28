@@ -1,5 +1,3 @@
-package org.example;
-
 import com.googlecode.lanterna.input.KeyType;
 import domain.Model;
 import presentation.Controller;

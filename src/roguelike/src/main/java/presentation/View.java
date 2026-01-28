@@ -119,9 +119,9 @@ public class View {
         int offsetY = 1;
         int playerX = controller.getModel().getPlayer().getCoord().getX();
         int playerY = controller.getModel().getPlayer().getCoord().getY();
-        int playerRoomIndex = controller.getModel().getMap().determineRoom(playerX, playerY);
+        int playerInRoom = controller.getModel().getMap().determineRoom(playerX, playerY);
         return new MapInfo(mapWidth, mapHeight, offsetX, offsetY,
-                playerX, playerY, playerRoomIndex);
+                playerX, playerY, playerInRoom);
     }
 
     private void drawRooms(MapInfo info) {
@@ -135,7 +135,7 @@ public class View {
                     room.getBottomY() + info.offsetY,
                     room.getLeftX() + info.offsetX,
                     room.getRightX() + info.offsetX);
-            if (i == info.playerRoomIndex) {
+            if (i == info.playerInRoom) {
                 drawRoomContent(textGraphics, room, info.offsetX, info.offsetY);
             }
         }
@@ -151,20 +151,62 @@ public class View {
     }
 
     private void drawEntities(MapInfo info) {
-        for (int x = 0; x < info.mapWidth; ++x) {
-            for (int y = 0; y < info.mapHeight; ++y) {
-                int roomIndex = controller.getModel().getMap().determineRoom(x, y);
-                if (roomIndex != info.playerRoomIndex) {
-                    continue;
-                }
-                char cellChar = controller.getModel().getMap().getMapChar(x, y);
-                if (cellChar != 0 && cellChar != ' ' && cellChar != '#' && cellChar != '.') {
-                    TextColor color = getCellColor(x, y, cellChar);
-                    textGraphics.setForegroundColor(color);
-                    textGraphics.putString(x + info.offsetX, y + info.offsetY, String.valueOf(cellChar));
-                    textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-                }
+        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
+        drawPlayer(info);
+        drawEnemies(info, playerInPassage);
+        drawItems(info);
+        drawExit(info);
+    }
+
+    private void drawEntitiesSymbol(int x, int y, char symbol, TextColor color, MapInfo info) {
+        textGraphics.setForegroundColor(color);
+        textGraphics.putString(x + info.offsetX, y + info.offsetY, String.valueOf(symbol));
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+    }
+
+    private void drawPlayer(MapInfo info) {
+        int playerX = info.playerX;
+        int playerY = info.playerY;
+        drawEntitiesSymbol(playerX, playerY, controller.getModel().getPlayer().getSymbol(), controller.getModel().getPlayer().getColor(), info);
+    }
+
+    private void drawEnemies(MapInfo info, int playerInPassage) {
+        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
+            int enemyX = enemy.getCoord().getX();
+            int enemyY = enemy.getCoord().getY();
+            int enemyInRoom = controller.getModel().getMap().determineRoom(enemyX, enemyY);
+            int enemyInPassage = controller.getModel().getMap().determinePassage(enemyX, enemyY);
+            boolean isVisible = false;
+            if (info.playerInRoom != -1 && enemyInRoom == info.playerInRoom) {
+                isVisible = true;
             }
+            else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
+                isVisible = true;
+            }
+            if (isVisible) {
+                drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
+            }
+        }
+    }
+
+    private void drawItems(MapInfo info) {
+        for (Items item : controller.getModel().getItems().getItems()) {
+            int itemX = item.getCoord().getX();
+            int itemY = item.getCoord().getY();
+            int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
+            if (itemInRoom == info.playerInRoom && itemInRoom != -1) {
+                drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
+            }
+        }
+    }
+
+    private void drawExit(MapInfo info) {
+        int[] exitCoords = controller.getModel().getMap().getFinalRoomCoords();
+        int exitX = exitCoords[0];
+        int exitY = exitCoords[1];
+        int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
+        if (exitInRoom == info.playerInRoom && exitInRoom != -1) {
+            drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
         }
     }
 
@@ -528,17 +570,17 @@ public class View {
         final int offsetY;
         final int playerX;
         final int playerY;
-        final int playerRoomIndex;
+        final int playerInRoom;
 
         MapInfo(int mapWidth, int mapHeight, int offsetX, int offsetY,
-                         int playerX, int playerY, int playerRoomIndex) {
+                         int playerX, int playerY, int playerInRoom) {
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
             this.offsetX = offsetX;
             this.offsetY = offsetY;
             this.playerX = playerX;
             this.playerY = playerY;
-            this.playerRoomIndex = playerRoomIndex;
+            this.playerInRoom = playerInRoom;
         }
     }
 }
