@@ -36,6 +36,9 @@ public class Map implements Check {
     private int startRoomNum;
     private int finalRoomNum;
 
+    private int exitX;
+    private int exitY;
+
     public Map() {
         common = new CommonProperties();
         this.map = new int[MAP_WIDTH][MAP_HEIGHT];
@@ -51,6 +54,7 @@ public class Map implements Check {
         generateRoomsAndPassages();
         sendRoomsIntoMap();
         sendPassagesIntoMap();
+        generateExitCoordinates();
     }
 
     public List<Rooms> getRooms() {
@@ -202,6 +206,12 @@ public class Map implements Check {
         }
     }
 
+    private void generateExitCoordinates() {
+        Rooms finalRoom = rooms.get(finalRoomNum);
+        this.exitX = getRandomInRange(finalRoom.getLeftX() + 1, finalRoom.getRightX() - 1);
+        this.exitY = getRandomInRange(finalRoom.getTopY() + 1, finalRoom.getBottomY() - 1);
+    }
+
     public void markAVisit(int playerX, int playerY) {
         int roomIndex = determineRoom(playerX, playerY);
         if (roomIndex != -1) {
@@ -314,10 +324,7 @@ public class Map implements Check {
     }
 
     public int[] getFinalRoomCoords() {
-        Rooms finalRoom = rooms.get(finalRoomNum);
-        int x = getRandomInRange(finalRoom.getLeftX() + 1, finalRoom.getRightX() - 1);
-        int y = getRandomInRange(finalRoom.getTopY() + 1, finalRoom.getBottomY() - 1);
-        return new int[]{x, y};
+        return new int[]{exitX, exitY};
     }
 
     public int getStartRoom() {

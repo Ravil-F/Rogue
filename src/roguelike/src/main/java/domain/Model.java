@@ -57,6 +57,7 @@ public class Model implements Check {
     public void gameInitialization(){
         player.setStatus(StatusPlayer.ACTION);
         map.setMap(player.getCoord().getX(), player.getCoord().getY(), player.getSymbol());
+        map.markAVisit(player.getCoord().getX(), player.getCoord().getY());
         generateItems();
         generateExit();
         generateEnemies();
