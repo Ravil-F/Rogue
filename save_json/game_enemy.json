@@ -1,0 +1,43 @@
+{
+  "enemy": [
+    {
+      "type": "Orge",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 100,
+      "strength": 50,
+      "hostility": 4,
+      "name": "Orge",
+      "symbol": "O",
+      "color": "YELLOW",
+      "coordX": 22,
+      "coordY": 26
+    },
+    {
+      "type": "Orge",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 100,
+      "strength": 50,
+      "hostility": 4,
+      "name": "Orge",
+      "symbol": "O",
+      "color": "YELLOW",
+      "coordX": 31,
+      "coordY": 4
+    },
+    {
+      "type": "Zombi",
+      "maxHealth": 100,
+      "health": 100,
+      "agility": 50,
+      "strength": 30,
+      "hostility": 2,
+      "name": "Zombi",
+      "symbol": "Z",
+      "color": "GREEN",
+      "coordX": 19,
+      "coordY": 4
+    }
+  ]
+}
