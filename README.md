@@ -1,6 +1,6 @@
 # Project Team 01 — Java_Bootcamp
 
-Summary: In this team project, you will develop a console-based "roguelike" game application in Java using the JCurses library (in the Java version) inspired by the classic 1980 game Rogue.
+Summary: In this team project, you will develop a console-based "roguelike" game application in Java using the JCurses library (in the Java version) or similar, inspired by the classic 1980 game Rogue.
 
 💡 [Click here](https://new.oprosso.net/p/4cb31ec3f47a4596bc758ea1861fb624) to share your feedback on this project. It’s anonymous and will help our team improve the course. We recommend filling out the survey right after completing the project.
 
@@ -76,7 +76,7 @@ When developing applications with data, business logic, and user interfaces, a m
 
 By separating the business and presentation layers, it becomes easier to organize the application logic and to separate components with different reliability.
 
-In the presentation layer, you should place the code that handles displaying the screen and receiving user input. This should reflect the interactions with the JCurses library components and the Domain layer.
+In the presentation layer, you should place the code that handles displaying the screen and receiving user input. This should reflect the interactions with the JCurses library (or similar) components and the Domain layer.
 
 The domain layer should reflect the business logic of the application that is not tied to frameworks. In the current project, this includes defining the logic of entities related to the game: the game itself, the player, enemies, levels, maps, and others, as well as the game process logic. The player's position and the logic for changing the player's position numerically on the map should be reflected in this layer and passed to the Presentation layer for rendering. Note that according to the concept of clean architecture, the business logic layer should not depend on other layers. To achieve this, the principle of dependency inversion should be used.
 
@@ -91,7 +91,7 @@ The Data layer in the application should handle the work with data. In this case
 The game application:
 
 - Must be implemented in Java version 21.
-- Must have a console interface based on the JCurses library.
+- Must have a console interface based on the JCurses library (or similar).
 - Must be controlled via the keyboard.
 - Must have a well-thought-out, clean architecture with clear layer separation.
 - Must implement the logic of the classic Rogue 1980 game with a few simplifications (specific requirements for game mechanics are described in later sections).
@@ -212,7 +212,7 @@ Implement a level generation module in the **layer** domain.
 
 ## Task 4. Cozy 2D
 
-Implement the game rendering in the **presentation** layer using JCurses, employing the necessary **domain** entities.
+Implement the game rendering in the **presentation** layer using JCurses (or similar), employing the necessary **domain** entities.
 
 ### Rendering
 
@@ -272,6 +272,6 @@ It should have high Agility, low Strength, high Health, and low Hostility.
   + The main view changes to a first-person 3D view.
   + The 2D view remains as a minimap in the corner of the screen.
   + The controls change accordingly: W — move forward, S — move backward, A — turn left, D — turn right.
-- For the 3D rendering of rooms and corridors, the Ray Casting algorithm and the JCurses library are used.
+- For the 3D rendering of rooms and corridors, the Ray Casting algorithm and the JCurses library (or similar) are used.
 - The walls of the rooms and corridors should be textured so that the movement of the character is clearly visible.
 - An example of 3D level rendering can be found in the code-samples folder.
