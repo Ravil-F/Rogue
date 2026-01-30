@@ -51,6 +51,7 @@ public class View {
             screen.clear();
             int offsetX = 1;
             int offsetY = 1;
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             drawRectangle(textGraphics,
                     offsetY,
                     MENU_HEIGHT + offsetY,
@@ -70,7 +71,6 @@ public class View {
             textGraphics.putString(menuX, menuStartY + 3, "Escape - Exit game");
             int versionX = offsetX + MENU_WIDTH - VERSION.length() - 1;
             int versionY = offsetY + MENU_HEIGHT - 1;
-            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
             textGraphics.putString(versionX, versionY, VERSION);
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             screen.refresh();
@@ -170,6 +170,25 @@ public class View {
         drawEntitiesSymbol(playerX, playerY, controller.getModel().getPlayer().getSymbol(), controller.getModel().getPlayer().getColor(), info);
     }
 
+//    private void drawEnemies(MapInfo info, int playerInPassage) {
+//        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
+//            int enemyX = enemy.getCoord().getX();
+//            int enemyY = enemy.getCoord().getY();
+//            int enemyInRoom = controller.getModel().getMap().determineRoom(enemyX, enemyY);
+//            int enemyInPassage = controller.getModel().getMap().determinePassage(enemyX, enemyY);
+//            boolean isVisible = false;
+//            if (info.playerInRoom != -1 && enemyInRoom == info.playerInRoom) {
+//                isVisible = true;
+//            }
+//            else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
+//                isVisible = true;
+//            }
+//            if (isVisible) {
+//                drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
+//            }
+//        }
+//    }
+
     private void drawEnemies(MapInfo info, int playerInPassage) {
         for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
             int enemyX = enemy.getCoord().getX();
@@ -183,29 +202,109 @@ public class View {
             else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
                 isVisible = true;
             }
+            else if (playerInPassage != -1 && enemyInRoom != -1) {
+                Rooms enemyRoom = controller.getModel().getMap().getRooms().get(enemyInRoom);
+                boolean isVertical = controller.getModel().getMap().isExitVertical(
+                        info.playerX, info.playerY, enemyRoom
+                );
+                isVisible = controller.getModel().getMap().isCellVisible(
+                        enemyX, enemyY, info.playerX, info.playerY, isVertical
+                );
+            }
+            if (isVisible) {
+                if (playerInPassage != -1 && enemyInRoom != -1) {
+                    isVisible = controller.getModel().getMap().hasLineOfSight(
+                            info.playerX, info.playerY, enemyX, enemyY
+                    );
+                }
+            }
             if (isVisible) {
                 drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
             }
         }
     }
 
+//    private void drawItems(MapInfo info) {
+//        for (Items item : controller.getModel().getItems().getItems()) {
+//            int itemX = item.getCoord().getX();
+//            int itemY = item.getCoord().getY();
+//            int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
+//            if (itemInRoom == info.playerInRoom && itemInRoom != -1) {
+//                drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
+//            }
+//        }
+//    }
+
     private void drawItems(MapInfo info) {
+        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         for (Items item : controller.getModel().getItems().getItems()) {
             int itemX = item.getCoord().getX();
             int itemY = item.getCoord().getY();
             int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
-            if (itemInRoom == info.playerInRoom && itemInRoom != -1) {
+            boolean isVisible = false;
+            if (info.playerInRoom != -1 && itemInRoom == info.playerInRoom) {
+                isVisible = true;
+            }
+            else if (playerInPassage != -1 && itemInRoom != -1) {
+                Rooms itemRoom = controller.getModel().getMap().getRooms().get(itemInRoom);
+                boolean isVertical = controller.getModel().getMap().isExitVertical(
+                        info.playerX, info.playerY, itemRoom
+                );
+                isVisible = controller.getModel().getMap().isCellVisible(
+                        itemX, itemY, info.playerX, info.playerY, isVertical
+                );
+            }
+            if (isVisible) {
+                if (playerInPassage != -1 && itemInRoom != -1) {
+                    isVisible = controller.getModel().getMap().hasLineOfSight(
+                            info.playerX, info.playerY, itemX, itemY
+                    );
+                }
+            }
+            if (isVisible) {
                 drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
             }
         }
     }
 
+//    private void drawExit(MapInfo info) {
+//        int[] exitCoords = controller.getModel().getMap().getFinalRoomCoords();
+//        int exitX = exitCoords[0];
+//        int exitY = exitCoords[1];
+//        int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
+//        if (exitInRoom == info.playerInRoom && exitInRoom != -1) {
+//            drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
+//        }
+//    }
+
     private void drawExit(MapInfo info) {
+        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         int[] exitCoords = controller.getModel().getMap().getFinalRoomCoords();
         int exitX = exitCoords[0];
         int exitY = exitCoords[1];
         int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
-        if (exitInRoom == info.playerInRoom && exitInRoom != -1) {
+        boolean isVisible = false;
+        if (info.playerInRoom != -1 && exitInRoom == info.playerInRoom) {
+            isVisible = true;
+        }
+        else if (playerInPassage != -1 && exitInRoom != -1) {
+            Rooms exitRoom = controller.getModel().getMap().getRooms().get(exitInRoom);
+            boolean isVertical = controller.getModel().getMap().isExitVertical(
+                    info.playerX, info.playerY, exitRoom
+            );
+
+            isVisible = controller.getModel().getMap().isCellVisible(
+                    exitX, exitY, info.playerX, info.playerY, isVertical
+            );
+        }
+        if (isVisible) {
+            if (playerInPassage != -1 && exitInRoom != -1) {
+                isVisible = controller.getModel().getMap().hasLineOfSight(
+                        info.playerX, info.playerY, exitX, exitY
+                );
+            }
+        }
+        if (isVisible) {
             drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
         }
     }
@@ -441,14 +540,14 @@ public class View {
             textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
             textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
 
-            textGraphics.putString(10, 2, "=== GAME STATISTICS ===");
+            textGraphics.putString((MENU_WIDTH - 3) / 2, 2, "=== GAME STATISTICS ===");
 
             if (allStatistics.isEmpty()) {
                 textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
                 textGraphics.putString(10, 4, "The statistics are empty for now. Play some games!");
             } else {
                 textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
-                textGraphics.putString(10, 4, "Top 10 players:");
+                textGraphics.putString(1, 4, "Top 10 players:");
 
                 int startY = 6;
                 int columnX = 1;

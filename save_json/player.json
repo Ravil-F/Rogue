@@ -1,9 +1,9 @@
 {
-  "status": "ACTION",
-  "treasure": 20,
+  "status": "GAMEOVER",
+  "treasure": 10,
   "sleep": 0,
   "maxHealth": 100,
-  "health": 20,
+  "health": -20,
   "agility": 80,
   "strength": 80,
   "hostility": 0,
@@ -11,7 +11,7 @@
   "symbol": "@",
   "color": "RED",
   "coord": {
-    "x": 49,
-    "y": 15
+    "x": 10,
+    "y": 17
   }
 }

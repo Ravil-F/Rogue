@@ -266,6 +266,60 @@ public class Map implements Check {
         return passageIndex >= 0 && passageIndex < visitedPassages.length && visitedPassages[passageIndex];
     }
 
+    public boolean isExitVertical(int playerX, int playerY, Rooms room) {
+        int checkX1 = playerX + 1;
+        if (checkX1 >= room.getLeftX() && checkX1 <= room.getRightX() &&
+                playerY >= room.getTopY() && playerY <= room.getBottomY()) {
+            return false;
+        }
+        int checkX2 = playerX - 1;
+        if (checkX2 >= room.getLeftX() && checkX2 <= room.getRightX() &&
+                playerY >= room.getTopY() && playerY <= room.getBottomY()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isCellVisible(int cellX, int cellY, int playerX, int playerY, boolean isVertical) {
+        int deltaX = cellX - playerX;
+        int deltaY = cellY - playerY;
+        if (isVertical) {
+            return Math.abs(deltaY) >= Math.abs(deltaX);
+        } else {
+            return Math.abs(deltaX) >= Math.abs(deltaY);
+        }
+    }
+
+    public boolean hasLineOfSight(int x0, int y0, int x1, int y1) {
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+        int err = dx - dy;
+        int x = x0;
+        int y = y0;
+        while (true) {
+            if (x == x1 && y == y1) {
+                return true;
+            }
+            if (isWithInBounds(x, y)) {
+                char cell = getMapChar(x, y);
+                if (cell == '#') {
+                    return false;
+                }
+            }
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y += sy;
+            }
+        }
+    }
+
     private int getRandomInRange(int min, int max) {
         if (max < min) return min;
         return min + rnd.nextInt(max - min + 1);
@@ -306,7 +360,7 @@ public class Map implements Check {
     }
 
     public int[] excludeStartRoom() {
-        int maxAttempts = 100;
+        int maxAttempts = 200;
         for (int attempt = 0; attempt < maxAttempts; attempt++) {
             int roomNum = rnd.nextInt(rooms.size());
             if (roomNum == startRoomNum) {
@@ -320,7 +374,7 @@ public class Map implements Check {
                 return new int[]{x, y};
             }
         }
-        return getRandomPosition();
+        return getFreePosition();
     }
 
     public int[] getFinalRoomCoords() {

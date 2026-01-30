@@ -1,18 +1,29 @@
 {
-  "packWeapon": [],
-  "packFood": [
+  "packWeapon": [
     {
-      "type": "Food",
-      "foodEnum": "MEAT_F",
-      "name": "meat",
-      "symbol": "f",
-      "increase": 20,
-      "color": "GREEN",
-      "coordX": 49,
-      "coordY": 16
+      "type": "Weapon",
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 71,
+      "coordY": 15
     }
   ],
-  "packElixir": [],
+  "packFood": [],
+  "packElixir": [
+    {
+      "type": "Elixir",
+      "elixirEnum": "STRENGTH_E",
+      "name": "health elixir",
+      "symbol": "e",
+      "increase": 10,
+      "color": "BLUE",
+      "coordX": 45,
+      "coordY": 15
+    }
+  ],
   "packScroll": [],
   "screenOuptup": []
 }
