@@ -1,24 +1,14 @@
 {
   "items": [
     {
-      "type": "Elixir",
-      "elixirEnum": "STRENGTH_E",
-      "name": "health elixir",
-      "symbol": "e",
-      "increase": 10,
-      "color": "BLUE",
-      "coordX": 21,
-      "coordY": 22
-    },
-    {
-      "type": "Food",
-      "foodEnum": "BREAD_F",
-      "name": "bread",
-      "symbol": "f",
-      "increase": 10,
-      "color": "GREEN",
-      "coordX": 33,
-      "coordY": 5
+      "type": "Scroll",
+      "scrollEnum": "HEALTH_S",
+      "name": "health scroll",
+      "symbol": "s",
+      "increase": 20,
+      "color": "YELLOW",
+      "coordX": 38,
+      "coordY": 23
     },
     {
       "type": "Food",
@@ -27,18 +17,8 @@
       "symbol": "f",
       "increase": 20,
       "color": "GREEN",
-      "coordX": 18,
-      "coordY": 27
-    },
-    {
-      "type": "Elixir",
-      "elixirEnum": "STRENGTH_E",
-      "name": "health elixir",
-      "symbol": "e",
-      "increase": 10,
-      "color": "BLUE",
-      "coordX": 35,
-      "coordY": 7
+      "coordX": 36,
+      "coordY": 26
     }
   ]
 }
