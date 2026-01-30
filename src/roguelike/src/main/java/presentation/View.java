@@ -118,29 +118,32 @@ public class View {
     }
 
     private void drawRooms(MapInfo info) {
-        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
+        int playerInPassage =
+                controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         boolean playerInCorridor = playerInPassage != -1;
-        
+
         for (int i = 0; i < controller.getModel().getMap().getRooms().size(); i++) {
             Rooms room = controller.getModel().getMap().getRooms().get(i);
             if (!controller.getModel().getMap().isRoomVisited(i)) {
                 continue;
             }
-            
+
             // Всегда рисуем стены посещенных комнат
             drawRectangle(textGraphics, room.getTopY() + info.offsetY,
                     room.getBottomY() + info.offsetY, room.getLeftX() + info.offsetX,
                     room.getRightX() + info.offsetX);
-            
+
             // Если игрок в комнате - показываем весь контент
             if (i == info.playerInRoom) {
                 drawRoomContent(textGraphics, room, info.offsetX, info.offsetY);
-            } 
-            // Если игрок в коридоре и комната связана с этим коридором - применяем частичный туман
-            else if (playerInCorridor && controller.getModel().getMap().isRoomVisited(i) &&
-                    controller.getModel().getMap().isRoomConnectedToPassage(i, playerInPassage)) {
-                drawRoomContentWithFog(textGraphics, room, info.offsetX, info.offsetY, 
-                        info.playerX, info.playerY);
+            }
+            // Если игрок в коридоре и комната находится рядом с позицией игрока - применяем
+            // частичный туман
+            else if (playerInCorridor && controller.getModel().getMap().isRoomVisited(i)
+                    && controller.getModel().getMap().isRoomNearPosition(i, info.playerX,
+                            info.playerY)) {
+                drawRoomContentWithFog(textGraphics, room, info.offsetX, info.offsetY, info.playerX,
+                        info.playerY);
             }
         }
     }
@@ -149,7 +152,43 @@ public class View {
         for (int i = 0; i < controller.getModel().getMap().getPassages().size(); i++) {
             Passage passage = controller.getModel().getMap().getPassages().get(i);
             if (controller.getModel().getMap().isPassageVisited(i)) {
+                // Рисуем весь коридор, если он посещен
                 drawPassageSegments(textGraphics, passage, info.offsetX, info.offsetY);
+            } else {
+                // Если коридор не посещен, но комната посещена - показываем только дверь
+                drawPassageDoors(i, info);
+            }
+        }
+    }
+
+    /**
+     * Рисует двери (первые клетки) коридоров для посещенных комнат Это помогает игроку видеть, где
+     * находятся проходы из комнаты
+     */
+    private void drawPassageDoors(int passageIndex, MapInfo info) {
+        // Используем Set для отслеживания уже нарисованных дверей, чтобы избежать дублирования
+        java.util.Set<String> drawnDoors = new java.util.HashSet<>();
+
+        for (int roomIndex = 0; roomIndex < controller.getModel().getMap().getRooms()
+                .size(); roomIndex++) {
+            // Проверяем, посещена ли комната
+            if (!controller.getModel().getMap().isRoomVisited(roomIndex)) {
+                continue;
+            }
+
+            // Проверяем, связан ли коридор с этой комнатой
+            int[] doorCell =
+                    controller.getModel().getMap().getPassageDoorCell(passageIndex, roomIndex);
+            if (doorCell != null) {
+                // Создаем уникальный ключ для координат двери
+                String doorKey = doorCell[0] + "," + doorCell[1];
+                // Рисуем дверь только если она еще не была нарисована
+                if (!drawnDoors.contains(doorKey)) {
+                    // Рисуем дверь (первую клетку коридора) символом '#'
+                    textGraphics.putString(doorCell[0] + info.offsetX, doorCell[1] + info.offsetY,
+                            "#");
+                    drawnDoors.add(doorKey);
+                }
             }
         }
     }
@@ -202,30 +241,31 @@ public class View {
             int enemyInRoom = controller.getModel().getMap().determineRoom(enemyX, enemyY);
             int enemyInPassage = controller.getModel().getMap().determinePassage(enemyX, enemyY);
             boolean isVisible = false;
-            
+
             // Если игрок в комнате и враг в той же комнате - видно
             if (info.playerInRoom != -1 && enemyInRoom == info.playerInRoom) {
                 isVisible = true;
-            } 
+            }
             // Если игрок в коридоре и враг в том же коридоре - видно
             else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
                 isVisible = true;
-            } 
+            }
             // Если игрок в коридоре, а враг в комнате - проверяем видимость через алгоритм тумана
             else if (playerInPassage != -1 && enemyInRoom != -1) {
-                // Проверяем, связана ли комната с коридором
-                if (controller.getModel().getMap().isRoomConnectedToPassage(enemyInRoom, playerInPassage)) {
+                // Проверяем, находится ли комната рядом с позицией игрока
+                if (controller.getModel().getMap().isRoomNearPosition(enemyInRoom, info.playerX,
+                        info.playerY)) {
                     Rooms enemyRoom = controller.getModel().getMap().getRooms().get(enemyInRoom);
                     // Проверяем, видна ли ячейка врага из коридора
-                    if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(
-                            enemyX, enemyY, info.playerX, info.playerY, enemyRoom)) {
+                    if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(enemyX, enemyY,
+                            info.playerX, info.playerY, enemyRoom)) {
                         // Дополнительно проверяем прямую видимость (Bresenham)
-                        isVisible = controller.getModel().getMap().hasLineOfSight(
-                                info.playerX, info.playerY, enemyX, enemyY);
+                        isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
+                                info.playerY, enemyX, enemyY);
                     }
                 }
             }
-            
+
             if (isVisible) {
                 drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
             }
@@ -251,26 +291,28 @@ public class View {
             int itemY = item.getCoord().getY();
             int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
             boolean isVisible = false;
-            
+
             // Если игрок в комнате и предмет в той же комнате - видно
             if (info.playerInRoom != -1 && itemInRoom == info.playerInRoom) {
                 isVisible = true;
-            } 
-            // Если игрок в коридоре, а предмет в комнате - проверяем видимость через алгоритм тумана
+            }
+            // Если игрок в коридоре, а предмет в комнате - проверяем видимость через алгоритм
+            // тумана
             else if (playerInPassage != -1 && itemInRoom != -1) {
-                // Проверяем, связана ли комната с коридором
-                if (controller.getModel().getMap().isRoomConnectedToPassage(itemInRoom, playerInPassage)) {
+                // Проверяем, находится ли комната рядом с позицией игрока
+                if (controller.getModel().getMap().isRoomNearPosition(itemInRoom, info.playerX,
+                        info.playerY)) {
                     Rooms itemRoom = controller.getModel().getMap().getRooms().get(itemInRoom);
                     // Проверяем, видна ли ячейка предмета из коридора
-                    if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(
-                            itemX, itemY, info.playerX, info.playerY, itemRoom)) {
+                    if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(itemX, itemY,
+                            info.playerX, info.playerY, itemRoom)) {
                         // Дополнительно проверяем прямую видимость (Bresenham)
-                        isVisible = controller.getModel().getMap().hasLineOfSight(
-                                info.playerX, info.playerY, itemX, itemY);
+                        isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
+                                info.playerY, itemX, itemY);
                     }
                 }
             }
-            
+
             if (isVisible) {
                 drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
             }
@@ -295,26 +337,27 @@ public class View {
         int exitY = exitCoords[1];
         int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
         boolean isVisible = false;
-        
+
         // Если игрок в комнате и выход в той же комнате - видно
         if (info.playerInRoom != -1 && exitInRoom == info.playerInRoom) {
             isVisible = true;
-        } 
+        }
         // Если игрок в коридоре, а выход в комнате - проверяем видимость через алгоритм тумана
         else if (playerInPassage != -1 && exitInRoom != -1) {
-            // Проверяем, связана ли комната с коридором
-            if (controller.getModel().getMap().isRoomConnectedToPassage(exitInRoom, playerInPassage)) {
+            // Проверяем, находится ли комната рядом с позицией игрока
+            if (controller.getModel().getMap().isRoomNearPosition(exitInRoom, info.playerX,
+                    info.playerY)) {
                 Rooms exitRoom = controller.getModel().getMap().getRooms().get(exitInRoom);
                 // Проверяем, видна ли ячейка выхода из коридора
-                if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(
-                        exitX, exitY, info.playerX, info.playerY, exitRoom)) {
+                if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(exitX, exitY,
+                        info.playerX, info.playerY, exitRoom)) {
                     // Дополнительно проверяем прямую видимость (Bresenham)
-                    isVisible = controller.getModel().getMap().hasLineOfSight(
-                            info.playerX, info.playerY, exitX, exitY);
+                    isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
+                            info.playerY, exitX, exitY);
                 }
             }
         }
-        
+
         if (isVisible) {
             drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
         }
@@ -351,15 +394,15 @@ public class View {
     }
 
     /**
-     * Рисует содержимое комнаты с применением тумана войны
-     * Показывает только видимые ячейки на основе алгоритма Ray Casting
+     * Рисует содержимое комнаты с применением тумана войны Показывает только видимые ячейки на
+     * основе алгоритма Ray Casting
      */
     private void drawRoomContentWithFog(TextGraphics tg, Rooms room, int offsetX, int offsetY,
             int playerX, int playerY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
             for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
-                if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(
-                        x, y, playerX, playerY, room)) {
+                if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(x, y, playerX,
+                        playerY, room)) {
                     tg.putString(x + offsetX, y + offsetY, ".");
                 }
             }
