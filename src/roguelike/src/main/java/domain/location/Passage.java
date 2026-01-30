@@ -24,10 +24,21 @@ public class Passage {
             this.endY = endY;
         }
 
-        public int getStartX() { return startX; }
-        public int getStartY() { return startY; }
-        public int getEndX() { return endX; }
-        public int getEndY() { return endY; }
+        public int getStartX() {
+            return startX;
+        }
+
+        public int getStartY() {
+            return startY;
+        }
+
+        public int getEndX() {
+            return endX;
+        }
+
+        public int getEndY() {
+            return endY;
+        }
 
         // public void setStartX(int x) { this.startX = x; }
         // public void setStartY(int y) { this.startY = y; }

@@ -10,7 +10,7 @@ public enum TreasureE {
     private final int increase;
     private final TextColor color;
 
-    TreasureE(char symbol, String name, TextColor color, int increase){
+    TreasureE(char symbol, String name, TextColor color, int increase) {
         this.symbol = symbol;
         this.name = name;
         this.increase = increase;

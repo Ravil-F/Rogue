@@ -3,8 +3,7 @@ package domain.enums;
 import com.googlecode.lanterna.TextColor;
 
 public enum FoodE {
-    BREAD_F('f', "bread", TextColor.ANSI.GREEN, 10),
-    MEAT_F('f', "meat", TextColor.ANSI.GREEN, 20);
+    BREAD_F('f', "bread", TextColor.ANSI.GREEN, 10), MEAT_F('f', "meat", TextColor.ANSI.GREEN, 20);
 
     private final char symbol;
     private final String name;

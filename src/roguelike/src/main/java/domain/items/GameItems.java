@@ -16,7 +16,7 @@ public class GameItems implements Check, GenerateRandom {
     private transient Random random;
     private transient final int countItems = 4;
 
-    public GameItems(){
+    public GameItems() {
         items = new LinkedList<Items>();
         random = new Random();
         common = new CommonProperties();
@@ -29,21 +29,24 @@ public class GameItems implements Check, GenerateRandom {
         int i = items.size();
         for (; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countItems);
-            switch (countRandom){
+            switch (countRandom) {
                 case 0:
-                    ElixirE randomElixir = ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
-                    items.add(new Elixir(randomElixir,60, randomXY(tmpXY), randomXY(tmpXY)));
+                    ElixirE randomElixir =
+                            ElixirE.values()[random.nextInt(0, ElixirE.values().length)];
+                    items.add(new Elixir(randomElixir, 60, randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 1:
                     FoodE randomFood = FoodE.values()[random.nextInt(0, FoodE.values().length)];
                     items.add(new Food(randomFood, randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 2:
-                    ScrollE randomScroll = ScrollE.values()[random.nextInt(0, ScrollE.values().length)];
+                    ScrollE randomScroll =
+                            ScrollE.values()[random.nextInt(0, ScrollE.values().length)];
                     items.add(new Scroll(randomScroll, randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 3:
-                    WeaponE randomWeapon = WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
+                    WeaponE randomWeapon =
+                            WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
                     items.add(new Weapon(randomWeapon, randomXY(tmpXY), randomXY(tmpXY)));
                     break;
             }
@@ -56,21 +59,26 @@ public class GameItems implements Check, GenerateRandom {
     }
 
     @Override
-    public int checkDifference(int level){
+    public int checkDifference(int level) {
         int result = 16;
-        if (level <= 5) result = 16;
-        else if (level <= 10) result = 17;
-        else if (level <= 15) result = 18;
-        else if (level <= 20) result = 19;
+        if (level <= 5)
+            result = 16;
+        else if (level <= 10)
+            result = 17;
+        else if (level <= 15)
+            result = 18;
+        else if (level <= 20)
+            result = 19;
         return result;
     }
 
     @Override
-    public int randomXY(int xy){
-        int tmp =  random.nextInt(xy);
+    public int randomXY(int xy) {
+        int tmp = random.nextInt(xy);
         if (isWithInBounds(tmp))
             return tmp;
-        else return randomXY(xy);
+        else
+            return randomXY(xy);
     }
 
     @Override

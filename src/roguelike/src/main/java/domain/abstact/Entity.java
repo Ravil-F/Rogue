@@ -3,7 +3,7 @@ package domain.abstact;
 import com.googlecode.lanterna.TextColor;
 import domain.common.Coord;
 
-//сущность
+// сущность
 public abstract class Entity {
     private String name;
     private char symbol;

@@ -7,7 +7,7 @@ import domain.enums.ScrollE;
 public class Scroll extends Items {
     private ScrollE scroll;
 
-    public Scroll(ScrollE scroll, int x, int y){
+    public Scroll(ScrollE scroll, int x, int y) {
         super(scroll.getSymbol(), scroll.getName(), scroll.getIncrease(), scroll.getColor(), x, y);
         this.scroll = scroll;
     }

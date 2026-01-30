@@ -2,28 +2,26 @@ package domain.abstact;
 
 import com.googlecode.lanterna.TextColor;
 
-public abstract class Attributes extends Entity{
+public abstract class Attributes extends Entity {
     private int maxHealth;
     private int health;
     private int agility;
     private int strength;
     private int hostility;
 
-//    constructor
-    public Attributes(String name, char symbol,
-                      TextColor color, int maxHealth,
-                      int health, int agility,
-                      int strength, int hostility, int x, int y){
+    // constructor
+    public Attributes(String name, char symbol, TextColor color, int maxHealth, int health,
+            int agility, int strength, int hostility, int x, int y) {
 
         super(name, symbol, color, x, y);
         this.maxHealth = maxHealth;
-        this.health= health;
+        this.health = health;
         this.agility = agility;
         this.strength = strength;
         this.hostility = hostility;
     }
 
-    //setter and getter
+    // setter and getter
     public int getMaxHealth() {
         return maxHealth;
     }

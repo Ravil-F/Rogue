@@ -6,7 +6,7 @@ public class CommonProperties extends MainProperties {
     private final int widthHeight;
     private final int countEnemy;
 
-    public CommonProperties(){
+    public CommonProperties() {
         super("common.properties");
         this.maxlevel = getIntProperty("max_level", 21);
         this.differenceLevel = getIntProperty("difference_level", 16);

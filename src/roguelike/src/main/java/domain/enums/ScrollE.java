@@ -3,9 +3,9 @@ package domain.enums;
 import com.googlecode.lanterna.TextColor;
 
 public enum ScrollE {
-    HEALTH_S('s', "health scroll", TextColor.ANSI.YELLOW, 20),
-    AGILITY_S('s', "agility scroll", TextColor.ANSI.YELLOW, 20),
-    STRENGTH_S('s', "strength scroll", TextColor.ANSI.YELLOW,20);
+    HEALTH_S('s', "health scroll", TextColor.ANSI.YELLOW, 20), AGILITY_S('s', "agility scroll",
+            TextColor.ANSI.YELLOW,
+            20), STRENGTH_S('s', "strength scroll", TextColor.ANSI.YELLOW, 20);
 
     private final char symbol;
     private final String name;

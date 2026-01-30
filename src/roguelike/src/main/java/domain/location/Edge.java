@@ -9,8 +9,13 @@ public class Edge {
         this.roomB = roomB;
     }
 
-    public int getRoomA() { return roomA; }
-    public int getRoomB() { return roomB; }
+    public int getRoomA() {
+        return roomA;
+    }
+
+    public int getRoomB() {
+        return roomB;
+    }
 
     public boolean isHorizontal() {
         return Math.abs(roomA - roomB) == 1;
