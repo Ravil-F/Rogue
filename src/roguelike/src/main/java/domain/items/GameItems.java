@@ -14,7 +14,7 @@ public class GameItems implements Check, GenerateRandom {
     transient CommonProperties common;
     private List<Items> items;
     private transient Random random;
-    private transient final int countItems = 5;
+    private transient final int countItems = 4;
 
     public GameItems(){
         items = new LinkedList<Items>();
@@ -45,10 +45,6 @@ public class GameItems implements Check, GenerateRandom {
                 case 3:
                     WeaponE randomWeapon = WeaponE.values()[random.nextInt(0, WeaponE.values().length)];
                     items.add(new Weapon(randomWeapon, randomXY(tmpXY), randomXY(tmpXY)));
-                    break;
-                case 4:
-                    TreasureE randomTreasure = TreasureE.values()[random.nextInt(0, TreasureE.values().length)];
-                    items.add(new Treasure(randomTreasure, randomXY(tmpXY), randomXY(tmpXY)));
                     break;
             }
         }
