@@ -66,7 +66,6 @@ public class Main {
                 }
                 break;
             case '3':
-                controller.getModel().getGameStatistics();
                 view.gameStatisticsView();
                 break;
             default:

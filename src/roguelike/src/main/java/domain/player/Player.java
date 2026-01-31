@@ -2,12 +2,9 @@ package domain.player;
 
 import com.googlecode.lanterna.TextColor;
 import domain.abstact.Attributes;
-import domain.common.Coord;
 import domain.enums.StatusPlayer;
 import domain.interfaces.Action;
 import utils.PlayerProperties;
-
-import javax.swing.*;
 
 public class Player extends Attributes implements Action {
     private transient PlayerProperties properties;

@@ -10,7 +10,6 @@ import java.util.List;
 
 public class Controller {
     private Model model;
-    private KeyStroke key;
 
     public Controller(Model model) {
         this.model = model;

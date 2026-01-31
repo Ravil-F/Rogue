@@ -128,7 +128,7 @@ public class View {
     private void drawRooms(MapInfo info) {
         int playerInPassage =
                 controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
-        boolean playerInCorridor = playerInPassage != -1;
+        boolean playerIn = playerInPassage != -1;
 
         // Определяем "текущую комнату игрока" - комнату, в которой находится игрок,
         // или комнату, рядом с которой находится игрок в коридоре
@@ -159,7 +159,7 @@ public class View {
             // Если комната является текущей и игрок находится в коридоре рядом с ней -
             // применяем частичный туман (работает как для посещенных, так и для непосещенных
             // комнат)
-            else if (isCurrentRoom && playerInCorridor) {
+            else if (isCurrentRoom && playerIn) {
                 drawRoomContentWithFog(textGraphics, room, info.offsetX, info.offsetY, info.playerX,
                         info.playerY);
             }
@@ -179,11 +179,7 @@ public class View {
         }
     }
 
-    /**
-     * Рисует двери (первые клетки) коридоров только для комнаты, в которой находится игрок Это
-     * помогает игроку видеть, где находятся проходы из текущей комнаты Аналогично логике
-     * отображения пола - двери видны только в текущей комнате
-     */
+
     private void drawPassageDoors(int passageIndex, MapInfo info) {
         // Проверяем, находится ли игрок в комнате
         if (info.playerInRoom == -1) {
@@ -221,25 +217,6 @@ public class View {
                 controller.getModel().getPlayer().getColor(), info);
     }
 
-    // private void drawEnemies(MapInfo info, int playerInPassage) {
-    // for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
-    // int enemyX = enemy.getCoord().getX();
-    // int enemyY = enemy.getCoord().getY();
-    // int enemyInRoom = controller.getModel().getMap().determineRoom(enemyX, enemyY);
-    // int enemyInPassage = controller.getModel().getMap().determinePassage(enemyX, enemyY);
-    // boolean isVisible = false;
-    // if (info.playerInRoom != -1 && enemyInRoom == info.playerInRoom) {
-    // isVisible = true;
-    // }
-    // else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
-    // isVisible = true;
-    // }
-    // if (isVisible) {
-    // drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
-    // }
-    // }
-    // }
-
     private void drawEnemies(MapInfo info, int playerInPassage) {
         for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
             int enemyX = enemy.getCoord().getX();
@@ -263,7 +240,7 @@ public class View {
                         info.playerY)) {
                     Rooms enemyRoom = controller.getModel().getMap().getRooms().get(enemyInRoom);
                     // Проверяем, видна ли ячейка врага из коридора
-                    if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(enemyX, enemyY,
+                    if (controller.getModel().getMap().isRoomCellVisibleFromPassage(enemyX, enemyY,
                             info.playerX, info.playerY, enemyRoom)) {
                         // Дополнительно проверяем прямую видимость (Bresenham)
                         isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
@@ -277,17 +254,6 @@ public class View {
             }
         }
     }
-
-    // private void drawItems(MapInfo info) {
-    // for (Items item : controller.getModel().getItems().getItems()) {
-    // int itemX = item.getCoord().getX();
-    // int itemY = item.getCoord().getY();
-    // int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
-    // if (itemInRoom == info.playerInRoom && itemInRoom != -1) {
-    // drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
-    // }
-    // }
-    // }
 
     private void drawItems(MapInfo info) {
         int playerInPassage =
@@ -310,7 +276,7 @@ public class View {
                         info.playerY)) {
                     Rooms itemRoom = controller.getModel().getMap().getRooms().get(itemInRoom);
                     // Проверяем, видна ли ячейка предмета из коридора
-                    if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(itemX, itemY,
+                    if (controller.getModel().getMap().isRoomCellVisibleFromPassage(itemX, itemY,
                             info.playerX, info.playerY, itemRoom)) {
                         // Дополнительно проверяем прямую видимость (Bresenham)
                         isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
@@ -324,16 +290,6 @@ public class View {
             }
         }
     }
-
-    // private void drawExit(MapInfo info) {
-    // int[] exitCoords = controller.getModel().getMap().getFinalRoomCoords();
-    // int exitX = exitCoords[0];
-    // int exitY = exitCoords[1];
-    // int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
-    // if (exitInRoom == info.playerInRoom && exitInRoom != -1) {
-    // drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
-    // }
-    // }
 
     private void drawExit(MapInfo info) {
         int playerInPassage =
@@ -355,7 +311,7 @@ public class View {
                     info.playerY)) {
                 Rooms exitRoom = controller.getModel().getMap().getRooms().get(exitInRoom);
                 // Проверяем, видна ли ячейка выхода из коридора
-                if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(exitX, exitY,
+                if (controller.getModel().getMap().isRoomCellVisibleFromPassage(exitX, exitY,
                         info.playerX, info.playerY, exitRoom)) {
                     // Дополнительно проверяем прямую видимость (Bresenham)
                     isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
@@ -369,28 +325,6 @@ public class View {
         }
     }
 
-    private TextColor getCellColor(int x, int y, char symbol) {
-        if (controller.getModel().getPlayer().getCoord().getX() == x
-                && controller.getModel().getPlayer().getCoord().getY() == y) {
-            return controller.getModel().getPlayer().getColor();
-        }
-
-        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
-            if (enemy.getCoord().getX() == x && enemy.getCoord().getY() == y) {
-                return enemy.getColor();
-            }
-        }
-
-        for (Items item : controller.getModel().getItems().getItems()) {
-            if (item.getCoord().getX() == x && item.getCoord().getY() == y) {
-                return item.getColor();
-            }
-        }
-
-        return TextColor.ANSI.WHITE;
-    }
-
-
     private void drawRoomContent(TextGraphics tg, Rooms room, int offsetX, int offsetY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
             for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
@@ -399,12 +333,6 @@ public class View {
         }
     }
 
-    /**
-     * Рисует содержимое комнаты с применением тумана войны Показывает только видимые ячейки на
-     * основе алгоритма Ray Casting (направление видимости) Основано на C реализации:
-     * fill_room_by_part_fog - для пола используется только направление, без проверки прямой
-     * видимости (Bresenham используется только для сущностей)
-     */
     private void drawRoomContentWithFog(TextGraphics tg, Rooms room, int offsetX, int offsetY,
             int playerX, int playerY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
@@ -412,7 +340,7 @@ public class View {
                 // Проверяем видимость ячейки на основе направления (Ray Casting)
                 // Для пола не используем проверку прямой видимости (Bresenham),
                 // так как это блокирует отображение из-за стен комнаты
-                if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(x, y, playerX,
+                if (controller.getModel().getMap().isRoomCellVisibleFromPassage(x, y, playerX,
                         playerY, room)) {
                     // Рисуем точку в видимой области
                     tg.putString(x + offsetX, y + offsetY, ".");
@@ -489,7 +417,7 @@ public class View {
         }
     }
 
-    private void viewSingleItemtype(final char symbol) throws IOException {
+    private void viewSingleItemtype() throws IOException {
         int offsetX = 0;
         int offsetY = 0;
         textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
@@ -527,9 +455,6 @@ public class View {
         return screen;
     }
 
-    public void setScreen(TerminalScreen screen) {
-        this.screen = screen;
-    }
     // END GET-SET METOD
 
     public void passName(String namePlayer) {
@@ -596,7 +521,7 @@ public class View {
     }
 
     private void viewBackpack(final char symbol) throws IOException, InterruptedException {
-        viewSingleItemtype(symbol);
+        viewSingleItemtype();
         setKey();
         while (this.key != null) {
             if (this.key.getKeyType() == KeyType.Escape) {

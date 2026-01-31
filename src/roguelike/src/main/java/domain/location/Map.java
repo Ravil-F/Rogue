@@ -232,12 +232,6 @@ public class Map implements Check {
         return -1;
     }
 
-    /**
-     * Определяет "текущую комнату игрока" - комнату, в которой находится игрок, или комнату, рядом
-     * с которой находится игрок в коридоре Основано на логике из C реализации: get_room_by_coord
-     * используется для определения текущей комнаты, даже если игрок находится в коридоре рядом с
-     * ней
-     */
     public int determineCurrentRoom(int playerX, int playerY) {
         // Сначала проверяем, находится ли игрок внутри комнаты
         int roomIndex = determineRoom(playerX, playerY);
@@ -364,12 +358,10 @@ public class Map implements Check {
 
     /**
      * Определяет, находится ли игрок сбоку от комнаты (вертикальное направление видимости) Игрок
-     * находится сбоку, если он не может попасть в комнату, двигаясь влево или вправо Основано на
-     * логике из C реализации: is_vertical_direction_fog
+     * находится сбоку, если он не может попасть в комнату, двигаясь влево или вправо
      */
     public boolean isVerticalDirectionFog(int playerX, int playerY, Rooms room) {
         // Проверяем, может ли игрок попасть в комнату, двигаясь влево или вправо
-        // Аналогично C: new_coords.coordinates[X]++ и new_coords.coordinates[X] -= 2
         int checkX1 = playerX + 1;
         if (isPointInsideRoom(checkX1, playerY, room)) {
             return false; // Может попасть вправо - горизонтальное направление
@@ -464,58 +456,9 @@ public class Map implements Check {
     }
 
     /**
-     * Проверяет, связана ли комната с коридором (коридор касается комнаты)
-     * 
-     * @deprecated Используйте isRoomNearPosition вместо этого метода
+     * Проверяет видимость ячейки комнаты из коридора на основе направления
      */
-    @Deprecated
-    public boolean isRoomConnectedToPassage(int roomIndex, int passageIndex) {
-        if (roomIndex < 0 || roomIndex >= rooms.size() || passageIndex < 0
-                || passageIndex >= passages.size()) {
-            return false;
-        }
-
-        Rooms room = rooms.get(roomIndex);
-        Passage passage = passages.get(passageIndex);
-
-        // Проверяем, находится ли хотя бы один сегмент коридора рядом с комнатой
-        for (Passage.PassageSegment segment : passage.getSegments()) {
-            // Проверяем горизонтальные сегменты
-            if (segment.isHorizontal()) {
-                int segY = segment.getStartY();
-                int minX = Math.min(segment.getStartX(), segment.getEndX());
-                int maxX = Math.max(segment.getStartX(), segment.getEndX());
-
-                // Проверяем, касается ли сегмент комнаты или находится рядом
-                if ((segY == room.getTopY() || segY == room.getBottomY()
-                        || segY == room.getTopY() - 1 || segY == room.getBottomY() + 1)
-                        && !(maxX < room.getLeftX() - 1 || minX > room.getRightX() + 1)) {
-                    return true;
-                }
-            }
-            // Проверяем вертикальные сегменты
-            else {
-                int segX = segment.getStartX();
-                int minY = Math.min(segment.getStartY(), segment.getEndY());
-                int maxY = Math.max(segment.getStartY(), segment.getEndY());
-
-                // Проверяем, касается ли сегмент комнаты или находится рядом
-                if ((segX == room.getLeftX() || segX == room.getRightX()
-                        || segX == room.getLeftX() - 1 || segX == room.getRightX() + 1)
-                        && !(maxY < room.getTopY() - 1 || minY > room.getBottomY() + 1)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Проверяет видимость ячейки комнаты из коридора на основе направления Основано на алгоритме из
-     * C реализации
-     */
-    public boolean isRoomCellVisibleFromCorridor(int cellX, int cellY, int playerX, int playerY,
+    public boolean isRoomCellVisibleFromPassage(int cellX, int cellY, int playerX, int playerY,
             Rooms room) {
         if (!isPointStrictlyInsideRoom(cellX, cellY, room)) {
             return false;
@@ -531,21 +474,6 @@ public class Map implements Check {
         } else {
             // Горизонтальное направление: видно ячейки где |deltaX| <= |deltaY|
             return Math.abs(deltaX) <= Math.abs(deltaY);
-        }
-    }
-
-    public boolean isExitVertical(int playerX, int playerY, Rooms room) {
-        return isVerticalDirectionFog(playerX, playerY, room);
-    }
-
-    public boolean isCellVisible(int cellX, int cellY, int playerX, int playerY,
-            boolean isVertical) {
-        int deltaX = cellX - playerX;
-        int deltaY = cellY - playerY;
-        if (isVertical) {
-            return Math.abs(deltaY) >= Math.abs(deltaX);
-        } else {
-            return Math.abs(deltaX) >= Math.abs(deltaY);
         }
     }
 
