@@ -91,16 +91,33 @@ public class View {
         char symbol;
         int pos = MENU_WIDTH / 3 + 1;
         textGraphics.putString(pos + 1, 2, "ENTER THE PLAYER'S NAME:");
+        textGraphics.putString(MENU_WIDTH / 4, 6, "Press BACKSPACE to delete, ENTER to finish");
+        int cursorPos = pos;
         screen.refresh();
         do {
             setKey();
             if ((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
                 break;
-            symbol = key.getCharacter();
-            textGraphics.putString(pos + 10, 4, String.valueOf(symbol));
-            res.append(symbol);
-            screen.refresh();
-            ++pos;
+
+            if(key.getKeyType() == KeyType.Backspace){
+                if(res.length() > 0){
+                    res.deleteCharAt(res.length() - 1);
+                    textGraphics.putString(cursorPos - 1, 4, " ");
+                    cursorPos--;
+                    screen.refresh();
+                }
+            }
+
+            if(key.getKeyType() == KeyType.Escape)
+                return " ";
+
+            if(key.getKeyType() == KeyType.Character) {
+                symbol = key.getCharacter();
+                textGraphics.putString(cursorPos, 4, String.valueOf(symbol));
+                res.append(symbol);
+                screen.refresh();
+                cursorPos++;
+            }
         } while (true);
         return res.toString().trim();
     }
