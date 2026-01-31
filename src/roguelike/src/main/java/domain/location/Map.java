@@ -384,7 +384,7 @@ public class Map implements Check {
     /**
      * Проверяет, находится ли игрок рядом с комнатой и может ли видеть её из коридора Основано на
      * логике из C реализации: комната видна, если игрок находится в коридоре рядом с границей
-     * комнаты (в пределах 1 клетки)
+     * комнаты (в пределах 1 клетки) И есть проход (дверь) между игроком и комнатой
      */
     public boolean isRoomNearPosition(int roomIndex, int playerX, int playerY) {
         if (roomIndex < 0 || roomIndex >= rooms.size()) {
@@ -413,7 +413,54 @@ public class Map implements Check {
         boolean nearRight = (playerX == room.getRightX() + 1) && playerY >= room.getTopY() - 1
                 && playerY <= room.getBottomY() + 1;
 
-        return nearTop || nearBottom || nearLeft || nearRight;
+        if (!(nearTop || nearBottom || nearLeft || nearRight)) {
+            return false; // Игрок не рядом с границей комнаты
+        }
+
+        // ВАЖНО: Проверяем, есть ли проход (дверь) между игроком и комнатой
+        // Область видимости должна работать только через дверь, а не через стену
+        int playerPassage = determinePassage(playerX, playerY);
+        if (playerPassage == -1) {
+            return false; // Игрок не в коридоре
+        }
+
+        // Проверяем, связан ли коридор, в котором находится игрок, с этой комнатой
+        if (!isPassageConnectedToRoom(playerPassage, roomIndex)) {
+            return false; // Коридор не связан с комнатой
+        }
+
+        // КРИТИЧНО: Проверяем, находится ли игрок рядом с дверью (первой клеткой коридора на
+        // границе комнаты)
+        // Область видимости должна работать только когда игрок находится рядом с дверью,
+        // а не просто в коридоре где-то далеко от двери
+        int[] doorCell = getPassageDoorCell(playerPassage, roomIndex);
+        if (doorCell == null) {
+            return false; // Дверь не найдена
+        }
+
+        // Проверяем, находится ли игрок рядом с дверью
+        // Игрок должен быть либо на самой двери, либо на соседней клетке от двери в коридоре
+        int doorX = doorCell[0];
+        int doorY = doorCell[1];
+
+        // Проверяем точное совпадение (игрок на двери)
+        if (playerX == doorX && playerY == doorY) {
+            return true;
+        }
+
+        // Проверяем, находится ли игрок на соседней клетке от двери в том же коридоре
+        // (в направлении от комнаты, т.е. дальше от комнаты, чем дверь)
+        int deltaX = playerX - doorX;
+        int deltaY = playerY - doorY;
+
+        // Игрок должен быть на расстоянии 1 клетка от двери
+        if (Math.abs(deltaX) + Math.abs(deltaY) != 1) {
+            return false; // Игрок слишком далеко от двери
+        }
+
+        // Проверяем, что игрок находится в коридоре (на пути от двери)
+        // и что между игроком и дверью нет стены
+        return hasLineOfSight(doorX, doorY, playerX, playerY);
     }
 
     /**
