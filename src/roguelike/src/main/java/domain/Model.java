@@ -332,7 +332,7 @@ public class Model implements Check {
         String tmpName = name.split(" ")[0];
         switch (tmpName) {
             case "health":
-                if (getPlayer().getHealth() <= 100)
+                if (getPlayer().getHealth() < 100)
                     getPlayer().increaseHealth(value);
                 break;
             case "agility":
