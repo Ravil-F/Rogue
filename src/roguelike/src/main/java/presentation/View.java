@@ -96,7 +96,7 @@ public class View {
         screen.refresh();
         do {
             setKey();
-            if ((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
+            if (key.getKeyType() == KeyType.Enter)
                 break;
 
             if(key.getKeyType() == KeyType.Backspace){
