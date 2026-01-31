@@ -18,6 +18,7 @@ public class Vampire extends Attributes implements Check, Action {
     public Vampire(int x, int y) {
         this(createProperties(), x, y);
         this.common = new CommonProperties();
+        this.firstAttack = true;
     }
 
     private Vampire(EntityProperties properties, int x, int y) {
@@ -25,6 +26,7 @@ public class Vampire extends Attributes implements Check, Action {
                 properties.getMaxHealth(), properties.getHealth(), properties.getAgility(),
                 properties.getStrength(), properties.getHostility(), x, y);
         this.properties = properties;
+        this.firstAttack = true;
     }
 
     private static EntityProperties createProperties() {
@@ -103,7 +105,6 @@ public class Vampire extends Attributes implements Check, Action {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if (isHit) {
             int damage = this.getStrength();
-            entity.setHealth(entity.getHealth() - damage);
             entity.setAgility(entity.getAgility() - 5);
             if (entity.getMaxHealth() > damage) {
                 entity.setMaxHealth(entity.getMaxHealth() - damage);
