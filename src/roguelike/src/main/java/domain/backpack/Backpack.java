@@ -16,15 +16,18 @@ public class Backpack {
     private List<Items> screenOuptup;
 
     public Backpack() {
-       packWeapon = new ArrayList<>();
-       packFood = new ArrayList<>();
-       packElixir = new ArrayList<>();
-       packScroll = new ArrayList<>();
-       screenOuptup = new ArrayList<>();
+        packWeapon = new ArrayList<>();
+        packFood = new ArrayList<>();
+        packElixir = new ArrayList<>();
+        packScroll = new ArrayList<>();
+        screenOuptup = new ArrayList<>();
     }
 
-   public void add(Items item,  final char symbol ){
-        switch (symbol){
+    public void add(Items item, final char symbol) {
+        if (getPackItems(symbol).size() >= 9) {
+            return;
+        }
+        switch (symbol) {
             case 'w':
                 packWeapon.add(item);
                 break;
@@ -38,10 +41,10 @@ public class Backpack {
                 packScroll.add(item);
                 break;
         }
-   }
+    }
 
-   public List<Items> getPackItems(final char symbol){
-        switch (symbol){
+    public List<Items> getPackItems(final char symbol) {
+        switch (symbol) {
             case 'w':
                 return packWeapon;
             case 'f':
@@ -52,11 +55,11 @@ public class Backpack {
                 return packScroll;
         }
         return null;
-   }
+    }
 
-   public List<Items> getScreenOutput(){
+    public List<Items> getScreenOutput() {
         return screenOuptup;
-   }
+    }
 
     public void setScreenOutput(List<Items> screenOuptup) {
         this.screenOuptup = screenOuptup;

@@ -15,31 +15,31 @@ public class GameEnemy implements Check, GenerateRandom {
     private transient Random random;
     private transient final int countEnemy = 5;
 
-    public GameEnemy(){
+    public GameEnemy() {
         enemy = new ArrayList<>();
         common = new CommonProperties();
         random = new Random();
     }
 
     @Override
-    public void generateRandom(int level){
+    public void generateRandom(int level) {
         int tmpXY = common.getWidthHeight();
         int tmpDifference = checkDifference(level);
 
-        for (int i = 0; i <  common.getMaxlevel() - tmpDifference; i++) {
+        for (int i = 0; i < common.getMaxlevel() - tmpDifference; i++) {
             int countRandom = random.nextInt(0, countEnemy);
-            switch (countRandom){
+            switch (countRandom) {
                 case 0:
-                    enemy.add(new Zombi(randomXY(tmpXY), randomXY(tmpXY)));
+                    enemy.add(new Zombie(randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 1:
                     enemy.add(new Vampire(randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 2:
-                    enemy.add(new Grost(randomXY(tmpXY), randomXY(tmpXY)));
+                    enemy.add(new Ghost(randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 3:
-                    enemy.add(new Orge(randomXY(tmpXY), randomXY(tmpXY)));
+                    enemy.add(new Ogre(randomXY(tmpXY), randomXY(tmpXY)));
                     break;
                 case 4:
                     enemy.add(new SnakeMage(randomXY(tmpXY), randomXY(tmpXY)));
@@ -48,11 +48,10 @@ public class GameEnemy implements Check, GenerateRandom {
         }
     }
 
-    public int getIndex(int x, int y){
+    public int getIndex(int x, int y) {
         int index = -1;
-        for(int i = 0; i < enemy.size() && index == -1; ++i){
-            if(enemy.get(i).getCoord().getX() == x &&
-                enemy.get(i).getCoord().getY() == y){
+        for (int i = 0; i < enemy.size() && index == -1; ++i) {
+            if (enemy.get(i).getCoord().getX() == x && enemy.get(i).getCoord().getY() == y) {
                 index = i;
             }
         }
@@ -62,19 +61,24 @@ public class GameEnemy implements Check, GenerateRandom {
     @Override
     public int checkDifference(int level) {
         int result = 16;
-        if (level <= 5) result = 16;
-        else if (level <= 10) result = 15;
-        else if (level <= 15) result = 14;
-        else if (level <= 20) result = 13;
+        if (level <= 5)
+            result = 16;
+        else if (level <= 10)
+            result = 15;
+        else if (level <= 15)
+            result = 14;
+        else if (level <= 20)
+            result = 13;
         return result;
     }
 
     @Override
-    public int randomXY(int xy){
-        int tmp =  random.nextInt(xy);
+    public int randomXY(int xy) {
+        int tmp = random.nextInt(xy);
         if (isWithInBounds(tmp))
             return tmp;
-        else return randomXY(xy);
+        else
+            return randomXY(xy);
     }
 
     @Override

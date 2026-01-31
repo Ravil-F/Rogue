@@ -7,10 +7,8 @@ public class Rooms {
     private static final Random rnd = new Random();
 
     // Генерация комнаты в конкретной зоне карты со случайным размером
-    public void generateSingleRoom(int roomNumber,
-                                     int minWidth, int maxWidth,
-                                     int minHeight, int maxHeight,
-                                     int regionWidth, int regionHeight) {
+    public void generateSingleRoom(int roomNumber, int minWidth, int maxWidth, int minHeight,
+            int maxHeight, int regionWidth, int regionHeight) {
         this.width = getRandomPos(minWidth, maxWidth);
         this.height = getRandomPos(minHeight, maxHeight);
         int roomPosX = roomNumber % 3;
@@ -26,21 +24,56 @@ public class Rooms {
     }
 
     private int getRandomPos(int min, int max) {
-        if (max < min) return min;
+        if (max < min)
+            return min;
         return min + rnd.nextInt(max - min + 1);
     }
 
-    public int getLeftX() { return leftX; }
-    public int getRightX() { return rightX; }
-    public int getTopY() { return topY; }
-    public int getBottomY() { return bottomY; }
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
+    public int getLeftX() {
+        return leftX;
+    }
 
-    public void setLeftX(int x){ this.leftX = x;}
-    public void setRightX(int x){ this.rightX = x;}
-    public void setTopY(int y){ this.topY = y;}
-    public void setBottomY(int y){ this.bottomY = y;}
-    public void setWidth(int width) { this.width = width; }
-    public void setHeight(int health) { this.height = height;} 
+    public int getRightX() {
+        return rightX;
+    }
+
+    public int getTopY() {
+        return topY;
+    }
+
+    public int getBottomY() {
+        return bottomY;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setLeftX(int x) {
+        this.leftX = x;
+    }
+
+    public void setRightX(int x) {
+        this.rightX = x;
+    }
+
+    public void setTopY(int y) {
+        this.topY = y;
+    }
+
+    public void setBottomY(int y) {
+        this.bottomY = y;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int health) {
+        this.height = height;
+    }
 }

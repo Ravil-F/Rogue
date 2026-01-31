@@ -8,27 +8,26 @@ import domain.abstact.Attributes;
 
 import java.util.Random;
 
-public class Grost extends Attributes implements Action, Check {
+public class Ghost extends Attributes implements Action, Check {
     private final EntityProperties properties;
     private CommonProperties common;
     public static final int MAP_WIDTH = 81;
     public static final int MAP_HEIGHT = 30;
 
-    public Grost(int x, int y) {
+    public Ghost(int x, int y) {
         this(createProperties(), x, y);
         this.common = new CommonProperties();
     }
 
-    private Grost(EntityProperties properties, int x, int y){
-        super(properties.getName(), properties.getSymbol(),
-                properties.getTextColor(), properties.getMaxHealth(),
-                properties.getHealth(), properties.getAgility(),
+    private Ghost(EntityProperties properties, int x, int y) {
+        super(properties.getName(), properties.getSymbol(), properties.getTextColor(),
+                properties.getMaxHealth(), properties.getHealth(), properties.getAgility(),
                 properties.getStrength(), properties.getHostility(), x, y);
         this.properties = properties;
     }
 
-    private static EntityProperties createProperties(){
-        return new EntityProperties("grost");
+    private static EntityProperties createProperties() {
+        return new EntityProperties("ghost");
     }
 
     public EntityProperties getProperties() {
@@ -47,9 +46,9 @@ public class Grost extends Attributes implements Action, Check {
             newY = random.nextInt(common.getWidthHeight());
         }
 
-        if(isWithInBounds(newX, newY))
-            return new int[]{newX, newY};
-        return new int[]{x, y};
+        if (isWithInBounds(newX, newY))
+            return new int[] {newX, newY};
+        return new int[] {x, y};
     }
 
     @Override
@@ -64,21 +63,20 @@ public class Grost extends Attributes implements Action, Check {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-//        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
         return (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT);
     }
 
     @Override
-    public boolean checkingSymbols(char symbol){
-        return symbol == 's' || symbol == 'w' || symbol == 'f' ||
-                symbol == 'e' || symbol == 'Z' || symbol == 'G' ||
-                symbol == 'S' || symbol == 'O' || symbol == 'V';
+    public boolean checkingSymbols(char symbol) {
+        return symbol == 's' || symbol == 'w' || symbol == 'f' || symbol == 'e' || symbol == 'Z'
+                || symbol == 'G' || symbol == 'S' || symbol == 'O' || symbol == 'V';
     }
 
     @Override
     public void attack(Attributes entity) {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
-        if(isHit){;
+        if (isHit) {
+            ;
             entity.setHealth(entity.getHealth() - this.getStrength());
             entity.setAgility(entity.getAgility() - 5);
         }
