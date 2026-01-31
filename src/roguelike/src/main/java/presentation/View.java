@@ -390,6 +390,8 @@ public class View {
         int offsetX = 1;
         int offsetY = 1;
         int infoY = mapHeight + offsetY + 2;
+        int navigatorY = infoY + 2;
+        int backpackY = navigatorY + 2;
 
         String info = String.format(
                 "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
@@ -398,12 +400,21 @@ public class View {
                 controller.getModel().getPlayer().getAgility(),
                 controller.getModel().getPlayer().getStrength(),
                 controller.getModel().getPlayer().getTreasure());
+        String navigatorInfo = String.format("W - Up     S - Down     A - Left     D - Right");
+        String backpackInfo = String.format("H - Weapon     J - Food     K - Elixir     E - Scroll");
+
         int infoRectWidth = mapWidth + offsetX;
-        drawRectangle(textGraphics, infoY - 1, infoY + 1, offsetX - 1, infoRectWidth);
-        int infoTextWidth = info.length();
-        int rectWidth = infoRectWidth - offsetX + 1;
-        int centerX = (rectWidth - infoTextWidth) / 2 + 1;
-        textGraphics.putString(centerX, infoY, info);
+
+        drawRectangle(textGraphics, infoY - 1, backpackY + 1, offsetX - 1, infoRectWidth);
+        int centerInfo = (infoRectWidth - info.length()) / 2 + 1;
+        int centerNavigator = (infoRectWidth - navigatorInfo.length()) / 2 + 1;
+        int centerBackpack = (infoRectWidth - backpackInfo.length()) / 2 + 1;
+
+
+        textGraphics.putString(centerInfo, infoY, info);
+        textGraphics.putString(centerNavigator, navigatorY, navigatorInfo);
+        textGraphics.putString(centerBackpack, backpackY, backpackInfo);
+
     }
 
     private void viewGameStatus(String message) {
