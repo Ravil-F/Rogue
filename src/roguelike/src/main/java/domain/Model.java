@@ -30,7 +30,11 @@ public class Model implements Check {
     private Weapon weaponTaken;
     private Statistics statistics;
     private GameStatistics gameStatistics;
+
     private static final int MAX_LEVEL = 21;
+    private static int timeAgility;
+    private static int timeStrenght;
+    private static int tmpStrenght;
 
     private static final String FOLDER =
             System.getProperty("user.dir") + File.separator + "save_json" + File.separator;
@@ -50,6 +54,9 @@ public class Model implements Check {
         items = new GameItems();
         enemys = new GameEnemy();
         level = 1;
+        timeAgility = 0;
+        timeStrenght = 0;
+        tmpStrenght = 0;
         this.weaponTaken = new Weapon(null, 0, 0);
         this.statistics = Statistics.getStatistics();
         this.gameStatistics = null;
@@ -130,6 +137,7 @@ public class Model implements Check {
                     throw new IllegalArgumentException("Invalid status");
             }
             playerAction(tmpX, tmpY, oldX, oldY);
+            checkTimeAgalityStrenght();
         }
     }
 
@@ -187,6 +195,25 @@ public class Model implements Check {
         int[] startPos = map.getStartRoomCoords();
         player.setCoord(startPos[0], startPos[1]);
         gameInitialization();
+    }
+
+    private void checkTimeAgalityStrenght(){
+        if (timeAgility != 0){
+            timeAgility = timeAgility - 1;
+            System.out.println("timeAgility = " + timeAgility);
+            if (timeAgility == 0) {
+                player.setAgility(90);
+                System.out.println("timeAgility = " + timeAgility);
+            }
+        }
+        if (timeStrenght != 0) {
+            timeStrenght = timeStrenght - 1;
+            System.out.println("timeStregnht = " + timeStrenght);
+            if (timeStrenght == 0) {
+                player.setStrength(player.getStrength() - tmpStrenght);
+                System.out.println("timeAgility = " + timeAgility);
+            }
+        }
     }
 
     // все что связано с предметами
@@ -316,11 +343,11 @@ public class Model implements Check {
                 break;
             case 'e':
                 incrementElixirDrink();
-                actionWithElixirScroll(item.get(index).getName(), value);
+                actionWithElixirScroll(item.get(index).getName(), value, true);
                 break;
             case 's':
                 incrementScrollUse();
-                actionWithElixirScroll(item.get(index).getName(), value);
+                actionWithElixirScroll(item.get(index).getName(), value, false);
                 break;
         }
 
@@ -328,7 +355,7 @@ public class Model implements Check {
         getPlayer().setStatus(StatusPlayer.ACTION);
     }
 
-    public void actionWithElixirScroll(final String name, final int value) {
+    public void actionWithElixirScroll(final String name, final int value, boolean flag) {
         String tmpName = name.split(" ")[0];
         switch (tmpName) {
             case "health":
@@ -337,9 +364,15 @@ public class Model implements Check {
                 break;
             case "agility":
                 getPlayer().increaseAgility(value);
+                if (flag)
+                    timeAgility = timeAgility + value;
                 break;
             case "strength":
                 getPlayer().increaseStrength(value);
+                if (flag) {
+                    timeStrenght = timeStrenght + value;
+                    tmpStrenght = timeStrenght + value;
+                }
                 break;
         }
         checkPlayerStatus();
