@@ -49,11 +49,11 @@ public class View {
     public void startWindow() {
         try {
             screen.clear();
-            int offsetX = 1;
-            int offsetY = 1;
+            int offsetX = 0;
+            int offsetY = 0;
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-            drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY, offsetX,
-                    MENU_WIDTH + offsetX);
+            drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY + 1, offsetX,
+                    MENU_WIDTH + offsetX + 1);
             String title = "ROGUELIKE";
             int titleX = offsetX + (MENU_WIDTH - title.length()) / 2;
             int titleY = offsetY + 3;
@@ -80,19 +80,24 @@ public class View {
     public String inputScan() throws IOException, InterruptedException {
         StringBuilder res = new StringBuilder();
         screen.clear();
+        int offsetX = 0;
+        int offsetY = 0;
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY + 1, offsetX,
+                MENU_WIDTH + offsetX + 1);
         char symbol;
-        int i = 23;
-        textGraphics.putString(4, 2, "Enter name Player:");
+        int pos = MENU_WIDTH / 3 + 1;
+        textGraphics.putString(pos + 1, 2, "ENTER THE PLAYER'S NAME:");
         screen.refresh();
         do {
             setKey();
             if ((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
                 break;
             symbol = key.getCharacter();
-            textGraphics.putString(i, 2, String.valueOf(symbol));
+            textGraphics.putString(pos + 10, 4, String.valueOf(symbol));
             res.append(symbol);
             screen.refresh();
-            ++i;
+            ++pos;
         } while (true);
         return res.toString().trim();
     }
@@ -122,26 +127,36 @@ public class View {
                 controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         boolean playerInCorridor = playerInPassage != -1;
 
+        // Определяем "текущую комнату игрока" - комнату, в которой находится игрок,
+        // или комнату, рядом с которой находится игрок в коридоре
+        int currentRoom =
+                controller.getModel().getMap().determineCurrentRoom(info.playerX, info.playerY);
+
         for (int i = 0; i < controller.getModel().getMap().getRooms().size(); i++) {
             Rooms room = controller.getModel().getMap().getRooms().get(i);
-            if (!controller.getModel().getMap().isRoomVisited(i)) {
+            boolean isRoomVisited = controller.getModel().getMap().isRoomVisited(i);
+            boolean isCurrentRoom = (i == currentRoom);
+
+            // Пропускаем комнату, если она не посещена и не является текущей
+            if (!isRoomVisited && !isCurrentRoom) {
                 continue;
             }
 
-            // Всегда рисуем стены посещенных комнат
-            drawRectangle(textGraphics, room.getTopY() + info.offsetY,
-                    room.getBottomY() + info.offsetY, room.getLeftX() + info.offsetX,
-                    room.getRightX() + info.offsetX);
+            // Если комната посещена или является текущей - рисуем стены
+            if (isRoomVisited || isCurrentRoom) {
+                drawRectangle(textGraphics, room.getTopY() + info.offsetY,
+                        room.getBottomY() + info.offsetY, room.getLeftX() + info.offsetX,
+                        room.getRightX() + info.offsetX);
+            }
 
-            // Если игрок в комнате - показываем весь контент
+            // Если игрок внутри комнаты - показываем весь контент
             if (i == info.playerInRoom) {
                 drawRoomContent(textGraphics, room, info.offsetX, info.offsetY);
             }
-            // Если игрок в коридоре и комната находится рядом с позицией игрока - применяем
-            // частичный туман
-            else if (playerInCorridor && controller.getModel().getMap().isRoomVisited(i)
-                    && controller.getModel().getMap().isRoomNearPosition(i, info.playerX,
-                            info.playerY)) {
+            // Если комната является текущей и игрок находится в коридоре рядом с ней -
+            // применяем частичный туман (работает как для посещенных, так и для непосещенных
+            // комнат)
+            else if (isCurrentRoom && playerInCorridor) {
                 drawRoomContentWithFog(textGraphics, room, info.offsetX, info.offsetY, info.playerX,
                         info.playerY);
             }
@@ -162,34 +177,22 @@ public class View {
     }
 
     /**
-     * Рисует двери (первые клетки) коридоров для посещенных комнат Это помогает игроку видеть, где
-     * находятся проходы из комнаты
+     * Рисует двери (первые клетки) коридоров только для комнаты, в которой находится игрок Это
+     * помогает игроку видеть, где находятся проходы из текущей комнаты Аналогично логике
+     * отображения пола - двери видны только в текущей комнате
      */
     private void drawPassageDoors(int passageIndex, MapInfo info) {
-        // Используем Set для отслеживания уже нарисованных дверей, чтобы избежать дублирования
-        java.util.Set<String> drawnDoors = new java.util.HashSet<>();
+        // Проверяем, находится ли игрок в комнате
+        if (info.playerInRoom == -1) {
+            return; // Игрок не в комнате, двери не отображаем
+        }
 
-        for (int roomIndex = 0; roomIndex < controller.getModel().getMap().getRooms()
-                .size(); roomIndex++) {
-            // Проверяем, посещена ли комната
-            if (!controller.getModel().getMap().isRoomVisited(roomIndex)) {
-                continue;
-            }
-
-            // Проверяем, связан ли коридор с этой комнатой
-            int[] doorCell =
-                    controller.getModel().getMap().getPassageDoorCell(passageIndex, roomIndex);
-            if (doorCell != null) {
-                // Создаем уникальный ключ для координат двери
-                String doorKey = doorCell[0] + "," + doorCell[1];
-                // Рисуем дверь только если она еще не была нарисована
-                if (!drawnDoors.contains(doorKey)) {
-                    // Рисуем дверь (первую клетку коридора) символом '#'
-                    textGraphics.putString(doorCell[0] + info.offsetX, doorCell[1] + info.offsetY,
-                            "#");
-                    drawnDoors.add(doorKey);
-                }
-            }
+        // Рисуем двери только для комнаты, в которой находится игрок
+        int[] doorCell =
+                controller.getModel().getMap().getPassageDoorCell(passageIndex, info.playerInRoom);
+        if (doorCell != null) {
+            // Рисуем дверь (первую клетку коридора) символом '#'
+            textGraphics.putString(doorCell[0] + info.offsetX, doorCell[1] + info.offsetY, "#");
         }
     }
 
@@ -395,14 +398,20 @@ public class View {
 
     /**
      * Рисует содержимое комнаты с применением тумана войны Показывает только видимые ячейки на
-     * основе алгоритма Ray Casting
+     * основе алгоритма Ray Casting (направление видимости) Основано на C реализации:
+     * fill_room_by_part_fog - для пола используется только направление, без проверки прямой
+     * видимости (Bresenham используется только для сущностей)
      */
     private void drawRoomContentWithFog(TextGraphics tg, Rooms room, int offsetX, int offsetY,
             int playerX, int playerY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
             for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
+                // Проверяем видимость ячейки на основе направления (Ray Casting)
+                // Для пола не используем проверку прямой видимости (Bresenham),
+                // так как это блокирует отображение из-за стен комнаты
                 if (controller.getModel().getMap().isRoomCellVisibleFromCorridor(x, y, playerX,
                         playerY, room)) {
+                    // Рисуем точку в видимой области
                     tg.putString(x + offsetX, y + offsetY, ".");
                 }
             }
@@ -478,15 +487,21 @@ public class View {
     }
 
     private void viewSingleItemtype(final char symbol) throws IOException {
-        int tmpX = controller.getModel().getMap().getHeight();
-        textGraphics.putString(tmpX + 2, 1, "Enter number items (0-8), Escape - exit");
+        int offsetX = 0;
+        int offsetY = 0;
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY + 1, offsetX,
+                MENU_WIDTH + offsetX + 1);
+        int pos = MENU_WIDTH / 3 + 1;
+        textGraphics.putString(pos, 2, "ENTER THE ITEM NUMBER (0-8):");
+        textGraphics.putString(pos + 3, MENU_HEIGHT - 2, "press Escape to exit");
         if (controller.getModel().getBackpack().getScreenOutput().isEmpty())
-            textGraphics.putString(tmpX + 2, 2, "Not Items in Backpack");
+            textGraphics.putString(pos + 5, 4, "backpack is empty");
         else {
             List<Items> item = controller.getModel().getBackpack().getScreenOutput();
             for (int i = 0; i < item.size(); ++i) {
-                textGraphics.putString(tmpX + 4, 2 + i, +i + "." + " name-" + item.get(i).getName()
-                        + " increase-" + item.get(i).getIncrease());
+                textGraphics.putString(pos, 4 + i, +i + ". " + item.get(i).getName() + " (increase "
+                        + item.get(i).getIncrease() + ")");
             }
         }
         screen.refresh();

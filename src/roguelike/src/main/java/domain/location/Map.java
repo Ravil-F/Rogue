@@ -232,6 +232,30 @@ public class Map implements Check {
         return -1;
     }
 
+    /**
+     * Определяет "текущую комнату игрока" - комнату, в которой находится игрок, или комнату, рядом
+     * с которой находится игрок в коридоре Основано на логике из C реализации: get_room_by_coord
+     * используется для определения текущей комнаты, даже если игрок находится в коридоре рядом с
+     * ней
+     */
+    public int determineCurrentRoom(int playerX, int playerY) {
+        // Сначала проверяем, находится ли игрок внутри комнаты
+        int roomIndex = determineRoom(playerX, playerY);
+        if (roomIndex != -1) {
+            return roomIndex;
+        }
+
+        // Если игрок не в комнате, проверяем, находится ли он рядом с какой-либо комнатой
+        // (в коридоре рядом с границей комнаты)
+        for (int i = 0; i < rooms.size(); i++) {
+            if (isRoomNearPosition(i, playerX, playerY)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public int determinePassage(int x, int y) {
         for (int i = 0; i < passages.size(); i++) {
             Passage passage = passages.get(i);

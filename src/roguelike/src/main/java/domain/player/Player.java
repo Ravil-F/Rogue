@@ -39,12 +39,16 @@ public class Player extends Attributes implements Action {
         return new PlayerProperties("player");
     }
 
-    public void increaseStrenght(int xp) {
+    public void increaseStrength(int xp) {
         setStrength(getStrength() + xp);
     }
 
     public void increaseHealth(int xp) {
         setHealth(getHealth() + xp);
+    }
+
+    public int getMaxHealth() {
+        return this.properties.getMaxHealth();
     }
 
     public void increaseTreasure(int xp) {
@@ -71,6 +75,7 @@ public class Player extends Attributes implements Action {
         this.treasure = treasure;
     }
 
+
     public void updateSleep() {
         if (sleep > 0) {
             --sleep;
@@ -96,13 +101,6 @@ public class Player extends Attributes implements Action {
     }
 
     @Override
-    // public void attack(Attributes entity) {
-    // boolean isHit = (Math.random() * 100) <= this.getAgility();
-    // if (isHit) {
-    // entity.setHealth(entity.getHealth() - this.getStrength());
-    // entity.setAgility(entity.getAgility() - 5);
-    // }
-    // }
     public void attack(Attributes entity) {
         if (entity instanceof domain.enemy.Vampire) {
             domain.enemy.Vampire vampire = (domain.enemy.Vampire) entity;
@@ -111,7 +109,6 @@ public class Player extends Attributes implements Action {
                 return;
             }
         }
-
         boolean isHit = (Math.random() * 100) <= this.getAgility();
         if (isHit) {
             entity.setHealth(entity.getHealth() - this.getStrength());

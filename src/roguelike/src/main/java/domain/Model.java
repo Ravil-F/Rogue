@@ -298,8 +298,8 @@ public class Model implements Check {
             case 'w':
                 int resIncrease = getPlayer().getStrength() - weaponTaken.getIncrease();
                 getPlayer().setStrength(resIncrease);
-                getPlayer().increaseStrenght(value);
-                if (getBackpack().getPackItems('w').size() >= 1 && weaponTaken.getClass() != null) {
+                getPlayer().increaseStrength(value);
+                if (!getBackpack().getPackItems('w').isEmpty() && weaponTaken.getClass() != null) {
                     int xPlayer = getPlayer().getCoord().getX();
                     int yPlayer = getPlayer().getCoord().getY();
                     int XY[] = isThereAnEmptyCellNearby(xPlayer, yPlayer);
@@ -311,7 +311,7 @@ public class Model implements Check {
                 break;
             case 'f':
                 incrementFoodEaten();
-                if (getPlayer().getHealth() <= 100)
+                if (getPlayer().getHealth() <= getPlayer().getMaxHealth())
                     getPlayer().increaseHealth(value);
                 break;
             case 'e':
@@ -339,7 +339,7 @@ public class Model implements Check {
                 getPlayer().increaseAgility(value);
                 break;
             case "strength":
-                getPlayer().increaseStrenght(value);
+                getPlayer().increaseStrength(value);
                 break;
         }
         checkPlayerStatus();
