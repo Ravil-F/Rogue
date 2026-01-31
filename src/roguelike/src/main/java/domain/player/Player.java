@@ -44,10 +44,6 @@ public class Player extends Attributes implements Action {
         setHealth(getHealth() + xp);
     }
 
-    public int getMaxHealth() {
-        return this.properties.getMaxHealth();
-    }
-
     public void increaseTreasure(int xp) {
         setTreasure(getTreasure() + xp);
     }
