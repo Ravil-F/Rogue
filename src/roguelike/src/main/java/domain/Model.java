@@ -200,18 +200,18 @@ public class Model implements Check {
     private void checkTimeAgalityStrenght(){
         if (timeAgility != 0){
             timeAgility = timeAgility - 1;
-            System.out.println("timeAgility = " + timeAgility);
             if (timeAgility == 0) {
                 player.setAgility(90);
-                System.out.println("timeAgility = " + timeAgility);
             }
         }
         if (timeStrenght != 0) {
             timeStrenght = timeStrenght - 1;
-            System.out.println("timeStregnht = " + timeStrenght);
             if (timeStrenght == 0) {
-                player.setStrength(player.getStrength() - tmpStrenght);
-                System.out.println("timeAgility = " + timeAgility);
+                int tmp = player.getStrength();
+                int res = tmp - tmpStrenght;
+                tmpStrenght = 0;
+                player.setStrength(res);
+
             }
         }
     }
@@ -343,11 +343,11 @@ public class Model implements Check {
                 break;
             case 'e':
                 incrementElixirDrink();
-                actionWithElixirScroll(item.get(index).getName(), value, true);
+                actionWithElixirScroll(item.get(index).getName(), value);
                 break;
             case 's':
                 incrementScrollUse();
-                actionWithElixirScroll(item.get(index).getName(), value, false);
+                actionWithElixirScroll(item.get(index).getName(), value);
                 break;
         }
 
@@ -355,7 +355,7 @@ public class Model implements Check {
         getPlayer().setStatus(StatusPlayer.ACTION);
     }
 
-    public void actionWithElixirScroll(final String name, final int value, boolean flag) {
+    public void actionWithElixirScroll(final String name, final int value) {
         String tmpName = name.split(" ")[0];
         switch (tmpName) {
             case "health":
@@ -364,15 +364,12 @@ public class Model implements Check {
                 break;
             case "agility":
                 getPlayer().increaseAgility(value);
-                if (flag)
-                    timeAgility = timeAgility + value;
+                timeAgility = timeAgility + value;
                 break;
             case "strength":
                 getPlayer().increaseStrength(value);
-                if (flag) {
-                    timeStrenght = timeStrenght + value;
-                    tmpStrenght = timeStrenght + value;
-                }
+                timeStrenght = timeStrenght + value;
+                tmpStrenght = tmpStrenght + value;
                 break;
         }
         checkPlayerStatus();
