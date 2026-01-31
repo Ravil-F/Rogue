@@ -46,31 +46,31 @@ public class View {
     }
 
     // VIEW WINDOWS
-    public void startWindow(){
+    public void startWindow() {
         try {
             screen.clear();
-            int offsetX = 1;
-            int offsetY = 1;
+            int offsetX = 0;
+            int offsetY = 0;
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-            drawRectangle(textGraphics,
-                    offsetY,
-                    MENU_HEIGHT + offsetY,
-                    offsetX,
-                    MENU_WIDTH + offsetX);
-            String title = "ROGUELIKE";
+            drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY + 1, offsetX,
+                    MENU_WIDTH + offsetX + 1);
+            String title = "===== ROGUELIKE =====";
             int titleX = offsetX + (MENU_WIDTH - title.length()) / 2;
             int titleY = offsetY + 3;
             textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
+            textGraphics.putString(titleX + 2, titleY - 1, "=================");
             textGraphics.putString(titleX, titleY, title);
-            int menuStartY = titleY + 3;
-            int menuX = offsetX + (MENU_WIDTH - 30) / 2;
+            textGraphics.putString(titleX + 2, titleY + 1, "=================");
+            int menuStartY = titleY + 4;
+            int menuX = offsetX + (MENU_WIDTH - 30) / 2 + 4;
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+            textGraphics.putString(menuX, menuStartY - 1, "SELECT THE GAME MODE:");
             textGraphics.putString(menuX, menuStartY, "1 - New game");
-            textGraphics.putString(menuX, menuStartY + 1, "2 - Load save game");
+            textGraphics.putString(menuX, menuStartY + 1, "2 - Load game");
             textGraphics.putString(menuX, menuStartY + 2, "3 - Load game statistics");
-            textGraphics.putString(menuX, menuStartY + 3, "Escape - Exit game");
-            int versionX = offsetX + MENU_WIDTH - VERSION.length() - 1;
-            int versionY = offsetY + MENU_HEIGHT - 1;
+            textGraphics.putString(menuX, menuStartY + 4, "Escape - Exit game");
+            int versionX = offsetX + MENU_WIDTH - VERSION.length();
+            int versionY = offsetY + MENU_HEIGHT;
             textGraphics.putString(versionX, versionY, VERSION);
             textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             screen.refresh();
@@ -83,30 +83,32 @@ public class View {
     public String inputScan() throws IOException, InterruptedException {
         StringBuilder res = new StringBuilder();
         screen.clear();
+        int offsetX = 0;
+        int offsetY = 0;
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY + 1, offsetX,
+                MENU_WIDTH + offsetX + 1);
         char symbol;
-        int i = 23;
-        textGraphics.putString(4, 2, "Enter name Player:");
+        int pos = MENU_WIDTH / 3 + 1;
+        textGraphics.putString(pos + 1, 2, "ENTER THE PLAYER'S NAME:");
         screen.refresh();
         do {
             setKey();
             if ((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
                 break;
             symbol = key.getCharacter();
-            textGraphics.putString(i, 2, String.valueOf(symbol));
+            textGraphics.putString(pos + 10, 4, String.valueOf(symbol));
             res.append(symbol);
             screen.refresh();
-            ++i;
+            ++pos;
         } while (true);
         return res.toString().trim();
     }
 
     private void viewMap() {
         MapInfo info = initInfo();
-        drawRectangle(textGraphics,
-                info.offsetY - 1,
-                info.mapHeight + info.offsetY,
-                info.offsetX - 1,
-                info.mapWidth + info.offsetX);
+        drawRectangle(textGraphics, info.offsetY - 1, info.mapHeight + info.offsetY,
+                info.offsetX - 1, info.mapWidth + info.offsetX);
         drawRooms(info);
         drawPassages(info);
         drawEntities(info);
@@ -120,23 +122,46 @@ public class View {
         int playerX = controller.getModel().getPlayer().getCoord().getX();
         int playerY = controller.getModel().getPlayer().getCoord().getY();
         int playerInRoom = controller.getModel().getMap().determineRoom(playerX, playerY);
-        return new MapInfo(mapWidth, mapHeight, offsetX, offsetY,
-                playerX, playerY, playerInRoom);
+        return new MapInfo(mapWidth, mapHeight, offsetX, offsetY, playerX, playerY, playerInRoom);
     }
 
     private void drawRooms(MapInfo info) {
+        int playerInPassage =
+                controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
+        boolean playerIn = playerInPassage != -1;
+
+        // Определяем "текущую комнату игрока" - комнату, в которой находится игрок,
+        // или комнату, рядом с которой находится игрок в коридоре
+        int currentRoom =
+                controller.getModel().getMap().determineCurrentRoom(info.playerX, info.playerY);
+
         for (int i = 0; i < controller.getModel().getMap().getRooms().size(); i++) {
             Rooms room = controller.getModel().getMap().getRooms().get(i);
-            if (!controller.getModel().getMap().isRoomVisited(i)) {
+            boolean isRoomVisited = controller.getModel().getMap().isRoomVisited(i);
+            boolean isCurrentRoom = (i == currentRoom);
+
+            // Пропускаем комнату, если она не посещена и не является текущей
+            if (!isRoomVisited && !isCurrentRoom) {
                 continue;
             }
-            drawRectangle(textGraphics,
-                    room.getTopY() + info.offsetY,
-                    room.getBottomY() + info.offsetY,
-                    room.getLeftX() + info.offsetX,
-                    room.getRightX() + info.offsetX);
+
+            // Если комната посещена или является текущей - рисуем стены
+            if (isRoomVisited || isCurrentRoom) {
+                drawRectangle(textGraphics, room.getTopY() + info.offsetY,
+                        room.getBottomY() + info.offsetY, room.getLeftX() + info.offsetX,
+                        room.getRightX() + info.offsetX);
+            }
+
+            // Если игрок внутри комнаты - показываем весь контент
             if (i == info.playerInRoom) {
                 drawRoomContent(textGraphics, room, info.offsetX, info.offsetY);
+            }
+            // Если комната является текущей и игрок находится в коридоре рядом с ней -
+            // применяем частичный туман (работает как для посещенных, так и для непосещенных
+            // комнат)
+            else if (isCurrentRoom && playerIn) {
+                drawRoomContentWithFog(textGraphics, room, info.offsetX, info.offsetY, info.playerX,
+                        info.playerY);
             }
         }
     }
@@ -145,13 +170,34 @@ public class View {
         for (int i = 0; i < controller.getModel().getMap().getPassages().size(); i++) {
             Passage passage = controller.getModel().getMap().getPassages().get(i);
             if (controller.getModel().getMap().isPassageVisited(i)) {
+                // Рисуем весь коридор, если он посещен
                 drawPassageSegments(textGraphics, passage, info.offsetX, info.offsetY);
+            } else {
+                // Если коридор не посещен, но комната посещена - показываем только дверь
+                drawPassageDoors(i, info);
             }
         }
     }
 
+
+    private void drawPassageDoors(int passageIndex, MapInfo info) {
+        // Проверяем, находится ли игрок в комнате
+        if (info.playerInRoom == -1) {
+            return; // Игрок не в комнате, двери не отображаем
+        }
+
+        // Рисуем двери только для комнаты, в которой находится игрок
+        int[] doorCell =
+                controller.getModel().getMap().getPassageDoorCell(passageIndex, info.playerInRoom);
+        if (doorCell != null) {
+            // Рисуем дверь (первую клетку коридора) символом '#'
+            textGraphics.putString(doorCell[0] + info.offsetX, doorCell[1] + info.offsetY, "#");
+        }
+    }
+
     private void drawEntities(MapInfo info) {
-        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
+        int playerInPassage =
+                controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         drawPlayer(info);
         drawEnemies(info, playerInPassage);
         drawItems(info);
@@ -167,27 +213,9 @@ public class View {
     private void drawPlayer(MapInfo info) {
         int playerX = info.playerX;
         int playerY = info.playerY;
-        drawEntitiesSymbol(playerX, playerY, controller.getModel().getPlayer().getSymbol(), controller.getModel().getPlayer().getColor(), info);
+        drawEntitiesSymbol(playerX, playerY, controller.getModel().getPlayer().getSymbol(),
+                controller.getModel().getPlayer().getColor(), info);
     }
-
-//    private void drawEnemies(MapInfo info, int playerInPassage) {
-//        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
-//            int enemyX = enemy.getCoord().getX();
-//            int enemyY = enemy.getCoord().getY();
-//            int enemyInRoom = controller.getModel().getMap().determineRoom(enemyX, enemyY);
-//            int enemyInPassage = controller.getModel().getMap().determinePassage(enemyX, enemyY);
-//            boolean isVisible = false;
-//            if (info.playerInRoom != -1 && enemyInRoom == info.playerInRoom) {
-//                isVisible = true;
-//            }
-//            else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
-//                isVisible = true;
-//            }
-//            if (isVisible) {
-//                drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
-//            }
-//        }
-//    }
 
     private void drawEnemies(MapInfo info, int playerInPassage) {
         for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
@@ -196,140 +224,106 @@ public class View {
             int enemyInRoom = controller.getModel().getMap().determineRoom(enemyX, enemyY);
             int enemyInPassage = controller.getModel().getMap().determinePassage(enemyX, enemyY);
             boolean isVisible = false;
+
+            // Если игрок в комнате и враг в той же комнате - видно
             if (info.playerInRoom != -1 && enemyInRoom == info.playerInRoom) {
                 isVisible = true;
             }
+            // Если игрок в коридоре и враг в том же коридоре - видно
             else if (playerInPassage != -1 && enemyInPassage == playerInPassage) {
                 isVisible = true;
             }
+            // Если игрок в коридоре, а враг в комнате - проверяем видимость через алгоритм тумана
             else if (playerInPassage != -1 && enemyInRoom != -1) {
-                Rooms enemyRoom = controller.getModel().getMap().getRooms().get(enemyInRoom);
-                boolean isVertical = controller.getModel().getMap().isExitVertical(
-                        info.playerX, info.playerY, enemyRoom
-                );
-                isVisible = controller.getModel().getMap().isCellVisible(
-                        enemyX, enemyY, info.playerX, info.playerY, isVertical
-                );
-            }
-            if (isVisible) {
-                if (playerInPassage != -1 && enemyInRoom != -1) {
-                    isVisible = controller.getModel().getMap().hasLineOfSight(
-                            info.playerX, info.playerY, enemyX, enemyY
-                    );
+                // Проверяем, находится ли комната рядом с позицией игрока
+                if (controller.getModel().getMap().isRoomNearPosition(enemyInRoom, info.playerX,
+                        info.playerY)) {
+                    Rooms enemyRoom = controller.getModel().getMap().getRooms().get(enemyInRoom);
+                    // Проверяем, видна ли ячейка врага из коридора
+                    if (controller.getModel().getMap().isRoomCellVisibleFromPassage(enemyX, enemyY,
+                            info.playerX, info.playerY, enemyRoom)) {
+                        // Дополнительно проверяем прямую видимость (Bresenham)
+                        isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
+                                info.playerY, enemyX, enemyY);
+                    }
                 }
             }
+
             if (isVisible) {
                 drawEntitiesSymbol(enemyX, enemyY, enemy.getSymbol(), enemy.getColor(), info);
             }
         }
     }
 
-//    private void drawItems(MapInfo info) {
-//        for (Items item : controller.getModel().getItems().getItems()) {
-//            int itemX = item.getCoord().getX();
-//            int itemY = item.getCoord().getY();
-//            int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
-//            if (itemInRoom == info.playerInRoom && itemInRoom != -1) {
-//                drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
-//            }
-//        }
-//    }
-
     private void drawItems(MapInfo info) {
-        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
+        int playerInPassage =
+                controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         for (Items item : controller.getModel().getItems().getItems()) {
             int itemX = item.getCoord().getX();
             int itemY = item.getCoord().getY();
             int itemInRoom = controller.getModel().getMap().determineRoom(itemX, itemY);
             boolean isVisible = false;
+
+            // Если игрок в комнате и предмет в той же комнате - видно
             if (info.playerInRoom != -1 && itemInRoom == info.playerInRoom) {
                 isVisible = true;
             }
+            // Если игрок в коридоре, а предмет в комнате - проверяем видимость через алгоритм
+            // тумана
             else if (playerInPassage != -1 && itemInRoom != -1) {
-                Rooms itemRoom = controller.getModel().getMap().getRooms().get(itemInRoom);
-                boolean isVertical = controller.getModel().getMap().isExitVertical(
-                        info.playerX, info.playerY, itemRoom
-                );
-                isVisible = controller.getModel().getMap().isCellVisible(
-                        itemX, itemY, info.playerX, info.playerY, isVertical
-                );
-            }
-            if (isVisible) {
-                if (playerInPassage != -1 && itemInRoom != -1) {
-                    isVisible = controller.getModel().getMap().hasLineOfSight(
-                            info.playerX, info.playerY, itemX, itemY
-                    );
+                // Проверяем, находится ли комната рядом с позицией игрока
+                if (controller.getModel().getMap().isRoomNearPosition(itemInRoom, info.playerX,
+                        info.playerY)) {
+                    Rooms itemRoom = controller.getModel().getMap().getRooms().get(itemInRoom);
+                    // Проверяем, видна ли ячейка предмета из коридора
+                    if (controller.getModel().getMap().isRoomCellVisibleFromPassage(itemX, itemY,
+                            info.playerX, info.playerY, itemRoom)) {
+                        // Дополнительно проверяем прямую видимость (Bresenham)
+                        isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
+                                info.playerY, itemX, itemY);
+                    }
                 }
             }
+
             if (isVisible) {
                 drawEntitiesSymbol(itemX, itemY, item.getSymbol(), item.getColor(), info);
             }
         }
     }
 
-//    private void drawExit(MapInfo info) {
-//        int[] exitCoords = controller.getModel().getMap().getFinalRoomCoords();
-//        int exitX = exitCoords[0];
-//        int exitY = exitCoords[1];
-//        int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
-//        if (exitInRoom == info.playerInRoom && exitInRoom != -1) {
-//            drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
-//        }
-//    }
-
     private void drawExit(MapInfo info) {
-        int playerInPassage = controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
+        int playerInPassage =
+                controller.getModel().getMap().determinePassage(info.playerX, info.playerY);
         int[] exitCoords = controller.getModel().getMap().getFinalRoomCoords();
         int exitX = exitCoords[0];
         int exitY = exitCoords[1];
         int exitInRoom = controller.getModel().getMap().determineRoom(exitX, exitY);
         boolean isVisible = false;
+
+        // Если игрок в комнате и выход в той же комнате - видно
         if (info.playerInRoom != -1 && exitInRoom == info.playerInRoom) {
             isVisible = true;
         }
+        // Если игрок в коридоре, а выход в комнате - проверяем видимость через алгоритм тумана
         else if (playerInPassage != -1 && exitInRoom != -1) {
-            Rooms exitRoom = controller.getModel().getMap().getRooms().get(exitInRoom);
-            boolean isVertical = controller.getModel().getMap().isExitVertical(
-                    info.playerX, info.playerY, exitRoom
-            );
-
-            isVisible = controller.getModel().getMap().isCellVisible(
-                    exitX, exitY, info.playerX, info.playerY, isVertical
-            );
-        }
-        if (isVisible) {
-            if (playerInPassage != -1 && exitInRoom != -1) {
-                isVisible = controller.getModel().getMap().hasLineOfSight(
-                        info.playerX, info.playerY, exitX, exitY
-                );
+            // Проверяем, находится ли комната рядом с позицией игрока
+            if (controller.getModel().getMap().isRoomNearPosition(exitInRoom, info.playerX,
+                    info.playerY)) {
+                Rooms exitRoom = controller.getModel().getMap().getRooms().get(exitInRoom);
+                // Проверяем, видна ли ячейка выхода из коридора
+                if (controller.getModel().getMap().isRoomCellVisibleFromPassage(exitX, exitY,
+                        info.playerX, info.playerY, exitRoom)) {
+                    // Дополнительно проверяем прямую видимость (Bresenham)
+                    isVisible = controller.getModel().getMap().hasLineOfSight(info.playerX,
+                            info.playerY, exitX, exitY);
+                }
             }
         }
+
         if (isVisible) {
             drawEntitiesSymbol(exitX, exitY, '■', TextColor.ANSI.CYAN, info);
         }
     }
-
-    private TextColor getCellColor(int x, int y, char symbol) {
-        if (controller.getModel().getPlayer().getCoord().getX() == x
-                && controller.getModel().getPlayer().getCoord().getY() == y) {
-            return controller.getModel().getPlayer().getColor();
-        }
-
-        for (Attributes enemy : controller.getModel().getEnemys().getEnemy()) {
-            if (enemy.getCoord().getX() == x && enemy.getCoord().getY() == y) {
-                return enemy.getColor();
-            }
-        }
-
-        for (Items item : controller.getModel().getItems().getItems()) {
-            if (item.getCoord().getX() == x && item.getCoord().getY() == y) {
-                return item.getColor();
-            }
-        }
-
-        return TextColor.ANSI.WHITE;
-    }
-
 
     private void drawRoomContent(TextGraphics tg, Rooms room, int offsetX, int offsetY) {
         for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
@@ -339,18 +333,34 @@ public class View {
         }
     }
 
+    private void drawRoomContentWithFog(TextGraphics tg, Rooms room, int offsetX, int offsetY,
+            int playerX, int playerY) {
+        for (int y = room.getTopY() + 1; y < room.getBottomY(); y++) {
+            for (int x = room.getLeftX() + 1; x < room.getRightX(); x++) {
+                // Проверяем видимость ячейки на основе направления (Ray Casting)
+                // Для пола не используем проверку прямой видимости (Bresenham),
+                // так как это блокирует отображение из-за стен комнаты
+                if (controller.getModel().getMap().isRoomCellVisibleFromPassage(x, y, playerX,
+                        playerY, room)) {
+                    // Рисуем точку в видимой области
+                    tg.putString(x + offsetX, y + offsetY, ".");
+                }
+            }
+        }
+    }
+
     private void drawPassageSegments(TextGraphics tg, Passage passage, int offsetX, int offsetY) {
         for (Passage.PassageSegment segment : passage.getSegments()) {
             if (segment.isHorizontal()) {
                 int y = segment.getStartY() + offsetY;
-                for (int x = Math.min(segment.getStartX(), segment.getEndX());
-                     x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
+                for (int x = Math.min(segment.getStartX(), segment.getEndX()); x <= Math
+                        .max(segment.getStartX(), segment.getEndX()); x++) {
                     tg.putString(x + offsetX, y, "#");
                 }
             } else {
                 int x = segment.getStartX() + offsetX;
-                for (int y = Math.min(segment.getStartY(), segment.getEndY());
-                     y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
+                for (int y = Math.min(segment.getStartY(), segment.getEndY()); y <= Math
+                        .max(segment.getStartY(), segment.getEndY()); y++) {
                     tg.putString(x, y + offsetY, "#");
                 }
             }
@@ -374,7 +384,7 @@ public class View {
         }
     }
 
-    private void viewInfo(){
+    private void viewInfo() {
         int mapWidth = controller.getModel().getMap().getWidth();
         int mapHeight = controller.getModel().getMap().getHeight();
         int offsetX = 1;
@@ -382,14 +392,12 @@ public class View {
         int infoY = mapHeight + offsetY + 2;
 
         String info = String.format(
-            "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
-            controller.getModel().getLevel(),
-            controller.getModel().getPlayer().getHealth(),
-            controller.getModel().getPlayer().getMaxHealth(),
-            controller.getModel().getPlayer().getAgility(),
-            controller.getModel().getPlayer().getStrength(),
-            controller.getModel().getPlayer().getTreasure()
-        );
+                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
+                controller.getModel().getLevel(), controller.getModel().getPlayer().getHealth(),
+                controller.getModel().getPlayer().getMaxHealth(),
+                controller.getModel().getPlayer().getAgility(),
+                controller.getModel().getPlayer().getStrength(),
+                controller.getModel().getPlayer().getTreasure());
         int infoRectWidth = mapWidth + offsetX;
         drawRectangle(textGraphics, infoY - 1, infoY + 1, offsetX - 1, infoRectWidth);
         int infoTextWidth = info.length();
@@ -409,16 +417,22 @@ public class View {
         }
     }
 
-    private void viewSingleItemtype(final char symbol) throws IOException {
-        int tmpX = controller.getModel().getMap().getHeight();
-        textGraphics.putString(tmpX + 2, 1, "Enter number items (0-8), Escape - exit");
+    private void viewSingleItemtype() throws IOException {
+        int offsetX = 0;
+        int offsetY = 0;
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        drawRectangle(textGraphics, offsetY, MENU_HEIGHT + offsetY + 1, offsetX,
+                MENU_WIDTH + offsetX + 1);
+        int pos = MENU_WIDTH / 3 + 1;
+        textGraphics.putString(pos, 2, "ENTER THE ITEM NUMBER (0-8):");
+        textGraphics.putString(pos + 3, MENU_HEIGHT - 2, "press Escape to exit");
         if (controller.getModel().getBackpack().getScreenOutput().isEmpty())
-            textGraphics.putString(tmpX + 2, 2, "Not Items in Backpack");
+            textGraphics.putString(pos + 5, 4, "backpack is empty");
         else {
             List<Items> item = controller.getModel().getBackpack().getScreenOutput();
             for (int i = 0; i < item.size(); ++i) {
-                textGraphics.putString(tmpX + 4, 2 + i, +i + "." + " name-" + item.get(i).getName()
-                        + " increase-" + item.get(i).getIncrease());
+                textGraphics.putString(pos, 4 + i, +i + ". " + item.get(i).getName() + " (increase "
+                        + item.get(i).getIncrease() + ")");
             }
         }
         screen.refresh();
@@ -441,9 +455,6 @@ public class View {
         return screen;
     }
 
-    public void setScreen(TerminalScreen screen) {
-        this.screen = screen;
-    }
     // END GET-SET METOD
 
     public void passName(String namePlayer) {
@@ -510,7 +521,7 @@ public class View {
     }
 
     private void viewBackpack(final char symbol) throws IOException, InterruptedException {
-        viewSingleItemtype(symbol);
+        viewSingleItemtype();
         setKey();
         while (this.key != null) {
             if (this.key.getKeyType() == KeyType.Escape) {
@@ -671,8 +682,8 @@ public class View {
         final int playerY;
         final int playerInRoom;
 
-        MapInfo(int mapWidth, int mapHeight, int offsetX, int offsetY,
-                         int playerX, int playerY, int playerInRoom) {
+        MapInfo(int mapWidth, int mapHeight, int offsetX, int offsetY, int playerX, int playerY,
+                int playerInRoom) {
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
             this.offsetX = offsetX;

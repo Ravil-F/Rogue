@@ -2,7 +2,7 @@ package utils;
 
 import java.io.Serializable;
 
-public class GameStatistics implements Serializable, Comparable<GameStatistics>{
+public class GameStatistics implements Serializable, Comparable<GameStatistics> {
     private int treasure;
     private int maxLevel;
     private int enemyKilled;
@@ -117,25 +117,37 @@ public class GameStatistics implements Serializable, Comparable<GameStatistics>{
         isVictory = victory;
     }
 
-    public void addTreasure(int treasure){
+    public void addTreasure(int treasure) {
         this.treasure = this.treasure + treasure;
     }
 
-    public void addEnemyKilled(){
+    public void addEnemyKilled() {
         this.enemyKilled++;
     }
 
-    public  void addFoodEaten() {this.foodEaten++;}
+    public void addFoodEaten() {
+        this.foodEaten++;
+    }
 
-    public void addElixirDrink(){this.elixirDrink++; }
+    public void addElixirDrink() {
+        this.elixirDrink++;
+    }
 
-    public void addScrollUse(){this.scrollUse++;}
+    public void addScrollUse() {
+        this.scrollUse++;
+    }
 
-    public void addAttacksMade(){this.attacksMade++;}
+    public void addAttacksMade() {
+        this.attacksMade++;
+    }
 
-    public void addAttacksReceived(){this.attacksReceived++;}
+    public void addAttacksReceived() {
+        this.attacksReceived++;
+    }
 
-    public void addCellMoved(){this.cellMoved++;}
+    public void addCellMoved() {
+        this.cellMoved++;
+    }
 
     @Override
     public int compareTo(GameStatistics o) {

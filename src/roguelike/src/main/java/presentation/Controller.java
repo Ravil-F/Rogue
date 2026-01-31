@@ -10,9 +10,8 @@ import java.util.List;
 
 public class Controller {
     private Model model;
-    private KeyStroke key;
 
-    public Controller(Model model){
+    public Controller(Model model) {
         this.model = model;
     }
 
@@ -50,23 +49,22 @@ public class Controller {
                     }
                 }
             }
-            if(key.getCharacter() == 'w' || key.getCharacter() == 's' || key.getCharacter() == 'a' ||
-                    key.getCharacter() == 'd' || key.getCharacter() == 'h' || key.getCharacter() == 'j' ||
-                    key.getCharacter() == 'k' || key.getCharacter() == 'e')
+            if (key.getCharacter() == 'w' || key.getCharacter() == 's' || key.getCharacter() == 'a'
+                    || key.getCharacter() == 'd' || key.getCharacter() == 'h'
+                    || key.getCharacter() == 'j' || key.getCharacter() == 'k'
+                    || key.getCharacter() == 'e')
                 model.gameSession();
         }
     }
 
-    public void userInputBackpack(KeyStroke key, final char symbol ){
+    public void userInputBackpack(KeyStroke key, final char symbol) {
         List<Items> item = model.getBackpack().getScreenOutput();
-        if (key != null && !item.isEmpty()){
+        if (key != null && !item.isEmpty()) {
 
-            if (key.getKeyType() == KeyType.Character){
+            if (key.getKeyType() == KeyType.Character) {
                 int index = Character.getNumericValue(key.getCharacter());
-                switch (index){
-                    case 0, 1, 2,
-                         3, 4, 5,
-                         6, 7, 8 :
+                switch (index) {
+                    case 0, 1, 2, 3, 4, 5, 6, 7, 8:
                         model.actionOfItems(symbol, index);
                         break;
                     default:
@@ -77,11 +75,11 @@ public class Controller {
 
     }
 
-    public void passName(String namePlayer){
+    public void passName(String namePlayer) {
         model.passName(namePlayer);
     }
 
-    //GET-SET METOD
+    // GET-SET METOD
     public Model getModel() {
         return model;
     }

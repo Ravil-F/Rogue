@@ -8,26 +8,28 @@ import domain.abstact.Attributes;
 
 import java.util.Random;
 
-public class Vampire  extends Attributes implements Check, Action {
+public class Vampire extends Attributes implements Check, Action {
     private final EntityProperties properties;
     private CommonProperties common;
+    private boolean firstAttack;
     public static final int MAP_WIDTH = 81;
     public static final int MAP_HEIGHT = 30;
 
     public Vampire(int x, int y) {
         this(createProperties(), x, y);
         this.common = new CommonProperties();
+        this.firstAttack = true;
     }
 
-    private Vampire(EntityProperties properties, int x, int y){
-        super(properties.getName(), properties.getSymbol(),
-                properties.getTextColor(), properties.getMaxHealth(),
-                properties.getHealth(), properties.getAgility(),
+    private Vampire(EntityProperties properties, int x, int y) {
+        super(properties.getName(), properties.getSymbol(), properties.getTextColor(),
+                properties.getMaxHealth(), properties.getHealth(), properties.getAgility(),
                 properties.getStrength(), properties.getHostility(), x, y);
         this.properties = properties;
+        this.firstAttack = true;
     }
 
-    private static EntityProperties createProperties(){
+    private static EntityProperties createProperties() {
         return new EntityProperties("vampire");
     }
 
@@ -42,19 +44,39 @@ public class Vampire  extends Attributes implements Check, Action {
         int newY = y;
         int direction = random.nextInt(8);
         switch (direction) {
-            case 0: newX++; break;
-            case 1: newX--; break;
-            case 2: newY++; break;
-            case 3: newY--; break;
-            case 4: newX++; newY++; break;
-            case 5: newX++; newY--; break;
-            case 6: newX--; newY++; break;
-            case 7: newX--; newY--; break;
+            case 0:
+                newX++;
+                break;
+            case 1:
+                newX--;
+                break;
+            case 2:
+                newY++;
+                break;
+            case 3:
+                newY--;
+                break;
+            case 4:
+                newX++;
+                newY++;
+                break;
+            case 5:
+                newX++;
+                newY--;
+                break;
+            case 6:
+                newX--;
+                newY++;
+                break;
+            case 7:
+                newX--;
+                newY--;
+                break;
         }
 
-        if(isWithInBounds(newX, newY))
-            return new int[]{newX, newY};
-        return new int[]{x, y};
+        if (isWithInBounds(newX, newY))
+            return new int[] {newX, newY};
+        return new int[] {x, y};
     }
 
     @Override
@@ -63,10 +85,9 @@ public class Vampire  extends Attributes implements Check, Action {
     }
 
     @Override
-    public boolean checkingSymbols(char symbol){
-        return symbol == 's' || symbol == 'w' || symbol == 'f' ||
-                symbol == 'e' || symbol == 'Z' || symbol == 'G' ||
-                symbol == 'S' || symbol == 'O' || symbol == 'V';
+    public boolean checkingSymbols(char symbol) {
+        return symbol == 's' || symbol == 'w' || symbol == 'f' || symbol == 'e' || symbol == 'Z'
+                || symbol == 'G' || symbol == 'S' || symbol == 'O' || symbol == 'V';
     }
 
     @Override
@@ -76,16 +97,31 @@ public class Vampire  extends Attributes implements Check, Action {
 
     @Override
     public boolean isWithInBounds(int x, int y) {
-//        return (x >= 0 && x < common.getWidthHeight() && y >= 0 && y < common.getWidthHeight());
         return (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT);
     }
 
     @Override
     public void attack(Attributes entity) {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
-        if(isHit){
-            entity.setHealth(entity.getHealth() - this.getStrength());
+        if (isHit) {
+            int damage = this.getStrength();
             entity.setAgility(entity.getAgility() - 5);
+            if (entity.getMaxHealth() > damage) {
+                entity.setMaxHealth(entity.getMaxHealth() - damage);
+            } else {
+                entity.setMaxHealth(1);
+            }
+            if (entity.getHealth() > entity.getMaxHealth()) {
+                entity.setHealth(entity.getMaxHealth());
+            }
         }
+    }
+
+    public boolean isFirstAttack() {
+        return firstAttack;
+    }
+
+    public void setFirstAttack(boolean firstAttack) {
+        this.firstAttack = firstAttack;
     }
 }

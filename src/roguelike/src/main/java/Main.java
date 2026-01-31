@@ -19,14 +19,15 @@ public class Main {
         view.stopWidows();
     }
 
-    private static void startGameLoop(View view, Controller controller) throws IOException, InterruptedException {
+    private static void startGameLoop(View view, Controller controller)
+            throws IOException, InterruptedException {
         boolean flag = true;
         while (flag) {
             view.setKey();
             if (view.getKey() != null) {
                 if (view.getKey().getKeyType() == KeyType.Escape) {
                     controller.getModel().saveGame();
-                    if(controller.getModel().getGameStatistics() != null)
+                    if (controller.getModel().getGameStatistics() != null)
                         controller.getModel().saveStatistics();
                     flag = false;
                 }
@@ -39,7 +40,8 @@ public class Main {
         }
     }
 
-    private static void startGameLoopSwitch(View view, Controller controller) throws IOException, InterruptedException {
+    private static void startGameLoopSwitch(View view, Controller controller)
+            throws IOException, InterruptedException {
         switch (view.getKey().getCharacter()) {
             case '1':
                 Model newModel = new Model();
@@ -47,7 +49,8 @@ public class Main {
                 String namePlayer = view.inputScan();
                 if (namePlayer.equals(" "))
                     view.passName(namePlayer);
-                else controller.passName(namePlayer);
+                else
+                    controller.passName(namePlayer);
                 view.gameLoop(true);
                 if (controller.getModel().getGameStatistics() != null) {
                     controller.getModel().saveStatistics();
@@ -63,7 +66,6 @@ public class Main {
                 }
                 break;
             case '3':
-                controller.getModel().getGameStatistics();
                 view.gameStatisticsView();
                 break;
             default:

@@ -70,10 +70,8 @@ public class Map implements Check {
         passages.clear();
         for (int i = 0; i < NUM_ROOMS; i++) {
             Rooms room = new Rooms();
-            room.generateSingleRoom(i,
-                    MIN_ROOM_WIDTH, MAX_ROOM_WIDTH,
-                    MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT,
-                    REGION_WIDTH, REGION_HEIGHT);
+            room.generateSingleRoom(i, MIN_ROOM_WIDTH, MAX_ROOM_WIDTH, MIN_ROOM_HEIGHT,
+                    MAX_ROOM_HEIGHT, REGION_WIDTH, REGION_HEIGHT);
             rooms.add(room);
         }
         startRoomNum = rnd.nextInt(NUM_ROOMS);
@@ -189,15 +187,15 @@ public class Map implements Check {
             for (Passage.PassageSegment segment : passage.getSegments()) {
                 if (segment.isHorizontal()) {
                     int y = segment.getStartY();
-                    for (int x = Math.min(segment.getStartX(), segment.getEndX());
-                         x <= Math.max(segment.getStartX(), segment.getEndX()); x++) {
+                    for (int x = Math.min(segment.getStartX(), segment.getEndX()); x <= Math
+                            .max(segment.getStartX(), segment.getEndX()); x++) {
                         map[x][y] = '.';
                         floor[x][y] = '.';
                     }
                 } else {
                     int x = segment.getStartX();
-                    for (int y = Math.min(segment.getStartY(), segment.getEndY());
-                         y <= Math.max(segment.getStartY(), segment.getEndY()); y++) {
+                    for (int y = Math.min(segment.getStartY(), segment.getEndY()); y <= Math
+                            .max(segment.getStartY(), segment.getEndY()); y++) {
                         map[x][y] = '.';
                         floor[x][y] = '.';
                     }
@@ -226,11 +224,29 @@ public class Map implements Check {
     public int determineRoom(int x, int y) {
         for (int i = 0; i < rooms.size(); i++) {
             Rooms room = rooms.get(i);
-            if (x >= room.getLeftX() && x <= room.getRightX() &&
-                    y >= room.getTopY() && y <= room.getBottomY()) {
+            if (x >= room.getLeftX() && x <= room.getRightX() && y >= room.getTopY()
+                    && y <= room.getBottomY()) {
                 return i;
             }
         }
+        return -1;
+    }
+
+    public int determineCurrentRoom(int playerX, int playerY) {
+        // Сначала проверяем, находится ли игрок внутри комнаты
+        int roomIndex = determineRoom(playerX, playerY);
+        if (roomIndex != -1) {
+            return roomIndex;
+        }
+
+        // Если игрок не в комнате, проверяем, находится ли он рядом с какой-либо комнатой
+        // (в коридоре рядом с границей комнаты)
+        for (int i = 0; i < rooms.size(); i++) {
+            if (isRoomNearPosition(i, playerX, playerY)) {
+                return i;
+            }
+        }
+
         return -1;
     }
 
@@ -263,30 +279,201 @@ public class Map implements Check {
     }
 
     public boolean isPassageVisited(int passageIndex) {
-        return passageIndex >= 0 && passageIndex < visitedPassages.length && visitedPassages[passageIndex];
+        return passageIndex >= 0 && passageIndex < visitedPassages.length
+                && visitedPassages[passageIndex];
     }
 
-    public boolean isExitVertical(int playerX, int playerY, Rooms room) {
+    /**
+     * Находит первую клетку коридора, которая находится на границе указанной комнаты Возвращает
+     * координаты [x, y] или null, если коридор не связан с комнатой
+     */
+    public int[] getPassageDoorCell(int passageIndex, int roomIndex) {
+        if (passageIndex < 0 || passageIndex >= passages.size() || roomIndex < 0
+                || roomIndex >= rooms.size()) {
+            return null;
+        }
+
+        Passage passage = passages.get(passageIndex);
+        Rooms room = rooms.get(roomIndex);
+
+        if (passage.getSegments().isEmpty()) {
+            return null;
+        }
+
+        // Проверяем все сегменты коридора, чтобы найти клетку на границе комнаты
+        for (Passage.PassageSegment segment : passage.getSegments()) {
+            // Проверяем начальную точку сегмента
+            int doorX = segment.getStartX();
+            int doorY = segment.getStartY();
+            if (isPointOnRoomBorder(doorX, doorY, room)) {
+                return new int[] {doorX, doorY};
+            }
+
+            // Проверяем конечную точку сегмента
+            doorX = segment.getEndX();
+            doorY = segment.getEndY();
+            if (isPointOnRoomBorder(doorX, doorY, room)) {
+                return new int[] {doorX, doorY};
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Проверяет, находится ли точка на границе комнаты
+     */
+    private boolean isPointOnRoomBorder(int x, int y, Rooms room) {
+        // Проверяем горизонтальные границы (сверху/снизу)
+        boolean onHorizontalBorder = (y == room.getTopY() || y == room.getBottomY())
+                && x >= room.getLeftX() && x <= room.getRightX();
+        // Проверяем вертикальные границы (слева/справа)
+        boolean onVerticalBorder = (x == room.getLeftX() || x == room.getRightX())
+                && y >= room.getTopY() && y <= room.getBottomY();
+        return onHorizontalBorder || onVerticalBorder;
+    }
+
+    /**
+     * Проверяет, связан ли коридор с указанной комнатой (имеет ли дверь на границе комнаты)
+     */
+    public boolean isPassageConnectedToRoom(int passageIndex, int roomIndex) {
+        return getPassageDoorCell(passageIndex, roomIndex) != null;
+    }
+
+    /**
+     * Проверяет, находится ли точка внутри комнаты (включая границы)
+     */
+    public boolean isPointInsideRoom(int x, int y, Rooms room) {
+        return x >= room.getLeftX() && x <= room.getRightX() && y >= room.getTopY()
+                && y <= room.getBottomY();
+    }
+
+    /**
+     * Проверяет, находится ли точка строго внутри комнаты (без границ)
+     */
+    public boolean isPointStrictlyInsideRoom(int x, int y, Rooms room) {
+        return x > room.getLeftX() && x < room.getRightX() && y > room.getTopY()
+                && y < room.getBottomY();
+    }
+
+    /**
+     * Определяет, находится ли игрок сбоку от комнаты (вертикальное направление видимости) Игрок
+     * находится сбоку, если он не может попасть в комнату, двигаясь влево или вправо
+     */
+    public boolean isVerticalDirectionFog(int playerX, int playerY, Rooms room) {
+        // Проверяем, может ли игрок попасть в комнату, двигаясь влево или вправо
         int checkX1 = playerX + 1;
-        if (checkX1 >= room.getLeftX() && checkX1 <= room.getRightX() &&
-                playerY >= room.getTopY() && playerY <= room.getBottomY()) {
-            return false;
+        if (isPointInsideRoom(checkX1, playerY, room)) {
+            return false; // Может попасть вправо - горизонтальное направление
         }
         int checkX2 = playerX - 1;
-        if (checkX2 >= room.getLeftX() && checkX2 <= room.getRightX() &&
-                playerY >= room.getTopY() && playerY <= room.getBottomY()) {
-            return false;
+        if (isPointInsideRoom(checkX2, playerY, room)) {
+            return false; // Может попасть влево - горизонтальное направление
         }
-        return true;
+        return true; // Не может попасть влево/вправо - вертикальное направление (игрок сбоку)
     }
 
-    public boolean isCellVisible(int cellX, int cellY, int playerX, int playerY, boolean isVertical) {
+    /**
+     * Проверяет, находится ли игрок рядом с комнатой и может ли видеть её из коридора Основано на
+     * логике из C реализации: комната видна, если игрок находится в коридоре рядом с границей
+     * комнаты (в пределах 1 клетки) И есть проход (дверь) между игроком и комнатой
+     */
+    public boolean isRoomNearPosition(int roomIndex, int playerX, int playerY) {
+        if (roomIndex < 0 || roomIndex >= rooms.size()) {
+            return false;
+        }
+
+        Rooms room = rooms.get(roomIndex);
+
+        // Проверяем, находится ли игрок ВНЕ комнаты (в коридоре)
+        if (isPointInsideRoom(playerX, playerY, room)) {
+            return false; // Игрок внутри комнаты, не применяем частичный туман
+        }
+
+        // Проверяем, находится ли игрок рядом с границами комнаты (в пределах 1 клетки)
+        // Это соответствует логике из C: игрок должен быть в коридоре рядом с комнатой
+
+        // Проверяем горизонтальные границы (сверху/снизу)
+        boolean nearTop = (playerY == room.getTopY() - 1) && playerX >= room.getLeftX() - 1
+                && playerX <= room.getRightX() + 1;
+        boolean nearBottom = (playerY == room.getBottomY() + 1) && playerX >= room.getLeftX() - 1
+                && playerX <= room.getRightX() + 1;
+
+        // Проверяем вертикальные границы (слева/справа)
+        boolean nearLeft = (playerX == room.getLeftX() - 1) && playerY >= room.getTopY() - 1
+                && playerY <= room.getBottomY() + 1;
+        boolean nearRight = (playerX == room.getRightX() + 1) && playerY >= room.getTopY() - 1
+                && playerY <= room.getBottomY() + 1;
+
+        if (!(nearTop || nearBottom || nearLeft || nearRight)) {
+            return false; // Игрок не рядом с границей комнаты
+        }
+
+        // ВАЖНО: Проверяем, есть ли проход (дверь) между игроком и комнатой
+        // Область видимости должна работать только через дверь, а не через стену
+        int playerPassage = determinePassage(playerX, playerY);
+        if (playerPassage == -1) {
+            return false; // Игрок не в коридоре
+        }
+
+        // Проверяем, связан ли коридор, в котором находится игрок, с этой комнатой
+        if (!isPassageConnectedToRoom(playerPassage, roomIndex)) {
+            return false; // Коридор не связан с комнатой
+        }
+
+        // КРИТИЧНО: Проверяем, находится ли игрок рядом с дверью (первой клеткой коридора на
+        // границе комнаты)
+        // Область видимости должна работать только когда игрок находится рядом с дверью,
+        // а не просто в коридоре где-то далеко от двери
+        int[] doorCell = getPassageDoorCell(playerPassage, roomIndex);
+        if (doorCell == null) {
+            return false; // Дверь не найдена
+        }
+
+        // Проверяем, находится ли игрок рядом с дверью
+        // Игрок должен быть либо на самой двери, либо на соседней клетке от двери в коридоре
+        int doorX = doorCell[0];
+        int doorY = doorCell[1];
+
+        // Проверяем точное совпадение (игрок на двери)
+        if (playerX == doorX && playerY == doorY) {
+            return true;
+        }
+
+        // Проверяем, находится ли игрок на соседней клетке от двери в том же коридоре
+        // (в направлении от комнаты, т.е. дальше от комнаты, чем дверь)
+        int deltaX = playerX - doorX;
+        int deltaY = playerY - doorY;
+
+        // Игрок должен быть на расстоянии 1 клетка от двери
+        if (Math.abs(deltaX) + Math.abs(deltaY) != 1) {
+            return false; // Игрок слишком далеко от двери
+        }
+
+        // Проверяем, что игрок находится в коридоре (на пути от двери)
+        // и что между игроком и дверью нет стены
+        return hasLineOfSight(doorX, doorY, playerX, playerY);
+    }
+
+    /**
+     * Проверяет видимость ячейки комнаты из коридора на основе направления
+     */
+    public boolean isRoomCellVisibleFromPassage(int cellX, int cellY, int playerX, int playerY,
+            Rooms room) {
+        if (!isPointStrictlyInsideRoom(cellX, cellY, room)) {
+            return false;
+        }
+
+        boolean isVertical = isVerticalDirectionFog(playerX, playerY, room);
         int deltaX = cellX - playerX;
         int deltaY = cellY - playerY;
+
         if (isVertical) {
-            return Math.abs(deltaY) >= Math.abs(deltaX);
-        } else {
+            // Вертикальное направление: видно ячейки где |deltaX| >= |deltaY|
             return Math.abs(deltaX) >= Math.abs(deltaY);
+        } else {
+            // Горизонтальное направление: видно ячейки где |deltaX| <= |deltaY|
+            return Math.abs(deltaX) <= Math.abs(deltaY);
         }
     }
 
@@ -321,7 +508,8 @@ public class Map implements Check {
     }
 
     private int getRandomInRange(int min, int max) {
-        if (max < min) return min;
+        if (max < min)
+            return min;
         return min + rnd.nextInt(max - min + 1);
     }
 
@@ -335,9 +523,9 @@ public class Map implements Check {
         Rooms randomRoom = rooms.get(rnd.nextInt(rooms.size()));
         int x = getRandomInRange(randomRoom.getLeftX() + 1, randomRoom.getRightX() - 1);
         int y = getRandomInRange(randomRoom.getTopY() + 1, randomRoom.getBottomY() - 1);
-        return new int[]{x, y};
+        return new int[] {x, y};
     }
-    
+
     public int[] getFreePosition() {
         int maxAttempts = 100;
         for (int attempt = 0; attempt < maxAttempts; attempt++) {
@@ -356,7 +544,7 @@ public class Map implements Check {
         Rooms startRoom = rooms.get(startRoomNum);
         int x = getRandomInRange(startRoom.getLeftX() + 1, startRoom.getRightX() - 1);
         int y = getRandomInRange(startRoom.getTopY() + 1, startRoom.getBottomY() - 1);
-        return new int[]{x, y};
+        return new int[] {x, y};
     }
 
     public int[] excludeStartRoom() {
@@ -371,14 +559,14 @@ public class Map implements Check {
             int y = getRandomInRange(room.getTopY() + 1, room.getBottomY() - 1);
             char cell = getMapChar(x, y);
             if (cell == '.') {
-                return new int[]{x, y};
+                return new int[] {x, y};
             }
         }
         return getFreePosition();
     }
 
     public int[] getFinalRoomCoords() {
-        return new int[]{exitX, exitY};
+        return new int[] {exitX, exitY};
     }
 
     public int getStartRoom() {
@@ -401,7 +589,7 @@ public class Map implements Check {
     }
 
     public char getMapChar(int x, int y) {
-        return (char)map[x][y];
+        return (char) map[x][y];
     }
 
 
