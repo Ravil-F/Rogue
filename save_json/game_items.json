@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "type": "Elixir",
+      "elixirEnum": "AGILITY_E",
+      "name": "agility elixir",
+      "symbol": "e",
+      "increase": 30,
+      "color": "BLUE",
+      "coordX": 39,
+      "coordY": 7
+    },
+    {
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 15,
+      "coordY": 23
+    },
+    {
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 64,
+      "coordY": 15
+    },
+    {
+      "type": "Food",
+      "foodEnum": "BREAD_F",
+      "name": "bread",
+      "symbol": "f",
+      "increase": 10,
+      "color": "GREEN",
+      "coordX": 30,
+      "coordY": 16
+    },
+    {
+      "type": "Food",
+      "foodEnum": "MEAT_F",
+      "name": "meat",
+      "symbol": "f",
+      "increase": 20,
+      "color": "GREEN",
+      "coordX": 74,
+      "coordY": 16
+    }
+  ]
+}
