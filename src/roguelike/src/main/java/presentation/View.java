@@ -34,7 +34,7 @@ public class View {
         try {
             this.controller = controller;
             DefaultTerminalFactory factory = new DefaultTerminalFactory();
-            factory.setInitialTerminalSize(new TerminalSize(100, 40)); // ширина x высота
+            factory.setInitialTerminalSize(new TerminalSize(110, 35)); // ширина x высота
             this.terminal = factory.createTerminal();
             this.screen = new TerminalScreen(terminal);
             textGraphics = screen.newTextGraphics();
@@ -63,12 +63,15 @@ public class View {
             textGraphics.putString(titleX + 2, titleY + 1, "=================");
             int menuStartY = titleY + 4;
             int menuX = offsetX + (MENU_WIDTH - 30) / 2 + 4;
-            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
             textGraphics.putString(menuX, menuStartY - 1, "SELECT THE GAME MODE:");
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             textGraphics.putString(menuX, menuStartY, "1 - New game");
             textGraphics.putString(menuX, menuStartY + 1, "2 - Load game");
-            textGraphics.putString(menuX, menuStartY + 2, "3 - Load game statistics");
-            textGraphics.putString(menuX, menuStartY + 4, "Escape - Exit game");
+            textGraphics.putString(menuX, menuStartY + 2, "3 - Game statistics");
+            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+            textGraphics.putString(menuX, menuStartY + 4, "ESCAPE - Exit the game");
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
             int versionX = offsetX + MENU_WIDTH - VERSION.length();
             int versionY = offsetY + MENU_HEIGHT;
             textGraphics.putString(versionX, versionY, VERSION);
@@ -90,9 +93,11 @@ public class View {
                 MENU_WIDTH + offsetX + 1);
         char symbol;
         int pos = MENU_WIDTH / 3 + 1;
+        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
         textGraphics.putString(pos + 1, 2, "ENTER THE PLAYER'S NAME:");
-        textGraphics.putString(MENU_WIDTH / 4, 6, "Press BACKSPACE to delete, ENTER to finish");
-        int cursorPos = pos;
+        textGraphics.putString(MENU_WIDTH / 4 - 3, 6, "Press BACKSPACE to delete, ENTER to start the game");
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        int cursorPos = pos + 7;
         screen.refresh();
         do {
             setKey();
@@ -195,7 +200,6 @@ public class View {
             }
         }
     }
-
 
     private void drawPassageDoors(int passageIndex, MapInfo info) {
         // Проверяем, находится ли игрок в комнате
@@ -402,36 +406,68 @@ public class View {
     }
 
     private void viewInfo() {
+        viewPlayerStats();
+        viewControlInfo();
+    }
+
+    private void viewPlayerStats() {
         int mapWidth = controller.getModel().getMap().getWidth();
         int mapHeight = controller.getModel().getMap().getHeight();
         int offsetX = 1;
         int offsetY = 1;
-        int infoY = mapHeight + offsetY + 2;
-        int navigatorY = infoY + 2;
-        int backpackY = navigatorY + 2;
-
-        String info = String.format(
-                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
-                controller.getModel().getLevel(), controller.getModel().getPlayer().getHealth(),
+        int statsY = mapHeight + offsetY + 2;
+        int statsWidth = mapWidth + offsetX;
+        drawRectangle(textGraphics, statsY - 1, statsY + 1,
+                offsetX - 1, statsWidth);
+        String stats = String.format(
+                "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasures: %d",
+                controller.getModel().getLevel(),
+                controller.getModel().getPlayer().getHealth(),
                 controller.getModel().getPlayer().getMaxHealth(),
                 controller.getModel().getPlayer().getAgility(),
                 controller.getModel().getPlayer().getStrength(),
-                controller.getModel().getPlayer().getTreasure());
-        String navigatorInfo = String.format("W - Up     S - Down     A - Left     D - Right");
-        String backpackInfo = String.format("H - Weapon     J - Food     K - Elixir     E - Scroll");
+                controller.getModel().getPlayer().getTreasure()
+        );
+        int centerX = (statsWidth - stats.length()) / 2 + 1;
+        textGraphics.putString(centerX, statsY, stats);
+    }
 
-        int infoRectWidth = mapWidth + offsetX;
+    private void viewControlInfo() {
+        int mapWidth = controller.getModel().getMap().getWidth();
+        int mapHeight = controller.getModel().getMap().getHeight();
+        int offsetX = 1;
+        int offsetY = 1;
+        int panelX = mapWidth + offsetX + 2;
+        int panelY = offsetY - 1;
+        int panelWidth = 25;
+        int panelHeight = mapHeight + 4;
+        drawRectangle(textGraphics, panelY, panelY + panelHeight,
+                panelX, panelX + panelWidth);
 
-        drawRectangle(textGraphics, infoY - 1, backpackY + 1, offsetX - 1, infoRectWidth);
-        int centerInfo = (infoRectWidth - info.length()) / 2 + 1;
-        int centerNavigator = (infoRectWidth - navigatorInfo.length()) / 2 + 1;
-        int centerBackpack = (infoRectWidth - backpackInfo.length()) / 2 + 1;
+        String title = "CONTROL:";
+        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+        textGraphics.putString(panelX + 2, panelY + 1, title);
 
+        int controlX = panelX + 2;
+        int controlY = panelY + 3;
+        textGraphics.putString(controlX, controlY, "Movement:");
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        textGraphics.putString(controlX + 2, controlY + 1, "W - Up");
+        textGraphics.putString(controlX + 2, controlY + 2, "A - Left");
+        textGraphics.putString(controlX + 2, controlY + 3, "S - Down");
+        textGraphics.putString(controlX + 2, controlY + 4, "D - Right");
 
-        textGraphics.putString(centerInfo, infoY, info);
-        textGraphics.putString(centerNavigator, navigatorY, navigatorInfo);
-        textGraphics.putString(centerBackpack, backpackY, backpackInfo);
+        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+        textGraphics.putString(controlX, controlY + 6, "Backpack:");
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        textGraphics.putString(controlX + 2, controlY + 7, "H - Weapon");
+        textGraphics.putString(controlX + 2, controlY + 8, "J - Food");
+        textGraphics.putString(controlX + 2, controlY + 9, "K - Elixirs");
+        textGraphics.putString(controlX + 2, controlY + 10, "E - Scrolls");
 
+        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+        textGraphics.putString(controlX, controlY + 12, "ESC - Save & Exit");
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
     }
 
     private void viewGameStatus(String message) {
@@ -453,7 +489,7 @@ public class View {
                 MENU_WIDTH + offsetX + 1);
         int pos = MENU_WIDTH / 3 + 1;
         textGraphics.putString(pos, 2, "ENTER THE ITEM NUMBER (0-8):");
-        textGraphics.putString(pos + 3, MENU_HEIGHT - 2, "press Escape to exit");
+        textGraphics.putString(pos + 3, MENU_HEIGHT - 2, "press ESCAPE to return");
         if (controller.getModel().getBackpack().getScreenOutput().isEmpty())
             textGraphics.putString(pos + 5, 4, "backpack is empty");
         else {
@@ -572,133 +608,179 @@ public class View {
     public void gameStatisticsView() {
         try {
             screen.clear();
-
-            domain.player.Statistics statsManager = controller.getModel().getStatistics();
-            List<utils.GameStatistics> allStatistics = statsManager.getAllStatistics();
-
-            textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
-            textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
-
-            textGraphics.putString((MENU_WIDTH - 3) / 2, 2, "=== GAME STATISTICS ===");
-
+            List<utils.GameStatistics> allStatistics =
+                    controller.getModel().getStatistics().getAllStatistics();
+            StatsOffsets info = initStatsOffsets();
+            drawOuterBorder(info);
+            drawTitle(info);
             if (allStatistics.isEmpty()) {
-                textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-                textGraphics.putString(10, 4, "The statistics are empty for now. Play some games!");
+                drawEmptyMessage(info);
             } else {
-                textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
-                textGraphics.putString(1, 4, "Top 10 players:");
-
-                int startY = 6;
-                int columnX = 1;
-
-                textGraphics.setForegroundColor(TextColor.ANSI.MAGENTA);
-                textGraphics.putString(columnX, startY, "№");
-                textGraphics.putString(columnX + 3, startY, "Name");
-                textGraphics.putString(columnX + 15, startY, "Treasure");
-                textGraphics.putString(columnX + 24, startY, "Level");
-                textGraphics.putString(columnX + 30, startY, "Enemies");
-                textGraphics.putString(columnX + 38, startY, "Foods");
-                textGraphics.putString(columnX + 44, startY, "Elixirs");
-                textGraphics.putString(columnX + 52, startY, "Scrolls");
-                textGraphics.putString(columnX + 60, startY, "At_Made");
-                textGraphics.putString(columnX + 68, startY, "At_Received");
-                textGraphics.putString(columnX + 80, startY, "CellMoved");
-                textGraphics.putString(columnX + 90, startY, "Victory");
-
-                for (int x = columnX; x <= columnX + 96; x++) {
-                    textGraphics.putString(x, startY + 1, "-");
-                }
-
-                int displayCount = Math.min(10, allStatistics.size());
-                int currentY = startY + 3;
-
-                for (int i = 0; i < displayCount; i++) {
-                    utils.GameStatistics statistics = allStatistics.get(i);
-
-                    if (i < 3) {
-                        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
-                    } else {
-                        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-                    }
-
-                    String place = (i + 1) + ".";
-                    textGraphics.putString(columnX, currentY, place);
-
-                    String name = statistics.getName();
-                    if (name.length() > 10) {
-                        name = name.substring(0, 7) + "...";
-                    }
-                    textGraphics.putString(columnX + 3, currentY, name);
-
-                    textGraphics.putString(columnX + 15, currentY,
-                            String.format("%8d", statistics.getTreasure()));
-
-                    textGraphics.putString(columnX + 24, currentY,
-                            String.format("%5d", statistics.getMaxLevel()));
-
-                    textGraphics.putString(columnX + 30, currentY,
-                            String.format("%7d", statistics.getEnemyKilled()));
-
-                    textGraphics.putString(columnX + 38, currentY,
-                            String.format("%5d", statistics.getFoodEaten()));
-
-                    textGraphics.putString(columnX + 44, currentY,
-                            String.format("%7d", statistics.getElixirDrink()));
-
-                    textGraphics.putString(columnX + 52, currentY,
-                            String.format("%7d", statistics.getScrollUse()));
-
-                    textGraphics.putString(columnX + 60, currentY,
-                            String.format("%7d", statistics.getAttacksMade()));
-
-                    textGraphics.putString(columnX + 68, currentY,
-                            String.format("%11d", statistics.getAttacksReceived()));
-
-                    textGraphics.putString(columnX + 80, currentY,
-                            String.format("%9d", statistics.getCellMoved()));
-
-                    String victory = statistics.isVictory() ? "✓" : "✗";
-                    if (statistics.isVictory()) {
-                        textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
-                    } else {
-                        textGraphics.setForegroundColor(TextColor.ANSI.RED);
-                    }
-                    textGraphics.putString(columnX + 96, currentY, victory);
-
-                    if (i < 3) {
-                        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
-                    } else {
-                        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-                    }
-
-                    currentY++;
-                }
+                drawInnerBorder(info);
+                drawStatsHeader(info);
+                drawStatsData(info, allStatistics);
             }
-
-            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
-            textGraphics.setBackgroundColor(TextColor.ANSI.BLUE);
-
-            String instruction = "Escape - Exit game";
-
-            textGraphics.putString(0, screen.getTerminalSize().getRows() - 2, instruction);
-
-            textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
-
+            drawFooter(info);
             screen.refresh();
-
-            boolean viewingStats = true;
-            while (viewingStats) {
-                KeyStroke key = screen.readInput();
-                if (key.getKeyType() == KeyType.Escape) {
-                    viewingStats = false;
-                    screen.clear();
-                }
-            }
-
+            waitForEscape();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private StatsOffsets initStatsOffsets() {
+        int screenWidth = screen.getTerminalSize().getColumns();
+        int screenHeight = screen.getTerminalSize().getRows();
+        int outerLeft = 1;
+        int outerRight = screenWidth - 2;
+        int outerTop = 1;
+        int outerBottom = screenHeight - 2;
+        int innerLeft = outerLeft + 2;
+        int innerRight = outerRight - 2;
+        int innerTop = outerTop + 5;
+        int innerBottom = outerBottom - 3;
+        return new StatsOffsets(
+                screenWidth, screenHeight,
+                outerLeft, outerRight, outerTop, outerBottom,
+                innerLeft, innerRight, innerTop, innerBottom
+        );
+    }
+
+    private void drawOuterBorder(StatsOffsets info) {
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        drawRectangle(textGraphics, info.outerTop - 1, info.outerBottom + 1,
+                info.outerLeft - 1, info.outerRight+ 1);
+    }
+
+    private void drawTitle(StatsOffsets info) {
+        String title = "GAME STATISTICS";
+        int titleX = (info.screenWidth - title.length()) / 2;
+        textGraphics.setForegroundColor(TextColor.ANSI.CYAN);
+        textGraphics.putString(titleX, info.outerTop, title);
+        textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+        textGraphics.putString(titleX, info.outerTop + 3, "TOP 10 PLAYERS:");
+    }
+
+    private void drawEmptyMessage(StatsOffsets info) {
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        String emptyMsg = "The statistics are empty for now. Play some games!";
+        int msgX = (info.screenWidth - emptyMsg.length()) / 2;
+        textGraphics.putString(msgX, info.screenHeight / 2, emptyMsg);
+    }
+
+    private void drawInnerBorder(StatsOffsets info) {
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        drawRectangle(textGraphics, info.innerTop, info.innerBottom,
+                info.innerLeft, info.innerRight);
+        for (int x = info.innerLeft + 1; x <= info.innerRight - 1; x++) {
+            textGraphics.putString(x, info.innerTop + 2, "─");
+        }
+    }
+
+    private void drawStatsHeader(StatsOffsets info) {
+        int headerY = info.innerTop + 1;
+        int[] cols = calculateColumnPositions(info.innerLeft);
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        textGraphics.putString(cols[0], headerY, "№");
+        textGraphics.putString(cols[1], headerY, "Name");
+        textGraphics.putString(cols[2], headerY, "Treasures");
+        textGraphics.putString(cols[3], headerY, "Level");
+        textGraphics.putString(cols[4], headerY, "Enemies");
+        textGraphics.putString(cols[5], headerY, "Food");
+        textGraphics.putString(cols[6], headerY, "Elixirs");
+        textGraphics.putString(cols[7], headerY, "Scrolls");
+        textGraphics.putString(cols[8], headerY, "AtMade");
+        textGraphics.putString(cols[9], headerY, "AtReceived");
+        textGraphics.putString(cols[10], headerY, "CellMoved");
+        textGraphics.putString(cols[11], headerY, "Victory");
+    }
+
+    private void drawStatsData(StatsOffsets info, List<utils.GameStatistics> stats) {
+        int displayCount = Math.min(10, stats.size());
+        int dataY = info.innerTop + 4;
+        int[] cols = calculateColumnPositions(info.innerLeft);
+        for (int i = 0; i < displayCount; i++) {
+            utils.GameStatistics s = stats.get(i);
+            setRowColor(i);
+            textGraphics.putString(cols[0], dataY, (i + 1) + ".");
+            String name = shortenLongName(s.getName(), 10);
+            textGraphics.putString(cols[1], dataY, name);
+            textGraphics.putString(cols[2] - 2, dataY, String.format("%7d", s.getTreasure()));
+            textGraphics.putString(cols[3] - 2, dataY, String.format("%5d", s.getMaxLevel()));
+            textGraphics.putString(cols[4] - 2, dataY, String.format("%6d", s.getEnemyKilled()));
+            textGraphics.putString(cols[5] - 2, dataY, String.format("%5d", s.getFoodEaten()));
+            textGraphics.putString(cols[6] - 2, dataY, String.format("%6d", s.getElixirDrink()));
+            textGraphics.putString(cols[7] - 2, dataY, String.format("%6d", s.getScrollUse()));
+            textGraphics.putString(cols[8] - 2, dataY, String.format("%6d", s.getAttacksMade()));
+            textGraphics.putString(cols[9] - 3, dataY, String.format("%9d", s.getAttacksReceived()));
+            textGraphics.putString(cols[10] - 1, dataY, String.format("%7d", s.getCellMoved()));
+            drawGameResult(cols[11] + 3, dataY, s.isVictory());
+            dataY++;
+        }
+    }
+
+    private void drawFooter(StatsOffsets info) {
+        textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        String instruction = "press ESCAPE to return to the main menu";
+        int instructionX = (info.screenWidth - instruction.length()) / 2;
+        textGraphics.putString(instructionX, info.outerBottom - 1, instruction);
+    }
+
+    // Расчёт позиций столбцов
+    private int[] calculateColumnPositions(int innerLeft) {
+        int col1 = innerLeft + 2;
+        int col2 = col1 + 3;
+        int col3 = col2 + 7;
+        int col4 = col3 + 11;
+        int col5 = col4 + 7;
+        int col6 = col5 + 9;
+        int col7 = col6 + 6;
+        int col8 = col7 + 9;
+        int col9 = col8 + 9;
+        int col10 = col9 + 8;
+        int col11 = col10 + 12;
+        int col12 = col11 + 11;
+
+        return new int[]{col1, col2, col3, col4, col5, col6,
+                col7, col8, col9, col10, col11, col12};
+    }
+
+    private void setRowColor(int index) {
+        if (index < 3) {
+            textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
+        } else {
+            textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
+        }
+    }
+
+    // Обрезка длинного имени
+    private String shortenLongName(String name, int maxLength) {
+        if (name.length() > maxLength) {
+            return name.substring(0, 7) + "...";
+        }
+        return name;
+    }
+
+    private void drawGameResult(int x, int y, boolean isVictory) {
+        String victory = isVictory ? "✓" : "✗";
+        if (isVictory) {
+            textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
+        } else {
+            textGraphics.setForegroundColor(TextColor.ANSI.RED);
+        }
+        textGraphics.putString(x, y, victory);
+    }
+
+    private void waitForEscape() throws IOException {
+        boolean viewingStats = true;
+        while (viewingStats) {
+            KeyStroke key = screen.readInput();
+            if (key.getKeyType() == KeyType.Escape) {
+                viewingStats = false;
+            }
+        }
+        screen.clear();
     }
 
     private static class MapInfo {
@@ -721,4 +803,33 @@ public class View {
             this.playerInRoom = playerInRoom;
         }
     }
+
+    private static class StatsOffsets {
+        final int screenWidth;
+        final int screenHeight;
+        final int outerLeft;
+        final int outerRight;
+        final int outerTop;
+        final int outerBottom;
+        final int innerLeft;
+        final int innerRight;
+        final int innerTop;
+        final int innerBottom;
+
+        StatsOffsets(int screenWidth, int screenHeight,
+                        int outerLeft, int outerRight, int outerTop, int outerBottom,
+                        int innerLeft, int innerRight, int innerTop, int innerBottom) {
+            this.screenWidth = screenWidth;
+            this.screenHeight = screenHeight;
+            this.outerLeft = outerLeft;
+            this.outerRight = outerRight;
+            this.outerTop = outerTop;
+            this.outerBottom = outerBottom;
+            this.innerLeft = innerLeft;
+            this.innerRight = innerRight;
+            this.innerTop = innerTop;
+            this.innerBottom = innerBottom;
+        }
+    }
+
 }
