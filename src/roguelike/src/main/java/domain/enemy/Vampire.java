@@ -103,17 +103,9 @@ public class Vampire extends Attributes implements Check, Action {
     @Override
     public void attack(Attributes entity) {
         boolean isHit = (Math.random() * 100) <= this.getAgility();
-        if (isHit) {
-            int damage = this.getStrength();
+        if(isHit){
+            entity.setHealth(entity.getHealth() - this.getStrength());
             entity.setAgility(entity.getAgility() - 5);
-            if (entity.getMaxHealth() > damage) {
-                entity.setMaxHealth(entity.getMaxHealth() - damage);
-            } else {
-                entity.setMaxHealth(1);
-            }
-            if (entity.getHealth() > entity.getMaxHealth()) {
-                entity.setHealth(entity.getMaxHealth());
-            }
         }
     }
 
