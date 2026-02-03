@@ -91,16 +91,33 @@ public class View {
         char symbol;
         int pos = MENU_WIDTH / 3 + 1;
         textGraphics.putString(pos + 1, 2, "ENTER THE PLAYER'S NAME:");
+        textGraphics.putString(MENU_WIDTH / 4, 6, "Press BACKSPACE to delete, ENTER to finish");
+        int cursorPos = pos;
         screen.refresh();
         do {
             setKey();
-            if ((key.getCharacter() != ' ') && (key.getKeyType() == KeyType.Enter))
+            if (key.getKeyType() == KeyType.Enter)
                 break;
-            symbol = key.getCharacter();
-            textGraphics.putString(pos + 10, 4, String.valueOf(symbol));
-            res.append(symbol);
-            screen.refresh();
-            ++pos;
+
+            if(key.getKeyType() == KeyType.Backspace){
+                if(res.length() > 0){
+                    res.deleteCharAt(res.length() - 1);
+                    textGraphics.putString(cursorPos - 1, 4, " ");
+                    cursorPos--;
+                    screen.refresh();
+                }
+            }
+
+            if(key.getKeyType() == KeyType.Escape)
+                return " ";
+
+            if(key.getKeyType() == KeyType.Character) {
+                symbol = key.getCharacter();
+                textGraphics.putString(cursorPos, 4, String.valueOf(symbol));
+                res.append(symbol);
+                screen.refresh();
+                cursorPos++;
+            }
         } while (true);
         return res.toString().trim();
     }
@@ -390,6 +407,8 @@ public class View {
         int offsetX = 1;
         int offsetY = 1;
         int infoY = mapHeight + offsetY + 2;
+        int navigatorY = infoY + 2;
+        int backpackY = navigatorY + 2;
 
         String info = String.format(
                 "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasure: %d",
@@ -398,12 +417,21 @@ public class View {
                 controller.getModel().getPlayer().getAgility(),
                 controller.getModel().getPlayer().getStrength(),
                 controller.getModel().getPlayer().getTreasure());
+        String navigatorInfo = String.format("W - Up     S - Down     A - Left     D - Right");
+        String backpackInfo = String.format("H - Weapon     J - Food     K - Elixir     E - Scroll");
+
         int infoRectWidth = mapWidth + offsetX;
-        drawRectangle(textGraphics, infoY - 1, infoY + 1, offsetX - 1, infoRectWidth);
-        int infoTextWidth = info.length();
-        int rectWidth = infoRectWidth - offsetX + 1;
-        int centerX = (rectWidth - infoTextWidth) / 2 + 1;
-        textGraphics.putString(centerX, infoY, info);
+
+        drawRectangle(textGraphics, infoY - 1, backpackY + 1, offsetX - 1, infoRectWidth);
+        int centerInfo = (infoRectWidth - info.length()) / 2 + 1;
+        int centerNavigator = (infoRectWidth - navigatorInfo.length()) / 2 + 1;
+        int centerBackpack = (infoRectWidth - backpackInfo.length()) / 2 + 1;
+
+
+        textGraphics.putString(centerInfo, infoY, info);
+        textGraphics.putString(centerNavigator, navigatorY, navigatorInfo);
+        textGraphics.putString(centerBackpack, backpackY, backpackInfo);
+
     }
 
     private void viewGameStatus(String message) {

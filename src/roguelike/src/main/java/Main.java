@@ -46,14 +46,16 @@ public class Main {
             case '1':
                 Model newModel = new Model();
                 controller.setModel(newModel);
-                String namePlayer = view.inputScan();
-                if (namePlayer.equals(" "))
-                    view.passName(namePlayer);
+                String namePlayer = view.inputScan().trim();
+                if (namePlayer.isEmpty())
+                    view.passName("Player");
                 else
                     controller.passName(namePlayer);
-                view.gameLoop(true);
-                if (controller.getModel().getGameStatistics() != null) {
-                    controller.getModel().saveStatistics();
+                if(!controller.getModel().getPlayer().getName().isEmpty()){
+                    view.gameLoop(true);
+                    if (controller.getModel().getGameStatistics() != null) {
+                        controller.getModel().saveStatistics();
+                    }
                 }
                 break;
             case '2':
