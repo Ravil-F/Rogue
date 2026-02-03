@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "type": "Elixir",
+      "elixirEnum": "AGILITY_E",
+      "name": "agility elixir",
+      "symbol": "e",
+      "increase": 30,
+      "color": "BLUE",
+      "coordX": 63,
+      "coordY": 16
+    },
+    {
+      "type": "Scroll",
+      "scrollEnum": "HEALTH_S",
+      "name": "health scroll",
+      "symbol": "s",
+      "increase": 20,
+      "color": "YELLOW",
+      "coordX": 69,
+      "coordY": 27
+    },
+    {
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 40,
+      "coordY": 2
+    },
+    {
+      "weaponEnum": "SWORD_W",
+      "name": "sword",
+      "symbol": "w",
+      "increase": 10,
+      "color": "RED",
+      "coordX": 66,
+      "coordY": 14
+    },
+    {
+      "type": "Scroll",
+      "scrollEnum": "STRENGTH_S",
+      "name": "strength scroll",
+      "symbol": "s",
+      "increase": 20,
+      "color": "YELLOW",
+      "coordX": 46,
+      "coordY": 14
+    }
+  ]
+}

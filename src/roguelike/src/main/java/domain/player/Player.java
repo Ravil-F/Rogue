@@ -42,7 +42,7 @@ public class Player extends Attributes implements Action {
 
     public void increaseHealth(int xp) {
         setHealth(getHealth() + xp);
-        if(getHealth() > 100)
+        if (getHealth() > 100)
             setHealth(100);
     }
 

@@ -1,0 +1,17 @@
+{
+  "status": "ACTION",
+  "treasure": 40,
+  "sleep": 0,
+  "maxHealth": 100,
+  "health": 40,
+  "agility": 80,
+  "strength": 80,
+  "hostility": 0,
+  "name": "fffffff",
+  "symbol": "@",
+  "color": "RED",
+  "coord": {
+    "x": 13,
+    "y": 17
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "packWeapon": [],
+  "packFood": [
+    {
+      "type": "Food",
+      "foodEnum": "BREAD_F",
+      "name": "bread",
+      "symbol": "f",
+      "increase": 10,
+      "color": "GREEN",
+      "coordX": 68,
+      "coordY": 15
+    },
+    {
+      "type": "Food",
+      "foodEnum": "BREAD_F",
+      "name": "bread",
+      "symbol": "f",
+      "increase": 10,
+      "color": "GREEN",
+      "coordX": 9,
+      "coordY": 6
+    }
+  ],
+  "packElixir": [],
+  "packScroll": [],
+  "screenOuptup": []
+}
