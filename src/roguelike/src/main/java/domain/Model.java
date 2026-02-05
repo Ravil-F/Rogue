@@ -197,8 +197,8 @@ public class Model implements Check {
         gameInitialization();
     }
 
-    private void checkTimeAgalityStrenght(){
-        if (timeAgility != 0){
+    private void checkTimeAgalityStrenght() {
+        if (timeAgility != 0) {
             timeAgility = timeAgility - 1;
             if (timeAgility == 0) {
                 player.setAgility(90);

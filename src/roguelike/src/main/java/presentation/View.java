@@ -95,7 +95,8 @@ public class View {
         int pos = MENU_WIDTH / 3 + 1;
         textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
         textGraphics.putString(pos + 1, 2, "ENTER THE PLAYER'S NAME:");
-        textGraphics.putString(MENU_WIDTH / 4 - 3, 6, "Press BACKSPACE to delete, ENTER to start the game");
+        textGraphics.putString(MENU_WIDTH / 4 - 3, 6,
+                "Press BACKSPACE to delete, ENTER to start the game");
         textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
         int cursorPos = pos + 7;
         screen.refresh();
@@ -104,8 +105,8 @@ public class View {
             if (key.getKeyType() == KeyType.Enter)
                 break;
 
-            if(key.getKeyType() == KeyType.Backspace){
-                if(res.length() > 0){
+            if (key.getKeyType() == KeyType.Backspace) {
+                if (res.length() > 0) {
                     res.deleteCharAt(res.length() - 1);
                     textGraphics.putString(cursorPos - 1, 4, " ");
                     cursorPos--;
@@ -113,10 +114,10 @@ public class View {
                 }
             }
 
-            if(key.getKeyType() == KeyType.Escape)
+            if (key.getKeyType() == KeyType.Escape)
                 return " ";
 
-            if(key.getKeyType() == KeyType.Character) {
+            if (key.getKeyType() == KeyType.Character) {
                 symbol = key.getCharacter();
                 textGraphics.putString(cursorPos, 4, String.valueOf(symbol));
                 res.append(symbol);
@@ -417,17 +418,14 @@ public class View {
         int offsetY = 1;
         int statsY = mapHeight + offsetY + 2;
         int statsWidth = mapWidth + offsetX;
-        drawRectangle(textGraphics, statsY - 1, statsY + 1,
-                offsetX - 1, statsWidth);
+        drawRectangle(textGraphics, statsY - 1, statsY + 1, offsetX - 1, statsWidth);
         String stats = String.format(
                 "Level: %d     Health: %d/%d     Agility: %d     Strength: %d     Treasures: %d",
-                controller.getModel().getLevel(),
-                controller.getModel().getPlayer().getHealth(),
+                controller.getModel().getLevel(), controller.getModel().getPlayer().getHealth(),
                 controller.getModel().getPlayer().getMaxHealth(),
                 controller.getModel().getPlayer().getAgility(),
                 controller.getModel().getPlayer().getStrength(),
-                controller.getModel().getPlayer().getTreasure()
-        );
+                controller.getModel().getPlayer().getTreasure());
         int centerX = (statsWidth - stats.length()) / 2 + 1;
         textGraphics.putString(centerX, statsY, stats);
     }
@@ -441,8 +439,7 @@ public class View {
         int panelY = offsetY - 1;
         int panelWidth = 25;
         int panelHeight = mapHeight + 4;
-        drawRectangle(textGraphics, panelY, panelY + panelHeight,
-                panelX, panelX + panelWidth);
+        drawRectangle(textGraphics, panelY, panelY + panelHeight, panelX, panelX + panelWidth);
 
         String title = "CONTROL:";
         textGraphics.setForegroundColor(TextColor.ANSI.YELLOW);
@@ -640,17 +637,14 @@ public class View {
         int innerRight = outerRight - 2;
         int innerTop = outerTop + 5;
         int innerBottom = outerBottom - 3;
-        return new StatsOffsets(
-                screenWidth, screenHeight,
-                outerLeft, outerRight, outerTop, outerBottom,
-                innerLeft, innerRight, innerTop, innerBottom
-        );
+        return new StatsOffsets(screenWidth, screenHeight, outerLeft, outerRight, outerTop,
+                outerBottom, innerLeft, innerRight, innerTop, innerBottom);
     }
 
     private void drawOuterBorder(StatsOffsets info) {
         textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-        drawRectangle(textGraphics, info.outerTop - 1, info.outerBottom + 1,
-                info.outerLeft - 1, info.outerRight+ 1);
+        drawRectangle(textGraphics, info.outerTop - 1, info.outerBottom + 1, info.outerLeft - 1,
+                info.outerRight + 1);
     }
 
     private void drawTitle(StatsOffsets info) {
@@ -671,8 +665,8 @@ public class View {
 
     private void drawInnerBorder(StatsOffsets info) {
         textGraphics.setForegroundColor(TextColor.ANSI.WHITE);
-        drawRectangle(textGraphics, info.innerTop, info.innerBottom,
-                info.innerLeft, info.innerRight);
+        drawRectangle(textGraphics, info.innerTop, info.innerBottom, info.innerLeft,
+                info.innerRight);
         for (int x = info.innerLeft + 1; x <= info.innerRight - 1; x++) {
             textGraphics.putString(x, info.innerTop + 2, "─");
         }
@@ -713,7 +707,8 @@ public class View {
             textGraphics.putString(cols[6] - 2, dataY, String.format("%6d", s.getElixirDrink()));
             textGraphics.putString(cols[7] - 2, dataY, String.format("%6d", s.getScrollUse()));
             textGraphics.putString(cols[8] - 2, dataY, String.format("%6d", s.getAttacksMade()));
-            textGraphics.putString(cols[9] - 3, dataY, String.format("%9d", s.getAttacksReceived()));
+            textGraphics.putString(cols[9] - 3, dataY,
+                    String.format("%9d", s.getAttacksReceived()));
             textGraphics.putString(cols[10] - 1, dataY, String.format("%7d", s.getCellMoved()));
             drawGameResult(cols[11] + 3, dataY, s.isVictory());
             dataY++;
@@ -742,8 +737,8 @@ public class View {
         int col11 = col10 + 12;
         int col12 = col11 + 11;
 
-        return new int[]{col1, col2, col3, col4, col5, col6,
-                col7, col8, col9, col10, col11, col12};
+        return new int[] {col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11,
+                col12};
     }
 
     private void setRowColor(int index) {
@@ -816,9 +811,8 @@ public class View {
         final int innerTop;
         final int innerBottom;
 
-        StatsOffsets(int screenWidth, int screenHeight,
-                        int outerLeft, int outerRight, int outerTop, int outerBottom,
-                        int innerLeft, int innerRight, int innerTop, int innerBottom) {
+        StatsOffsets(int screenWidth, int screenHeight, int outerLeft, int outerRight, int outerTop,
+                int outerBottom, int innerLeft, int innerRight, int innerTop, int innerBottom) {
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
             this.outerLeft = outerLeft;

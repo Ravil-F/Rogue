@@ -167,7 +167,6 @@ public class SaveGame {
     }
 }
 
-
 // Адаптер для TextColor
 class TextColorTypeAdapter extends TypeAdapter<TextColor> {
     @Override
@@ -194,7 +193,6 @@ class TextColorTypeAdapter extends TypeAdapter<TextColor> {
         }
     }
 }
-
 
 // Адаптер для Items
 class ItemsTypeAdapter extends TypeAdapter<Items> {
@@ -462,7 +460,6 @@ class ItemsTypeAdapter extends TypeAdapter<Items> {
     }
 }
 
-
 // Адаптер для Backpack
 class BackpackTypeAdapter extends TypeAdapter<Backpack> {
     @Override
@@ -569,7 +566,6 @@ class BackpackTypeAdapter extends TypeAdapter<Backpack> {
         backpack.setScreenOutput(screenOutput);
     }
 }
-
 
 // Адаптер для Attributes (врагов)
 class AttributesTypeAdapter extends TypeAdapter<Attributes> {
@@ -701,7 +697,6 @@ class AttributesTypeAdapter extends TypeAdapter<Attributes> {
     }
 }
 
-
 // Адаптер для GameEnemy
 class GameEnemyTypeAdapter extends TypeAdapter<GameEnemy> {
     @Override
@@ -754,7 +749,6 @@ class GameEnemyTypeAdapter extends TypeAdapter<GameEnemy> {
         in.endArray();
     }
 }
-
 
 // адаптер для Weapon
 class WeaponTypeAdapter extends TypeAdapter<Weapon> {
@@ -840,7 +834,6 @@ class WeaponTypeAdapter extends TypeAdapter<Weapon> {
         return new domain.items.Weapon(weaponE, coordX, coordY);
     }
 }
-
 
 // Адаптер для Map
 class MapTypeAdapter extends TypeAdapter<domain.location.Map> {
