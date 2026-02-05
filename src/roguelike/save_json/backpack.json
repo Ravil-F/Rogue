@@ -1,28 +1,49 @@
 {
   "packWeapon": [],
-  "packFood": [
+  "packFood": [],
+  "packElixir": [
     {
-      "type": "Food",
-      "foodEnum": "BREAD_F",
-      "name": "bread",
-      "symbol": "f",
-      "increase": 10,
-      "color": "GREEN",
-      "coordX": 68,
-      "coordY": 15
+      "type": "Elixir",
+      "elixirEnum": "HEALTH_E",
+      "name": "strength elixir",
+      "symbol": "e",
+      "increase": 20,
+      "color": "BLUE",
+      "coordX": 17,
+      "coordY": 16
     },
     {
-      "type": "Food",
-      "foodEnum": "BREAD_F",
-      "name": "bread",
-      "symbol": "f",
-      "increase": 10,
-      "color": "GREEN",
-      "coordX": 9,
-      "coordY": 6
+      "type": "Elixir",
+      "elixirEnum": "AGILITY_E",
+      "name": "agility elixir",
+      "symbol": "e",
+      "increase": 30,
+      "color": "BLUE",
+      "coordX": 5,
+      "coordY": 25
+    },
+    {
+      "type": "Elixir",
+      "elixirEnum": "AGILITY_E",
+      "name": "agility elixir",
+      "symbol": "e",
+      "increase": 30,
+      "color": "BLUE",
+      "coordX": 41,
+      "coordY": 7
     }
   ],
-  "packElixir": [],
-  "packScroll": [],
+  "packScroll": [
+    {
+      "type": "Scroll",
+      "scrollEnum": "AGILITY_S",
+      "name": "agility scroll",
+      "symbol": "s",
+      "increase": 20,
+      "color": "YELLOW",
+      "coordX": 18,
+      "coordY": 15
+    }
+  ],
   "screenOuptup": []
 }
