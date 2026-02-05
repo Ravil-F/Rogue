@@ -7,7 +7,7 @@ import domain.enums.FoodE;
 public class Food extends Items {
     private FoodE food;
 
-    public Food(FoodE food, int x, int y){
+    public Food(FoodE food, int x, int y) {
         super(food.getSymbol(), food.getName(), food.getIncrease(), food.getColor(), x, y);
         this.food = food;
     }
