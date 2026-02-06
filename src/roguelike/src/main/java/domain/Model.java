@@ -30,6 +30,7 @@ public class Model implements Check {
     private Weapon weaponTaken;
     private Statistics statistics;
     private GameStatistics gameStatistics;
+    private int tmpHostility;
 
     private static final int MAX_LEVEL = 21;
     private static int timeAgility;
@@ -57,6 +58,7 @@ public class Model implements Check {
         timeAgility = 0;
         timeStrenght = 0;
         tmpStrenght = 0;
+        tmpHostility = 0;
         this.weaponTaken = new Weapon(null, 0, 0);
         this.statistics = Statistics.getStatistics();
         this.gameStatistics = null;
@@ -157,6 +159,8 @@ public class Model implements Check {
             }
             return;
         }
+
+
         if (checkEnemy(tmpX, tmpY)) {
             int index = enemys.getIndex(tmpX, tmpY);
             if (index >= 0 && index < enemys.getEnemy().size()) {
@@ -167,6 +171,7 @@ public class Model implements Check {
                     int enemyX = enemys.getEnemy().get(index).getCoord().getX();
                     int enemyY = enemys.getEnemy().get(index).getCoord().getY();
                     map.putZero(enemyX, enemyY);
+                    tmpHostility = enemys.getEnemy().get(index).getHostility();
                     enemys.getEnemy().remove(index);
                     Items singleItem = items.generateTreasure(enemyX, enemyY);
                     if (singleItem != null) {
@@ -178,11 +183,12 @@ public class Model implements Check {
             checkPlayerStatus();
             return;
         }
-        if (!checkItems(tmpX, tmpY)) {
+        if (!checkItems(tmpX, tmpY, tmpHostility)) {
             incrementCellMoved();
             map.putZero(oldX, oldY);
             player.setCoord(tmpX, tmpY);
             map.setMap(tmpX, tmpY, player.getSymbol());
+            tmpHostility = 0;
         }
     }
 
@@ -217,7 +223,7 @@ public class Model implements Check {
     }
 
     // все что связано с предметами
-    private boolean checkItems(int x, int y) {
+    private boolean checkItems(int x, int y, int tmpHostility) {
         if (items.getItems() == null || items.getItems().isEmpty())
             return false;
 
@@ -233,8 +239,9 @@ public class Model implements Check {
             }
 
             if (cellChar == 't') {
-                incrementTreasure(item.getIncrease());
-                player.increaseTreasure(item.getIncrease());
+                int tmp = item.getIncrease() + tmpHostility;
+                player.increaseTreasure(tmp);
+                incrementTreasure(tmp);
                 flag = true;
             }
         }
